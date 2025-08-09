@@ -28,12 +28,13 @@ export type BedImage = {
 export type Pin = {
   id: string;
   bed_id: string;
-  x: number;      // 0..1
-  y: number;      // 0..1
-  name: string;
+  image_id: string | null;
+  name: string | null;
   notes: string | null;
-  created_at?: string;
-  updated_at?: string;
+  x: number;
+  y: number;
+  created_at: string;
+  updated_at: string | null;
 };
 
 export type BedLatest = {

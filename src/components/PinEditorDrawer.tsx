@@ -1,102 +1,148 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import type { Pin } from "../types/types";
 
-type Draft = {
-  id?: string;
-  bed_id: string;
-  x: number;
-  y: number;
-  name: string;
-  notes: string | null;
+type Draft =
+  | (Pin & { isEdit?: true })
+  | ({ id?: undefined; bed_id: string; image_id: string | null; x: number; y: number; name?: string; notes?: string; });
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+
+  bedId: string;
+  /** Associate new pins with a specific bed image (or null if “unscoped”). */
+  imageId?: string;
+
+  /** Existing pin to edit OR a position to create at. */
+  initial?: Pin | { x: number; y: number };
+
+  onSaved: (pin: Pin) => void;
+  onDeleted: (id: string) => void;
 };
 
 export default function PinEditorDrawer({
   open,
   onClose,
   bedId,
-  initial, // undefined=create, Pin=edit, or {x,y} for new at position
+  imageId,
+  initial,
   onSaved,
   onDeleted,
-}: {
-  open: boolean;
-  onClose: () => void;
-  bedId: string;
-  initial?: Pin | { x: number; y: number };
-  onSaved: (pin: Pin) => void;
-  onDeleted: (id: string) => void;
-}) {
+}: Props) {
   const [draft, setDraft] = useState<Draft | null>(null);
-  const isEdit = !!(draft && draft.id);
 
+  // Prime the draft whenever the drawer opens
   useEffect(() => {
     if (!open) return;
-    if (!initial) { setDraft(null); return; }
-    if ("id" in (initial as any)) {
-      const p = initial as Pin;
-      setDraft({ id: p.id, bed_id: p.bed_id, x: p.x, y: p.y, name: p.name, notes: p.notes ?? null });
-    } else {
-      const pos = initial as { x: number; y: number };
-      setDraft({ bed_id: bedId, x: pos.x, y: pos.y, name: "", notes: null });
+    if (!initial) {
+      setDraft(null);
+      return;
     }
-  }, [open, initial, bedId]);
+
+    if ("id" in initial) {
+      setDraft({ ...initial, isEdit: true });
+    } else {
+      setDraft({
+        bed_id: bedId,
+        image_id: imageId ?? null,
+        x: initial.x,
+        y: initial.y,
+        name: "",
+        notes: "",
+      });
+    }
+  }, [open, initial, bedId, imageId]);
 
   async function save() {
     if (!draft) return;
-    if (draft.id) {
+
+    // UPDATE
+    if ("id" in draft && draft.id) {
       const { data, error } = await supabase
         .from("pins")
-        .update({ name: draft.name, notes: draft.notes, x: draft.x, y: draft.y, updated_at: new Date().toISOString() })
+        .update({
+          name: draft.name ?? null,
+          notes: draft.notes ?? null,
+          x: draft.x,
+          y: draft.y,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", draft.id)
         .select("*")
         .single();
+
       if (error) return alert(error.message);
       onSaved(data as Pin);
       onClose();
-    } else {
-      const { data, error } = await supabase
-        .from("pins")
-        .insert({ bed_id: draft.bed_id, x: draft.x, y: draft.y, name: draft.name, notes: draft.notes })
-        .select("*")
-        .single();
-      if (error) return alert(error.message);
-      onSaved(data as Pin);
-      onClose();
+      return;
     }
+
+    // INSERT
+    const { data, error } = await supabase
+      .from("pins")
+      .insert({
+        bed_id: draft.bed_id,
+        image_id: draft.image_id ?? null,
+        x: draft.x,
+        y: draft.y,
+        name: draft.name ?? null,
+        notes: draft.notes ?? null,
+      })
+      .select("*")
+      .single();
+
+    if (error) return alert(error.message);
+    onSaved(data as Pin);
+    onClose();
   }
 
-  async function del() {
-    if (!draft?.id) return;
-    if (!confirm("Delete this pin?")) return;
-    const { error } = await supabase.from("pins").delete().eq("id", draft.id);
+  async function remove() {
+    if (!draft || !("id" in draft) || !draft.id) return;
+    const id = draft.id;
+    const { error } = await supabase.from("pins").delete().eq("id", id);
     if (error) return alert(error.message);
-    onDeleted(draft.id);
+    onDeleted(id);
     onClose();
   }
 
   return (
-    <div className={`drawer ${open ? "open" : ""}`} onClick={onClose}>
-      <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
+    <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open}>
+      <div className="drawer-panel" role="dialog" aria-modal="true">
         <div className="drawer-header">
-          <div className="title">{isEdit ? "Edit pin" : "Add pin"}</div>
-          <button className="btn ghost" onClick={onClose}>Close</button>
+          <div className="title">{("id" in (draft ?? {})) ? "Edit pin" : "Add pin"}</div>
+          <div style={{ marginLeft: "auto" }}>
+            <button className="pill" onClick={onClose}>Close</button>
+          </div>
         </div>
 
         <div className="drawer-body">
-          <label className="field">
+          <div className="field">
             <span>Name</span>
-            <input value={draft?.name ?? ""} onChange={(e) => draft && setDraft({ ...draft, name: e.target.value })} />
-          </label>
-          <label className="field">
+            <input
+              value={draft?.name ?? ""}
+              onChange={(e) => setDraft((d) => (d ? { ...d, name: e.target.value } : d))}
+              placeholder="e.g., Cosmos"
+            />
+          </div>
+
+          <div className="field">
             <span>Notes</span>
-            <textarea rows={3} value={draft?.notes ?? ""} onChange={(e) => draft && setDraft({ ...draft, notes: e.target.value })}/>
-          </label>
+            <textarea
+              rows={6}
+              value={draft?.notes ?? ""}
+              onChange={(e) => setDraft((d) => (d ? { ...d, notes: e.target.value } : d))}
+              placeholder="Any notes…"
+            />
+          </div>
         </div>
 
         <div className="drawer-actions">
-          {isEdit && <button className="btn danger" onClick={del}>Delete</button>}
-          <div style={{ flex: 1 }} />
-          <button className="btn primary" onClick={save} disabled={!draft?.name.trim()}>Save</button>
+          {("id" in (draft ?? {})) && draft?.id ? (
+            <button className="btn danger" onClick={remove}>Delete</button>
+          ) : null}
+          <div style={{ marginLeft: "auto" }} />
+          <button className="pill" onClick={save}>Save</button>
         </div>
       </div>
     </div>

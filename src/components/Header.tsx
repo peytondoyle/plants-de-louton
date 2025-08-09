@@ -1,20 +1,33 @@
-import { NavLink } from "react-router-dom";
-import { mapSections } from "../data/mapSections";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Header() {
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <NavLink to="/" className="brand">Plants de Louton</NavLink>
+        <Link to="/" className="brand">Plants de Louton</Link>
 
-        <nav className="main-nav">
-          <NavLink to="/" end className="nav-link">All sections</NavLink>
-          {mapSections.slice(0, 3).map(s => (
-            <NavLink key={s.slug} to={`/section/${s.slug}`} className="nav-link">
-              {s.label}
-            </NavLink>
-          ))}
+        {/* Top nav as ghost pills, unified hover/focus */}
+        <nav className="main-nav" aria-label="Sections">
+        <NavLink
+          to="/section/front-yard"
+          className={({ isActive }) =>
+            `ui-btn ui-btn--sm ui-btn--ghost ${isActive ? "is-active" : ""}`
+          }
+        >
+          Front yard
+        </NavLink>
+        <NavLink
+          to="/section/back-yard"
+          className={({ isActive }) =>
+            `ui-btn ui-btn--sm ui-btn--ghost ${isActive ? "is-active" : ""}`
+          }
+        >
+          Back yard
+        </NavLink>
         </nav>
+
+        {/* right side utility (leave empty for now) */}
+        <div style={{ marginLeft: "auto" }} />
       </div>
     </header>
   );
