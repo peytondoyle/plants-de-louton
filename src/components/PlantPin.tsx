@@ -11,7 +11,7 @@ export default function PlantPin({ pin, onClick }: Props) {
     <button
       className="pin"
       style={{ left: `${pin.x * 100}%`, top: `${pin.y * 100}%` }}
-      title={pin.name}
+      title={pin.name ?? undefined}  
       aria-label={`Pin ${pin.name}`}
       onClick={(e) => {
         e.stopPropagation();
