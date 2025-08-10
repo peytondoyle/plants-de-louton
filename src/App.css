@@ -1,5 +1,5 @@
 /* =========================
-   Base
+   Design tokens
 ========================= */
 :root{
   --sp-1: 6px;
@@ -8,90 +8,96 @@
   --sp-4: 18px;
   --radius: 12px;
   --border: #e5e7eb;
-  --header-h: 56px; /* NEW: header height */
+  --header-h: 56px;
+
+  /* One source of truth for side gutters (header + pages) */
+  --page-pad: clamp(16px, 6vw, 100px);
 }
+
 *{ box-sizing:border-box; }
-body{ margin:0; color:#0f172a; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#fff; }
-a{ color:inherit; }
+body{
+  margin:0;
+  color:#0f172a;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:#fff;
+}
+a{ color:inherit; text-decoration:none; }
 
 /* =========================
-   Layout shell (under sticky header)
-   — Tight top padding so header never looks "pushed down"
+   Fluid container (shared)
+   Use on: .site-header__inner and .app-root
 ========================= */
-.app-shell{ padding:8px 16px 16px; }
-@media (min-width:1024px){ .app-shell{ padding:10px 20px 20px; } }
-
-/* Main page container */
-.app-root{ max-width:1100px; margin:0 auto; padding:8px 16px 16px; }
-
-/* First child inside .app-shell never adds extra top spacing */
-.app-shell > *:first-child{ margin-top:0 !important; padding-top:0 !important; }
+.container{
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: var(--page-pad);
+}
 
 /* =========================
-   Header (global, single)
+   Header
 ========================= */
 .site-header{
-  position:fixed; top:0; left:0; right:0; z-index:1000;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
   height: var(--header-h);
   background: rgba(255,255,255,.75);
   backdrop-filter: saturate(1.1) blur(6px);
   border-bottom: 1px solid #eef0f2;
 }
-.site-header__inner{ max-width:1100px; margin:0 auto; height:100%; padding:0 16px; display:flex; gap:10px; align-items:center; }
+.site-header__inner{
+  height: 100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding-block: 0; /* keep side padding from .container */
+}
+.brand{
+  font-weight:700;
+  border-radius:8px;
+  padding:0; margin:0; color:#0f172a;
+}
+.main-nav{ display:flex; gap:6px; flex-wrap:wrap; }
 
-/* Content shell must sit BELOW the fixed header */
-.app-shell{ padding: calc(var(--header-h) + 8px) 16px 16px; min-height:100vh; }
+/* =========================
+   App shell (below header)
+========================= */
+.app-shell{
+  padding: calc(var(--header-h) + 8px) 0 16px;
+  min-height:100vh;
+}
 @media (min-width:1024px){
-  .app-shell{ padding: calc(var(--header-h) + 10px) 20px 20px; }
+  .app-shell{ padding: calc(var(--header-h) + 10px) 0 20px; }
 }
 
-/* Page container */
-.app-root{ max-width:1100px; margin:0 auto; padding: 0 16px 16px; }
+/* =========================
+   Page root
+========================= */
+.app-root{}
 .app-root > *:first-child{ margin-top:0 !important; padding-top:0 !important; }
 
-/* Title */
+/* =========================
+   Titles / toolbar
+========================= */
 .page-title{ margin: 0 0 16px; }
 @media (min-width:768px){ .page-title{ margin: 0 0 18px; } }
 
-.brand{ font-weight:700; text-decoration:none; padding:6px 8px; border-radius:8px; }
-.main-nav{ display:flex; gap:6px; flex-wrap:wrap; }
-.nav-link{ text-decoration:none; color:#334155; font-size:14px; padding:6px 10px; border-radius:8px; }
-.nav-link.active{ background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; }
-
-/* Header pills */
-.nav-utility .pill{
-  font-size:14px; line-height:1;
-  padding:6px 10px;
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  background:#fff;
-  color:#0f172a;
-}
-.nav-utility .pill--link{ color:#2563eb; text-decoration:none; }
-.nav-utility .pill:hover{ background:#f8fafc; }
-.nav-utility .pill input[type="file"]{ display:none; }
-
-/* =========================
-   Page toolbar
-========================= */
 .page-toolbar{
   display:flex; gap:8px; align-items:center;
   margin:6px 0 12px;
 }
 .pill{
   font-size:14px; line-height:1;
-  padding:6px 10px;
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  background:#fff;
-  color:#0f172a;
+  padding:6px 10px; border:1px solid #e5e7eb;
+  border-radius:12px; background:#fff; color:#0f172a;
 }
 .pill--link{ color:#2563eb; text-decoration:none; }
 .pill:hover{ background:#f8fafc; }
 .pill input[type="file"]{ display:none; }
 
 /* =========================
-   Sections overview (All sections)
+   Sections overview
 ========================= */
 .sections-grid{
   display:grid;
@@ -105,9 +111,7 @@ a{ color:inherit; }
 }
 .section-card:hover{ box-shadow:0 6px 22px rgba(0,0,0,.08); transform: translateY(-1px); }
 .section-thumb{ position:relative; width:100%; padding-top:70%; background:#f3f4f6; }
-.section-thumb img{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;
-}
+.section-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
 .thumb-fallback{ position:absolute; inset:0; display:grid; place-items:center; color:#334155; }
 .fallback-emoji{ font-size:28px; }
 .section-meta{ padding:10px 12px; }
@@ -119,9 +123,8 @@ a{ color:inherit; }
    Beds grid
 ========================= */
 .beds-grid{
-  display:grid;
+  display:grid; gap:16px;
   grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
-  gap:16px;
 }
 .bed-card{
   display:block; background:#fff; color:inherit; text-decoration:none;
@@ -139,89 +142,56 @@ a{ color:inherit; }
 .meta .sub{ font-size:12px; color:#6b7280; }
 
 /* =========================
-   Bed page
+   Bed page layout
 ========================= */
-.page-grid{ display:grid; grid-template-columns:1fr; gap:16px; align-items:start; }
+.page-grid{
+  display:grid;
+  grid-template-columns: 1fr;   /* mobile: single column */
+  gap:16px;
+  align-items:start;
+}
 @media (min-width:960px){
-  .page-grid{ grid-template-columns: minmax(0,1fr) 320px; }
+  .page-grid{
+    grid-template-columns: minmax(0,1fr) 320px; /* image left, pins right */
+    gap:16px;
+  }
 }
 .left-col .hint{ text-align:center; color:#6b7280; font-size:14px; margin-bottom:8px; }
 
-/* ===== Image history (REWRITTEN) ===== */
+/* ===== Image history ===== */
 .image-history{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  padding:8px 0;
-  -webkit-overflow-scrolling:touch;
+  display:flex; gap:12px; overflow-x:auto; padding:8px 0; -webkit-overflow-scrolling:touch;
 }
-
 .hist-thumb{
-  position:relative;
-  flex:0 0 auto;
-  width:132px; height:92px;
-  border:0;                 /* no native border */
-  padding:0;
-  border-radius:14px;
-  overflow:hidden;          /* clip image & overlays to radius */
-  background:transparent;
-  box-shadow:0 1px 2px rgba(0,0,0,.10);  /* tiny elevation only */
-  cursor:pointer;
-  transition:transform .12s ease, filter .12s ease;
+  position:relative; flex:0 0 auto; width:132px; height:92px;
+  border:0; padding:0; border-radius:14px; overflow:hidden;
+  background:transparent; box-shadow:0 1px 2px rgba(0,0,0,.10);
+  cursor:pointer; transition:transform .12s ease, filter .12s ease;
 }
-
-/* the photo */
-.hist-thumb > img{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  object-fit:cover; display:block;
-  -webkit-user-drag:none;
-}
-
-/* ONE crisp ring for hover + active via ::after (no glow) */
-.hist-thumb::after{
-  content:"";
-  position:absolute; inset:0;
-  border-radius:inherit;
-  border:2px solid transparent;     /* off by default */
-  pointer-events:none;
-}
+.hist-thumb > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; -webkit-user-drag:none; }
+.hist-thumb::after{ content:""; position:absolute; inset:0; border-radius:inherit; border:2px solid transparent; pointer-events:none; }
 .hist-thumb:hover::after,
-.hist-thumb:focus-visible::after{
-  border-color:#3b82f6;             /* same color as active */
-}
-.hist-thumb.active::after{
-  border-color:#3b82f6;             /* active looks the same */
-}
-
-/* Check badge (does not push the date) */
+.hist-thumb:focus-visible::after{ border-color:#3b82f6; }
+.hist-thumb.active::after{ border-color:#3b82f6; }
 .thumb-check{
-  position:absolute; top:6px; right:8px;
-  width:18px; height:18px; display:grid; place-items:center;
-  font-size:12px; font-weight:800; color:#fff;
-  background:#2563eb; border-radius:9999px;
+  position:absolute; top:6px; right:8px; width:18px; height:18px;
+  display:grid; place-items:center; font-size:12px; font-weight:800;
+  color:#fff; background:#2563eb; border-radius:9999px;
   box-shadow:0 1px 2px rgba(0,0,0,.25);
-  opacity:0; transform:scale(.9);
-  transition:opacity .12s ease, transform .12s ease;
+  opacity:0; transform:scale(.9); transition:opacity .12s, transform .12s;
   pointer-events:none; z-index:2;
 }
 .hist-thumb.active .thumb-check{ opacity:1; transform:scale(1); }
-
-/* Date stripe */
 .hist-meta{
   position:absolute; left:0; right:0; bottom:0; z-index:1;
   padding:6px 10px; color:#fff; font-weight:700;
   text-shadow:0 1px 2px rgba(0,0,0,.45);
   background:linear-gradient(to top, rgba(0,0,0,.35), rgba(0,0,0,0));
 }
-
-/* Non-active = slightly faded; restore on hover/focus */
 .hist-thumb:not(.active){ filter:saturate(.9) brightness(.96); }
 @media (hover:hover){
   .hist-thumb:not(.active):hover,
-  .hist-thumb:not(.active):focus-visible{
-    filter:none; transform:translateY(-1px);
-  }
+  .hist-thumb:not(.active):focus-visible{ filter:none; transform:translateY(-1px); }
 }
 .hist-thumb:focus-visible{ outline:none; }
 
@@ -234,28 +204,18 @@ a{ color:inherit; }
   width:100%; height:auto; max-height:70vh;
   object-fit:contain; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.12);
 }
-.pins-layer{
-  position: absolute;
-  left: 0; top: 0; right: 0; bottom: 0;
-  pointer-events: none;
-}
+.pins-layer{ position:absolute; left:0; top:0; right:0; bottom:0; pointer-events:none; }
 
-/* pins (true circles) */
+/* pins */
 .pin{ box-sizing: content-box; }
 .pin{
-  pointer-events: auto;
-  position: absolute;
-  left: 0; top: 0;
+  pointer-events: auto; position: absolute; left:0; top:0;
   transform: translate(-50%,-50%);
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: #10b981;
-  border: 2px solid #0a1014;
-  box-shadow: 0 0 0 2px rgba(16,185,129,.25);
+  width:16px; height:16px; border-radius:50%;
+  background:#10b981; border:2px solid #0a1014;
+  box-shadow:0 0 0 2px rgba(16,185,129,.25);
 }
-@media (max-width: 480px){
-  .pin{ width: 18px; height: 18px; }
-}
+@media (max-width:480px){ .pin{ width:18px; height:18px; } }
 
 /* =========================
    Sidebar & panels
@@ -279,19 +239,14 @@ a{ color:inherit; }
 /* =========================
    Drawer (pin editor)
 ========================= */
-:root{ --header-h: 56px; }
 .drawer{
-  position:fixed; inset:0;
-  z-index:2000;
-  background:rgba(0,0,0,.4);
-  opacity:0; pointer-events:none; transition:.2s;
-  padding-top: var(--header-h);
+  position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,.4);
+  opacity:0; pointer-events:none; transition:.2s; padding-top: var(--header-h);
 }
 .drawer.open{ opacity:1; pointer-events:auto; }
 .drawer-panel{
-  position:absolute; right:0; top:var(--header-h);
-  bottom:0; width:min(420px, 92vw);
-  height: calc(100vh - var(--header-h));
+  position:absolute; right:0; top:var(--header-h); bottom:0;
+  width:min(420px, 92vw); height: calc(100vh - var(--header-h));
   background:#fff; box-shadow:-8px 0 24px rgba(0,0,0,.2);
   display:flex; flex-direction:column;
 }
@@ -303,7 +258,9 @@ a{ color:inherit; }
 .drawer-actions{ display:flex; gap:8px; padding:12px 14px; border-top:1px solid #eee; }
 .btn.danger{ background:#ef4444; color:#fff; border-radius:8px; padding:8px 12px; }
 
-/* Back link */
+/* =========================
+   Back link
+========================= */
 .link-back{
   display:inline-flex; align-items:center; gap:8px;
   padding:6px 10px;
@@ -315,7 +272,9 @@ a{ color:inherit; }
 .link-back:hover{ background:#f8fafc; border-color:#d1d5db; }
 .link-back:active{ transform: translateY(1px); }
 
-/* Extra pin interaction polish */
+/* =========================
+   Pin interaction polish
+========================= */
 .pin:hover{
   box-shadow:0 0 0 4px rgba(16,185,129,.30), 0 3px 10px rgba(0,0,0,.25);
   filter:brightness(1.03);
@@ -325,7 +284,7 @@ a{ color:inherit; }
 }
 .pin:active{ transform:translate(-50%, -50%) scale(.95); }
 
-/* Button pin reset (for <button class="pin"> cases) */
+/* Button pin reset */
 button.pin{
   -webkit-appearance:none; appearance:none; padding:0; margin:0;
   border:2px solid #0f172a; background:#10b981; display:block; line-height:0;
@@ -336,81 +295,58 @@ button.pin{
 }
 button.pin:hover{ filter:brightness(1.03); box-shadow:0 0 0 4px rgba(16,185,129,.30), 0 3px 10px rgba(0,0,0,.25); }
 button.pin:focus-visible{ outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px #2563eb; }
-button.pin:active{ transform:translate(-50%,-50%) scale(.95); }
+button.pin:active{ transform:translate(-50%, -50%) scale(.95); }
 
-/* -------- Unified pills (links, buttons, labels) -------- */
+/* =========================
+   Unified pills (links, buttons, labels)
+========================= */
 a.ui-btn,
 button.ui-btn,
-label.ui-btn {
+label.ui-btn{
   -webkit-appearance: none;
   appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  line-height: 1;
-  font-size: 14px;
-  font-weight: 500;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  color: #0f172a;               /* base color */
-  transition:
-    background .12s ease,
-    border-color .12s ease,
-    transform .06s ease,
-    box-shadow .12s ease,
-    color .12s ease;
+  display: inline-flex; align-items:center; gap:8px;
+  padding: 6px 12px; line-height:1; font-size:14px; font-weight:500;
+  border:1px solid #e5e7eb; border-radius:12px; background:#fff;
+  text-decoration:none; cursor:pointer; user-select:none; color:#0f172a;
+  transition: background .12s, border-color .12s, transform .06s, box-shadow .12s, color .12s;
+}
+a.ui-btn:link, a.ui-btn:visited{ color:#0f172a; text-decoration:none; }
+a.ui-btn:hover, button.ui-btn:hover, label.ui-btn:hover{ background:#f8fafc; border-color:#d1d5db; }
+a.ui-btn:active, button.ui-btn:active, label.ui-btn:active{ transform: translateY(1px); }
+a.ui-btn:focus-visible, button.ui-btn:focus-visible, label.ui-btn:focus-visible{
+  outline:none; box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(37,99,235,.55);
+}
+.ui-btn--sm{ padding:4px 10px; font-size:13px; }
+.ui-btn--ghost{ background:transparent; border-color:#cbd5e1; }
+.ui-btn--ghost:hover{ background:#f8fafc; border-color:#b6c3d1; }
+.ui-btn.is-active{ background:#f8fafc; border-color:#cbd5e1; color:#0f172a; }
+label.ui-btn input[type="file"]{ display:none; }
+
+/* =========================
+   Tooltip
+========================= */
+.tt-wrap{ position: relative; display: inline-flex; margin-left:6px; }
+.pill--icon{ padding:6px; display:inline-grid; place-items:center; }
+.tt{
+  position:absolute; top:100%; right:0; margin-top:8px;
+  max-width:260px; padding:8px 10px; font-size:12px; line-height:1.35;
+  background:#0f172a; color:#fff; border-radius:8px; box-shadow:0 6px 22px rgba(0,0,0,.2);
+  opacity:0; transform: translateY(-2px); pointer-events:none; transition:.12s;
+  z-index:30;
+}
+.tt.open{ opacity:1; transform: translateY(0); }
+.tt::after{
+  content:""; position:absolute; top:-6px; right:10px; width:10px; height:10px;
+  background:#0f172a; transform: rotate(45deg);
 }
 
-/* kill Safari/Chrome visited purple & default underline */
-a.ui-btn:link,
-a.ui-btn:visited {
-  color: #0f172a;
-  text-decoration: none;
+/* =========================
+   Safety net (wins against any stray .container rules)
+========================= */
+.site-header__inner.container,
+.app-root.container{
+  width:100% !important;
+  max-width:none !important;
+  padding-inline: var(--page-pad) !important;
 }
-
-/* hover / active / focus ring (all elements) */
-a.ui-btn:hover,
-button.ui-btn:hover,
-label.ui-btn:hover {
-  background: #f8fafc;
-  border-color: #d1d5db;
-}
-a.ui-btn:active,
-button.ui-btn:active,
-label.ui-btn:active {
-  transform: translateY(1px);
-}
-a.ui-btn:focus-visible,
-button.ui-btn:focus-visible,
-label.ui-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(37,99,235,.55);
-}
-
-/* compact size (use on header tabs, back, change image, +Add) */
-.ui-btn--sm { padding: 4px 10px; font-size: 13px; }
-
-/* ghost tab style for header nav (no fill until hover) */
-.ui-btn--ghost {
-  background: transparent;
-  border-color: #cbd5e1;
-}
-.ui-btn--ghost:hover {
-  background: #f8fafc;
-  border-color: #b6c3d1;
-}
-
-/* “active” tab state (NavLink) */
-.ui-btn.is-active {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #0f172a;
-}
-
-/* make file inputs inside label pills invisible */
-label.ui-btn input[type="file"] { display: none; }
