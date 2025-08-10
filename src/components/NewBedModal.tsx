@@ -29,7 +29,7 @@ export default function NewBedModal({
     return data as Bed;
   }
 
-  function slug(s: string) { return s.toLowerCase().trim().replace(/[^\w\-]+/g, "-").replace(/\-+/g, "-"); }
+  function slug(s: string) { return s.toLowerCase().trim().replace(/[^\w-]+/g, "-").replace(/-+/g, "-"); }
   function ext(f: File) { const n = f.name; const i = n.lastIndexOf("."); return i >= 0 ? n.slice(i + 1) : "jpg"; }
 
   const create = async () => {
@@ -59,8 +59,9 @@ export default function NewBedModal({
 
       onCreated({ bed, image, publicUrl });
       onClose();
-    } catch (e: any) {
-      alert(e?.message ?? String(e));
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      alert(errorMessage);
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";

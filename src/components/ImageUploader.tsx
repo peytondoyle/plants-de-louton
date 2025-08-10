@@ -74,7 +74,7 @@ export default function ImageUploader({ initialSection = "", onReady }: Props) {
   }
 
   function slugify(s: string) {
-    return s.toLowerCase().trim().replace(/[^\w\-]+/g, "-").replace(/\-+/g, "-");
+    return s.toLowerCase().trim().replace(/[^\w-]+/g, "-").replace(/-+/g, "-");
   }
   function fileExt(f: File) {
     const n = f.name; const dot = n.lastIndexOf("."); return dot >= 0 ? n.slice(dot + 1) : "jpg";
@@ -112,8 +112,9 @@ export default function ImageUploader({ initialSection = "", onReady }: Props) {
       setImageFile(null);
       if (inputRef.current) inputRef.current.value = "";
       onReady?.({ bed: b, image, publicUrl });
-    } catch (e: any) {
-      alert(e?.message ?? String(e));
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      alert(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -151,8 +152,9 @@ export default function ImageUploader({ initialSection = "", onReady }: Props) {
       setImageFile(null);
       if (inputRef.current) inputRef.current.value = "";
       onReady?.({ bed, image, publicUrl });
-    } catch (e: any) {
-      alert(e?.message ?? String(e));
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      alert(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -206,7 +208,24 @@ export default function ImageUploader({ initialSection = "", onReady }: Props) {
                       <span className="text-sm">{b.name}</span>
                       <button
                         className="px-2 py-1 text-sm rounded bg-gray-800 text-white"
-                        onClick={() => void useExistingBed(b)}
+                        onClick={() => {
+                          void (async () => {
+                            setBusy(true);
+                            try {
+                              const { image, publicUrl } = await getLatestImage(b.id);
+                              setImageUrl(publicUrl || null);
+                              setShowModal(false);
+                              setImageFile(null);
+                              if (inputRef.current) inputRef.current.value = "";
+                              onReady?.({ bed: b, image, publicUrl });
+                            } catch (e: unknown) {
+                              const errorMessage = e instanceof Error ? e.message : String(e);
+                              alert(errorMessage);
+                            } finally {
+                              setBusy(false);
+                            }
+                          })();
+                        }}
                         disabled={busy}
                       >
                         Use this bed

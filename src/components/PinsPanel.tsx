@@ -1,13 +1,12 @@
 import type { Pin } from "../types/types";
-import Tooltip from "./Tooltip";
+import Tooltip from "./Tooltip/Tooltip";
 
 type Props = {
   pins: Pin[];
-  onAdd: () => void;
   onOpen: (pin: Pin) => void;
 };
 
-export default function PinsPanel({ pins, onAdd, onOpen }: Props) {
+export default function PinsPanel({ pins, onOpen }: Props) {
   return (
     <div className="card">
       <div className="panel">
@@ -15,20 +14,21 @@ export default function PinsPanel({ pins, onAdd, onOpen }: Props) {
       <div className="panel-head">
         <div className="panel-title">Pins</div>
         <div className="panel-meta">{pins.length}</div>
-        <button className="panel-action" onClick={onAdd}>+ Add</button>
 
-        <Tooltip label="Pin help">
-          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="11" fill="currentColor" opacity=".08"/>
-            <path d="M12 8.5a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm-1.1 2.7h2.2v6.3h-2.2z"
-                  fill="currentColor"/>
-          </svg>
+        <Tooltip content="Click the image to add a pin. Click a pin to edit. Use the thumbnails above to switch images.">
+          <button className="pill pill--icon" aria-label="Pin help">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="11" fill="currentColor" opacity=".08"/>
+              <path d="M12 8.5a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm-1.1 2.7h2.2v6.3h-2.2z"
+                    fill="currentColor"/>
+            </svg>
+          </button>
         </Tooltip>
       </div>
 
         {pins.length === 0 ? (
           <div className="panel-empty">
-            No pins yet. Click “Add” or tap the image.
+            No pins yet. Click the image to add a pin.
           </div>
         ) : (
           <ul className="pin-rows">

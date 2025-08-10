@@ -180,7 +180,7 @@ a{ color:inherit; text-decoration:none; }
   width: 100%;
   max-width: 100%;
   margin: 0 !important;     /* override .image-history bottom margin */
-  padding: 0;               /* arrows moved to wrapper padding */
+  padding: 0 12px;          /* space for arrows */
   display: flex;            /* row scroll */
   gap: 10px;
   overflow-x: auto;         /* horizontal scroll with arrows */
@@ -195,34 +195,40 @@ a{ color:inherit; text-decoration:none; }
   scroll-snap-align: start;
 }
 
-/* filmstrip arrow buttons */
-.filmstrip-wrap{ position: relative; padding: 0 28px; }
-.filmstrip-arrow{ position:absolute; top:50%; transform: translateY(-50%); z-index:2; width:28px; height:28px; display:grid; place-items:center; color:#0f172a; background:#fff; border:1px solid #e5e7eb; border-radius:999px; box-shadow:0 2px 6px rgba(0,0,0,.12); font-weight:700; line-height:1; }
-.filmstrip-arrow.left{ left:0; }
-.filmstrip-arrow.right{ right:0; }
-.filmstrip-arrow:hover{ background:#f8fafc; }
-.filmstrip-arrow:disabled{ opacity:.35; cursor:default; box-shadow:none; }
+/* filmstrip drag functionality */
+.filmstrip-wrap{ position: relative; }
+.sidebar-filmstrip{ 
+  cursor: grab; 
+  user-select: none;
+}
+.sidebar-filmstrip:active{ 
+  cursor: grabbing; 
+}
+.sidebar-filmstrip .embla__container{ 
+  cursor: grab; 
+}
+.sidebar-filmstrip .embla__container:active{ 
+  cursor: grabbing; 
+}
+
+/* Enhanced drag experience */
+.sidebar-filmstrip {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-filmstrip::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-filmstrip {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 .sidebar-filmstrip .hist-meta{ font-size: 11px; padding: 3px 6px; }
 
-.hist-thumb{
-  position:relative; flex:0 0 auto; width:118px; height:84px;
-  border:0; padding:0; border-radius:14px; overflow:hidden;
-  background:transparent; box-shadow:0 1px 2px rgba(0,0,0,.10);
-  cursor:pointer; transition:transform .12s ease, filter .12s ease;
-}
-@media (min-width:1280px){ .hist-thumb{ width:126px; height:90px; } }
-.hist-thumb > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; -webkit-user-drag:none; }
-.hist-thumb::after{ content:""; position:absolute; inset:0; border-radius:inherit; border:2px solid transparent; pointer-events:none; }
-.hist-thumb:hover::after,
-.hist-thumb:focus-visible::after{ border-color:#3b82f6; }
-.hist-thumb.active::after{ border-color:#2563eb; }
-.thumb-check{
-  position:absolute; top:6px; right:8px; width:18px; height:18px;
-  display:grid; place-items:center; font-size:12px; font-weight:800;
-  color:#fff; background:#2563eb; border-radius:9999px;
-  box-shadow:0 1px 2px rgba(0,0,0,.25);
-  opacity:1; transform:scale(1); pointer-events:none; z-index:2;
-}
+/* Old conflicting styles removed - using new filmstrip styles below */
+
 .hist-meta{
   position:absolute; left:0; right:0; bottom:0; z-index:1;
   padding:4px 8px; color:#fff; font-weight:700; font-size:12px;
@@ -245,18 +251,125 @@ a{ color:inherit; text-decoration:none; }
   border-radius:12px;
   box-shadow:0 2px 12px rgba(0,0,0,.12);
 }
-.pins-layer{ position:absolute; inset:0; pointer-events:none; }
+.pins-layer{ 
+  position:absolute; 
+  inset:0; 
+  pointer-events:none; 
+  /* Ensure pins layer doesn't distort its children */
+  transform: none !important;
+  transform-origin: initial !important;
+}
 
 /* pins */
-.pin{ box-sizing: content-box; }
-.pin{
-  pointer-events: auto; position: absolute; left:0; top:0;
+.pin{ 
+  /* Reset all potential problematic properties */
+  all: unset;
+  
+  /* Core positioning and sizing */
+  box-sizing: border-box !important; 
+  pointer-events: auto; 
+  position: absolute; 
+  left: 0; 
+  top: 0;
   transform: translate(-50%,-50%);
-  width:16px; height:16px; border-radius:50%;
-  background:#10b981; border:2px solid #0a1014;
-  box-shadow:0 0 0 2px rgba(16,185,129,.25);
+  
+  /* Force exact dimensions */
+  width: 16px !important; 
+  height: 16px !important; 
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  
+  /* Perfect circle */
+  border-radius: 50% !important;
+  
+  /* Visual styling */
+  background: #10b981 !important; 
+  border: 2px solid #0a1014 !important;
+  box-shadow: 0 0 0 2px rgba(16,185,129,.25);
+  
+  /* Prevent flexbox distortion */
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  
+  /* Force perfect circle and prevent any distortion */
+  aspect-ratio: 1 !important;
+  display: block !important;
+  
+  /* Prevent any stretching or scaling */
+  transform-origin: center center !important;
+  
+  /* Enhanced visual appeal */
+  background: radial-gradient(circle at 30% 30%, #22d3aa 0%, #10b981 70%) !important;
+  box-shadow: 
+    0 0 0 2px rgba(16,185,129,.25),
+    0 2px 4px rgba(0,0,0,0.1);
+  
+  /* Smooth transitions for hover effects only, not position changes */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  
+  /* Additional safeguards */
+  overflow: visible !important;
+  resize: none !important;
+  
+  /* Force circular shape with CSS custom properties */
+  --pin-size: 16px;
+  width: var(--pin-size) !important;
+  height: var(--pin-size) !important;
+  min-width: var(--pin-size) !important;
+  min-height: var(--pin-size) !important;
+  max-width: var(--pin-size) !important;
+  max-height: var(--pin-size) !important;
+  
+  /* Additional isolation from container effects */
+  isolation: isolate !important;
+  contain: layout style paint !important;
+  
+  /* Ensure no inherited transforms affect the pin */
+  transform-style: flat !important;
+  backface-visibility: hidden !important;
+  
+  /* Force no scaling or distortion */
+  scale: 1 !important;
+  zoom: 1 !important;
+  
+  /* Ensure the pin is rendered as a perfect circle */
+  shape-rendering: geometricPrecision !important;
+  
+  /* Optimize for position changes */
+  will-change: transform;
 }
-@media (max-width:480px){ .pin{ width:18px; height:18px; } }
+
+.pin:hover {
+  transform: translate(-50%,-50%) scale(1.1);
+  box-shadow: 
+    0 0 0 2px rgba(16,185,129,.4),
+    0 4px 8px rgba(0,0,0,0.15);
+  background: radial-gradient(circle at 30% 30%, #34d399 0%, #10b981 70%);
+}
+
+.pin:active {
+  transform: translate(-50%,-50%) scale(0.95);
+}
+
+/* No transitions when dragging for instant response */
+.pin--dragging {
+  transition: none !important;
+  will-change: transform !important;
+}
+@media (max-width:480px){ 
+  .pin{ 
+    width: 18px; 
+    height: 18px; 
+    min-width: 18px;
+    min-height: 18px;
+    max-width: 18px;
+    max-height: 18px;
+    /* Ensure mobile pins also maintain perfect circle */
+    aspect-ratio: 1;
+  } 
+}
 
 /* =========================
    Sidebar & panels
@@ -274,7 +387,19 @@ a{ color:inherit; text-decoration:none; }
 .panel-empty{ font-size:13px; color:#6b7280; padding:10px 4px; }
 .pin-rows{ list-style:none; padding:0; margin:8px 0 0; display:grid; gap:6px; max-height:260px; overflow:auto; }
 .pin-row{ width:100%; display:flex; align-items:center; gap:8px; text-align:left; padding:8px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; }
-.pin-dot{ width:10px; height:10px; border-radius:999px; background:#7fdc8b; border:2px solid #0a1014; }
+.pin-dot{ 
+  width: 10px; 
+  height: 10px; 
+  min-width: 10px;
+  min-height: 10px;
+  max-width: 10px;
+  max-height: 10px;
+  border-radius: 50%; 
+  background: #7fdc8b; 
+  border: 2px solid #0a1014; 
+  flex-shrink: 0;
+  flex-grow: 0;
+}
 .pin-name{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 /* =========================
@@ -339,25 +464,36 @@ label.ui-btn input[type="file"]{ display:none; }
 /* =========================
    Tooltip
 ========================= */
-.tt-wrap{ position: relative; display: inline-flex; margin-left:6px; }
+.tt-wrap{ position: relative; display: inline-flex; margin-left:6px; cursor: pointer; }
 .tt-wrap--abs{ margin-left: 0; }
-.pill--icon{ padding:6px; display:inline-grid; place-items:center; border:0; background:transparent; }
+.pill--icon{ padding:6px; display:inline-grid; place-items:center; border:0; background:transparent; cursor: pointer; }
 .tt{
   position:absolute; top:100%; right:0; margin-top:8px;
-  max-width:260px; padding:8px 10px; font-size:12px; line-height:1.35;
-  background:#0f172a; color:#fff; border-radius:8px; box-shadow:0 6px 22px rgba(0,0,0,.2);
+  width:120px; height:120px; max-width:120px; max-height:120px;
+  padding:8px 10px; font-size:12px; line-height:1.35;
+  background:#0f172a; color:#fff; border-radius:50%; box-shadow:0 6px 22px rgba(0,0,0,.2);
   opacity:0; transform: translateY(-2px); pointer-events:none; transition:.12s;
   z-index:30;
+  display:flex; align-items:center; justify-content:center; text-align:center;
 }
 .tt--up{ top:auto; bottom:100%; right:0; margin-top:0; margin-bottom:8px; }
 .tt-wrap:hover .tt,
 .tt-wrap:focus-within .tt{ opacity:1; transform: translateY(0); }
 .tt.open{ opacity:1; transform: translateY(0); }
-.tt::after{
-  content:""; position:absolute; top:-6px; right:10px; width:10px; height:10px;
-  background:#0f172a; transform: rotate(45deg);
+.tt-arrow{
+  position: absolute;
+  width: 12px;
+  height: 6px;
+  color: #0f172a;
+  right: 10px;
 }
-.tt--up::after{ top:auto; bottom:-6px; right:6px; }
+.tt .tt-arrow{
+  top: -6px;
+}
+.tt--up .tt-arrow{
+  top: auto;
+  bottom: -6px;
+}
 
 /* Ensure hero aligns with filmstrip - only apply to outer image card */
 .left-col .image-shell.card{ margin: 0 0 calc(var(--stack-gap) + 4px); }
@@ -372,3 +508,349 @@ label.ui-btn input[type="file"]{ display:none; }
 
 /* ensure the panels inside don’t shrink weirdly */
 .sidebar{ min-width: 340px; }
+
+/* =========================
+   Animations
+========================= */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =========================
+   Modal styles
+========================= */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 20px 20px 0 20px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.modal-body {
+  padding: 16px 20px;
+}
+
+.modal-body p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.ui-btn--danger {
+  background: #dc2626;
+  color: white;
+}
+
+.ui-btn--danger:hover {
+  background: #b91c1c;
+}
+
+.ui-btn--secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.ui-btn--secondary:hover {
+  background: #e5e7eb;
+}
+
+/* =========================
+   Image history enhancements
+========================= */
+.hist-thumb-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hist-thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #f3f4f6;
+  border: 2px solid transparent;
+  transition: border-color 0.12s ease, transform 0.06s ease;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.hist-thumb:hover {
+  border-color: #d1d5db;
+}
+
+.hist-thumb.active {
+  border-color: #2563eb;
+}
+
+.hist-thumb > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  -webkit-user-drag: none;
+}
+
+
+
+.pin-count-badge svg {
+  flex-shrink: 0;
+}
+
+.pin-count-badge span {
+  line-height: 1;
+  min-width: 8px;
+  text-align: center;
+}
+
+/* Pin count badge - clean, circular design */
+.pin-count-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(16, 185, 129, 0.9);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pin-count-badge span {
+  color: white;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Main image badge - clean, prominent design */
+.main-image-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(37, 99, 235, 0.9);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.main-image-badge svg {
+  width: 12px;
+  height: 12px;
+  color: white;
+}
+
+/* Clean action buttons - only show on hover */
+.hist-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 15;
+  transition: opacity 0.2s ease;
+}
+
+.hist-thumb-wrapper:hover .hist-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hist-action-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-size: 0;
+  padding: 0;
+}
+
+.hist-action-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hist-action-btn:active {
+  transform: translateY(0);
+}
+
+.hist-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.hist-action-main {
+  color: #10b981;
+}
+
+.hist-action-main:hover {
+  background: rgba(16, 185, 129, 0.9);
+  color: white;
+}
+
+.hist-action-delete {
+  color: #ef4444;
+}
+
+.hist-action-delete:hover {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Spinner animation */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .hist-actions {
+    top: 6px;
+    right: 6px;
+    flex-direction: column;
+    gap: 3px;
+  }
+  
+  .hist-action-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .pin-count-badge {
+    top: 6px;
+    left: 6px;
+    width: 22px;
+    height: 22px;
+  }
+  
+  .main-image-badge {
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hist-action-btn {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .pin-count-badge {
+    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    top: 4px;
+    left: 4px;
+  }
+  
+  .main-image-badge {
+    width: 20px;
+    height: 20px;
+    top: 4px;
+    right: 4px;
+  }
+  
+  .main-image-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Ensure proper spacing in sidebar */
+.sidebar-filmstrip .hist-thumb-wrapper {
+  margin-bottom: 8px;
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  .hist-thumb:hover {
+    transform: none;
+  }
+  
+  .hist-action-btn:hover {
+    transform: none;
+  }
+  
+  /* Show action buttons on mobile for better accessibility */
+  .hist-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

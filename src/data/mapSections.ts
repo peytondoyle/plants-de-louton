@@ -2,12 +2,12 @@ export const mapSections = [
   {
     slug: "front-yard",
     label: "Front yard",
-    image: "/images/front.jpg",
+    image: "/images/front.svg",
   },
   {
     slug: "back-yard",
     label: "Back yard",
-    image: "/images/back.jpg",
+    image: "/images/back.svg",
   },
   // Add more sections as needed
 ];
