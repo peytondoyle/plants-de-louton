@@ -9,8 +9,9 @@ import { listImagesForBed } from "../lib/listImagesForBed";
 import PinDropper from "../components/PinDropper";
 import PinsPanel from "../components/PinsPanel";
 import Sidebar from "../components/Sidebar";
-import SidebarImageHistory from "../components/SidebarImageHistory";
+import Filmstrip from "../components/Filmstrip";
 import PinEditorDrawer from "../components/PinEditorDrawer";
+import MainImageTooltip from "../components/MainImageTooltip";
 
 import type { Bed, BedImage, Pin } from "../types/types";
 
@@ -131,7 +132,7 @@ export default function BedDetail() {
           {imageUrl ? (
             <>
             <div className="pinboard-stage">
-              <div className="image-shell card">
+              <div className="image-shell card" ref={boardRef as any}>
                 <PinDropper
                   bedId={bedId}
                   imageUrl={`${imageUrl}?v=${imgVer}`}
@@ -146,17 +147,13 @@ export default function BedDetail() {
                 >
                   {images.length > 0 && (
                     <div className="tt-wrap tt-wrap--abs" style={{ position: "absolute", right: 10, bottom: 10 }}>
-                      <button className="pill pill--icon" aria-label="Captured info">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden>
-                          <circle cx="12" cy="12" r="11" fill="currentColor" opacity=".08"/>
-                          <path d="M12 8.5a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm-1.1 2.7h2.2v6.3h-2.2z" />
-                        </svg>
-                      </button>
-                      <span className="tt tt--up" role="tooltip">
-                        Captured {new Date(
+                      <MainImageTooltip
+                        imgEl={document.querySelector('.image-shell img') as HTMLImageElement}
+                        containerEl={document.querySelector('.image-shell') as HTMLElement}
+                        timestamp={new Date(
                           images.find((i) => i.image_path === imagePath)?.created_at ?? Date.now()
                         ).toLocaleString()}
-                      </span>
+                      />
                     </div>
                   )}
                 </PinDropper>
@@ -172,15 +169,29 @@ export default function BedDetail() {
 
         <Sidebar>
           <div className="card panel panel--images">
-            <SidebarImageHistory
-              images={images}
-              activePath={imagePath}
-              onSelect={(img, url) => {
-                setActiveImageId(img.id);
-                setImagePath(img.image_path);
-                setImageUrl(url);
-              }}
-            />
+            {(() => {
+              const items = images.map((img) => {
+                const { data } = supabase.storage.from("plant-images").getPublicUrl(img.image_path);
+                const d = img.created_at ? new Date(img.created_at) : null;
+                const label = d ? d.toLocaleDateString() : undefined;
+                return { id: img.id, url: data.publicUrl, label };
+              });
+              const activeId = images.find((i) => i.image_path === imagePath)?.id;
+              return (
+                <Filmstrip
+                  items={items}
+                  activeId={activeId}
+                  onSelect={(id) => {
+                    const found = images.find((i) => i.id === id);
+                    if (!found) return;
+                    const { data } = supabase.storage.from("plant-images").getPublicUrl(found.image_path);
+                    setActiveImageId(found.id);
+                    setImagePath(found.image_path);
+                    setImageUrl(data.publicUrl);
+                  }}
+                />
+              );
+            })()}
           </div>
 
           <PinsPanel

@@ -32,9 +32,12 @@ export default function SectionDetail() {
     })();
   }, [section]);
 
+  const human = (section ?? "").replace(/-/g, " ");
+  const title = human ? human[0].toUpperCase() + human.slice(1) : human;
+
   return (
     <div className="app-root container">
-      <h1 className="page-title capitalize">{section.replace("-", " ")}</h1>
+      <h1 className="page-title">{title}</h1>
 
       {/* New flow: upload image -> drop pins (Supabase beds/pins) */}
       {!ctx && (

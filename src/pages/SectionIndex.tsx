@@ -21,10 +21,13 @@ export default function SectionIndex() {
     return () => { cancel = true; };
   }, [slug]);
 
+  const human = (slug ?? "").replace(/-/g, " ");
+  const title = human ? human[0].toUpperCase() + human.slice(1) : human;
+
   return (
     <div className="app-root container">
       <div className="page-toolbar" style={{ justifyContent: "space-between" }}>
-        <h1 className="page-title capitalize" style={{ margin: 0 }}>{slug.replace("-", " ")}</h1>
+        <h1 className="page-title" style={{ margin: 0 }}>{title}</h1>
         <div className="flex gap-2">
           <Link to="/" className="ui-btn ui-btn--sm ui-btn--ghost">All sections</Link>
           <button className="ui-btn ui-btn--sm" onClick={() => setShowNew(true)}>Add bed</button>

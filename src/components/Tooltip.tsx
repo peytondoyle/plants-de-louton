@@ -14,10 +14,7 @@ export default function Tooltip({
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
     >
-      <button
-        className="pill pill--icon"
-        aria-describedby={open ? id : undefined}
-      >
+      <button className="pill pill--icon" aria-describedby={open ? id : undefined}>
         {children}
       </button>
       <span
@@ -25,8 +22,7 @@ export default function Tooltip({
         role="tooltip"
         className={`tt ${open ? "open" : ""}`}
       >
-        Click the image to add a pin. Click a pin to edit.
-        Use the thumbnails above to switch images.
+        {label}
       </span>
     </span>
   );
