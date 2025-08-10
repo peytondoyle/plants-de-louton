@@ -42,17 +42,22 @@ export default function BedDetail() {
     setImages(hist);
   }
 
-  useEffect(() => { void refresh(); }, [bedId]);
+  useEffect(() => {
+    void refresh();
+  }, [bedId]);
 
   const onChangeImage = async (file: File) => {
     if (!bed) return;
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
     const path = `${bed.section}/${bed.name}/${uuidv4()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type || "image/jpeg",
-    });
+
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || "image/jpeg",
+      });
     if (upErr) return alert(upErr.message);
 
     const { data, error } = await supabase
@@ -71,27 +76,35 @@ export default function BedDetail() {
     setActiveImageId((data as BedImage).id);
   };
 
-  const createAt = (pos: { x: number; y: number }) => { setDraftInit(pos); setDrawerOpen(true); };
-  const editPin = (pin: Pin) => { setDraftInit(pin); setDrawerOpen(true); };
+  const createAt = (pos: { x: number; y: number }) => {
+    setDraftInit(pos);
+    setDrawerOpen(true);
+  };
+  const editPin = (pin: Pin) => {
+    setDraftInit(pin);
+    setDrawerOpen(true);
+  };
 
   return (
-    <div className="app-root">
+    // Single container so this aligns perfectly with the header brand
+    <main className="app-root container">
       {/* Page header */}
       <h1 className="page-title">{bed?.name ?? "Bed"}</h1>
 
       {/* unified pill actions */}
       <div className="page-toolbar">
         <Link to={`/section/${slug}`} className="ui-btn ui-btn--sm">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
               stroke="currentColor"
-              style={{ width: "14px", height: "14px" }}
+              style={{ width: 14, height: 14 }}
+              aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
             Back yard
           </span>
@@ -140,8 +153,18 @@ export default function BedDetail() {
                 />
               </div>
               {images.length > 0 && (
-                <div style={{ textAlign: "center", fontSize: 12, color: "#6b7280", marginTop: 8 }}>
-                  Captured {new Date(images.find(i => i.image_path === imagePath)?.created_at ?? Date.now()).toLocaleString()}
+                <div
+                  style={{
+                    textAlign: "center",
+                    fontSize: 12,
+                    color: "#6b7280",
+                    marginTop: 8,
+                  }}
+                >
+                  Captured{" "}
+                  {new Date(
+                    images.find((i) => i.image_path === imagePath)?.created_at ?? Date.now()
+                  ).toLocaleString()}
                 </div>
               )}
             </div>
@@ -153,15 +176,23 @@ export default function BedDetail() {
         <aside className="sidebar">
           <PinsPanel
             pins={pins}
-            onAdd={() => { setDraftInit({ x: 0.5, y: 0.5 }); setDrawerOpen(true); }}
-            onOpen={(pin) => { setDraftInit(pin); setDrawerOpen(true); }}
+            onAdd={() => {
+              setDraftInit({ x: 0.5, y: 0.5 });
+              setDrawerOpen(true);
+            }}
+            onOpen={(pin) => {
+              setDraftInit(pin);
+              setDrawerOpen(true);
+            }}
           />
 
           <div className="card" style={{ padding: 10 }}>
-            <div className="panel-title" style={{ marginBottom: 6 }}>Quick help</div>
+            <div className="panel-title" style={{ marginBottom: 6 }}>
+              Quick help
+            </div>
             <div style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.4 }}>
-              Click the image to add a pin. Click a pin to edit.
-              Use the thumbnails above to switch images.
+              Click the image to add a pin. Click a pin to edit. Use the thumbnails above to switch
+              images.
             </div>
           </div>
         </aside>
@@ -176,7 +207,11 @@ export default function BedDetail() {
         onSaved={(pin) => {
           setPins((prev) => {
             const i = prev.findIndex((p) => p.id === pin.id);
-            if (i >= 0) { const c = prev.slice(); c[i] = pin; return c; }
+            if (i >= 0) {
+              const c = prev.slice();
+              c[i] = pin;
+              return c;
+            }
             return [pin, ...prev];
           });
           setImgVer((v) => v + 1);
@@ -186,6 +221,6 @@ export default function BedDetail() {
           setImgVer((v) => v + 1);
         }}
       />
-    </div>
+    </main>
   );
 }

@@ -3,31 +3,38 @@ import { Link, NavLink } from "react-router-dom";
 export default function Header() {
   return (
     <header className="site-header">
-      <div className="site-header__inner">
-        <Link to="/" className="brand">Plants de Louton</Link>
+      {/* Share the same container as the page body for perfect alignment */}
+      <div className="site-header__inner container">
+        {/* Brand — no internal padding so it lines up with page titles */}
+        <Link to="/" className="brand">
+          Plants de Louton
+        </Link>
 
-        {/* Top nav as ghost pills, unified hover/focus */}
+        {/* Section tabs (ghost pills, unified hover/focus) */}
         <nav className="main-nav" aria-label="Sections">
-        <NavLink
-          to="/section/front-yard"
-          className={({ isActive }) =>
-            `ui-btn ui-btn--sm ui-btn--ghost ${isActive ? "is-active" : ""}`
-          }
-        >
-          Front yard
-        </NavLink>
-        <NavLink
-          to="/section/back-yard"
-          className={({ isActive }) =>
-            `ui-btn ui-btn--sm ui-btn--ghost ${isActive ? "is-active" : ""}`
-          }
-        >
-          Back yard
-        </NavLink>
+          <NavLink
+            to="/section/front-yard"
+            className={({ isActive }) =>
+              `ui-btn ui-btn--sm ui-btn--ghost ${isActive ? "is-active" : ""}`
+            }
+            end
+          >
+            Front yard
+          </NavLink>
+
+          <NavLink
+            to="/section/back-yard"
+            className={({ isActive }) =>
+              `ui-btn ui-btn--sm ui-btn--ghost ${isActive ? "is-active" : ""}`
+            }
+            end
+          >
+            Back yard
+          </NavLink>
         </nav>
 
-        {/* right side utility (leave empty for now) */}
-        <div style={{ marginLeft: "auto" }} />
+        {/* Flex spacer pushes anything on the right edge (future utilities) */}
+        <div style={{ flex: 1 }} />
       </div>
     </header>
   );
