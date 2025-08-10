@@ -20,6 +20,8 @@ type Props = {
 
   /** When true, renders the inline hint above the image. */
   showInlineHint?: boolean;
+  /** Optional overlay content to render inside the image shell (e.g., a tooltip button). */
+  children?: React.ReactNode;
 };
 
 export default function PinDropper({
@@ -33,6 +35,7 @@ export default function PinDropper({
   onPinsChange,
   useExternalEditor = true,
   showInlineHint = false,
+  children,
 }: Props) {
   const [pins, setPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -133,6 +136,7 @@ export default function PinDropper({
                 draggable={false}
               />
               <div className="pins-layer">{pinEls}</div>
+              {children}
             </div>
           </div>
         )}

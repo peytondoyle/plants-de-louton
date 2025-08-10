@@ -22,12 +22,12 @@ export default function SectionIndex() {
   }, [slug]);
 
   return (
-    <div className="app-root">
-      <div className="flex items-center justify-between mb-3">
-        <h1 className="text-3xl font-bold capitalize">{slug.replace("-", " ")}</h1>
+    <div className="app-root container">
+      <div className="page-toolbar" style={{ justifyContent: "space-between" }}>
+        <h1 className="page-title capitalize" style={{ margin: 0 }}>{slug.replace("-", " ")}</h1>
         <div className="flex gap-2">
-          <Link to="/" className="btn ghost">All sections</Link>
-          <button className="btn primary" onClick={() => setShowNew(true)}>Add bed</button>
+          <Link to="/" className="ui-btn ui-btn--sm ui-btn--ghost">All sections</Link>
+          <button className="ui-btn ui-btn--sm" onClick={() => setShowNew(true)}>Add bed</button>
         </div>
       </div>
 
