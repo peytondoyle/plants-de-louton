@@ -29,8 +29,13 @@ export default function SidebarImageHistory({ images, activePath = null, onSelec
   const scrollByDir = (dir: number) => {
     const el = scrollerRef.current; if (!el) return;
     const first = el.querySelector<HTMLElement>(".hist-thumb");
-    const step = first ? first.offsetWidth + 10 : Math.round(el.clientWidth * 0.8);
-    const target = Math.max(0, Math.min(el.scrollWidth - el.clientWidth, (el.scrollLeft || 0) + dir * step));
+    if (!first) return;
+    const step = first.offsetWidth + 10; // thumb width + gap
+    const left = el.scrollLeft || 0;
+    const maxLeft = Math.max(0, el.scrollWidth - el.clientWidth);
+    const currentIndex = Math.round(left / step);
+    const nextIndex = Math.max(0, Math.min(Math.ceil((el.scrollWidth - 1) / step) - 1, currentIndex + dir));
+    const target = Math.max(0, Math.min(maxLeft, nextIndex * step));
     el.scrollTo({ left: target, behavior: "smooth" });
   };
 
