@@ -1,0 +1,7 @@
+<svg width="400" height="280" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="280" fill="#fef3c7"/>
+  <rect x="30" y="180" width="340" height="80" fill="#16a34a" rx="10"/>
+  <rect x="120" y="120" width="160" height="100" fill="#dc2626" rx="12"/>
+  <circle cx="200" cy="90" r="25" fill="#f59e0b"/>
+  <text x="200" y="250" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="18" font-weight="bold">Back Yard</text>
+</svg>

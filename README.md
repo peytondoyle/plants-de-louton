@@ -1,6 +1,25 @@
-# React + TypeScript + Vite
+# Plants de Louton
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A garden planning and plant tracking application built with React, TypeScript, and Vite. This application helps users organize their garden by sections, beds, and individual plants with visual pin markers on images.
+
+## Features
+
+- **Section Management**: Organize your garden into logical sections (Front Yard, Back Yard, etc.)
+- **Bed Organization**: Create and manage individual garden beds within each section
+- **Image Management**: Upload and manage multiple images for each bed
+- **Plant Pinning**: Drop pins on images to mark plant locations
+- **Plant Details**: Add notes and information for each plant pin
+- **Image History**: Track changes over time with image versioning
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Technology Stack
+
+- **Frontend**: React 19 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: CSS with modern features (Grid, Flexbox, CSS Variables)
+- **Database**: Supabase (PostgreSQL + Storage)
+- **Routing**: React Router DOM
+- **UI Components**: Custom components with modern design patterns
 
 Currently, two official plugins are available:
 

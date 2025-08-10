@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import type { Pin } from "../types/types";
 
@@ -22,6 +22,12 @@ type Props = {
   showInlineHint?: boolean;
   /** Optional overlay content to render inside the image shell (e.g., a tooltip button). */
   children?: React.ReactNode;
+  /** Whether pins are visible. Defaults to true for backward compatibility. */
+  isVisible?: boolean;
+  /** Currently selected pin ID for visual feedback */
+  selectedPinId?: string;
+  /** Pins to display - if provided, component won't load its own pins */
+  pins?: Pin[];
 };
 
 export default function PinDropper({
@@ -36,13 +42,36 @@ export default function PinDropper({
   useExternalEditor = true,
   showInlineHint = false,
   children,
+  isVisible = true,
+  selectedPinId,
+  pins: externalPins,
 }: Props) {
-  const [pins, setPins] = useState<Pin[]>([]);
+  const [internalPins, setInternalPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(true);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [draggingPinId, setDraggingPinId] = useState<string | null>(null);
+  const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [optimisticPins, setOptimisticPins] = useState<Pin[]>([]);
+  const [pinWasMoved, setPinWasMoved] = useState<boolean>(false);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
-  // Load pins for this bed (+ optional image filter)
+  // Use external pins if provided, otherwise use internal pins
+  const pins = externalPins ?? internalPins;
+  const setPins = useMemo(() => 
+    externalPins ? (() => {}) : setInternalPins, 
+    [externalPins, setInternalPins]
+  );
+
+  // Load pins for this bed (+ optional image filter) - only if external pins not provided
   useEffect(() => {
+    if (externalPins) {
+      // Use external pins, no need to load
+      setLoading(false);
+      setOptimisticPins(externalPins);
+      return;
+    }
+
     let cancel = false;
 
     async function run() {
@@ -61,10 +90,11 @@ export default function PinDropper({
         if (error) {
           alert(error.message);
           setPins([]);
+          setOptimisticPins([]);
         } else {
           const list = (data ?? []) as Pin[];
           setPins(list);
-          onPinsChange?.(list);
+          setOptimisticPins(list);
         }
         setLoading(false);
       }
@@ -74,40 +104,228 @@ export default function PinDropper({
     return () => {
       cancel = true;
     };
-  }, [bedId, imageId, onPinsChange]);
+  }, [bedId, imageId, externalPins, setPins]);
+
+  // Update optimistic pins when external pins change
+  useEffect(() => {
+    if (externalPins) {
+      setOptimisticPins(externalPins);
+    }
+  }, [externalPins, setOptimisticPins]);
+
+  // Setup ResizeObserver for image container
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      // Trigger re-render when container resizes to recalculate pin positions
+      setOptimisticPins(current => current);
+    });
+    
+    observer.observe(containerRef.current);
+    resizeObserverRef.current = observer;
+
+    return () => {
+      observer.disconnect();
+      resizeObserverRef.current = null;
+    };
+  }, []);
 
   const canInteract = useMemo(
-    () => Boolean(imageUrl && bedId),
-    [imageUrl, bedId]
+    () => Boolean(imageUrl && bedId && isVisible),
+    [imageUrl, bedId, isVisible]
   );
+
+  /**
+   * Converts client coordinates to percentage values (0-1) with clamping
+   */
+  const clientToPercent = useCallback((clientX: number, clientY: number) => {
+    if (!imgRef.current) return { x: 0, y: 0 };
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+    return { x: clamp01(x), y: clamp01(y) };
+  }, []);
 
   const handleImageClick = (e: React.MouseEvent) => {
     if (!canInteract || !imgRef.current) return;
-    const rect = imgRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    onCreateAt?.({ x: clamp01(x), y: clamp01(y) });
+    const { x, y } = clientToPercent(e.clientX, e.clientY);
+    onCreateAt?.({ x, y });
   };
 
-  const editPin = (pin: Pin) => onEditPin?.(pin);
+  const editPin = useCallback((pin: Pin) => onEditPin?.(pin), [onEditPin]);
+
+  /**
+   * Handles pin drag start with Pointer Events
+   */
+  const handlePinPointerDown = useCallback((e: React.PointerEvent, pin: Pin) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!canInteract) return;
+    
+    setDraggingPinId(pin.id);
+    setDragStartPos({ x: e.clientX, y: e.clientY });
+    setPinWasMoved(false); // Reset moved flag
+    
+    // Set pointer capture for the pin element
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [canInteract]);
+
+  /**
+   * Handles pin drag during pointer move
+   */
+  const handlePinPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!draggingPinId || !dragStartPos) return;
+    
+    const { x, y } = clientToPercent(e.clientX, e.clientY);
+    
+    // Check if pin actually moved (more than a tiny threshold)
+    const currentPin = optimisticPins.find(p => p.id === draggingPinId);
+    if (currentPin && (Math.abs(currentPin.x - x) > 0.005 || Math.abs(currentPin.y - y) > 0.005)) {
+      setPinWasMoved(true);
+    }
+    
+    // Update optimistic position immediately for smooth dragging
+    setOptimisticPins(prev => 
+      prev.map(p => 
+        p.id === draggingPinId 
+          ? { ...p, x, y }
+          : p
+      )
+    );
+  }, [draggingPinId, dragStartPos, clientToPercent, optimisticPins]);
+
+  /**
+   * Handles pin drag end and saves position
+   */
+  const handlePinPointerUp = useCallback((e: React.PointerEvent) => {
+    if (!draggingPinId) return;
+    
+    const { x, y } = clientToPercent(e.clientX, e.clientY);
+    
+    // Release pointer capture
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    
+    // Create the updated pins array with the new position
+    const updatedPins = pins.map(p => 
+      p.id === draggingPinId 
+        ? { ...p, x, y }
+        : p
+    );
+    
+    // Update optimistic state immediately for smooth UI
+    setOptimisticPins(updatedPins);
+    
+    // Only update internal pins if not using external pins
+    if (!externalPins) {
+      setPins(updatedPins);
+    }
+    
+    // Clear drag state
+    setDraggingPinId(null);
+    setDragStartPos(null);
+    
+    // Reset moved flag after a short delay to allow onClick to check it
+    setTimeout(() => setPinWasMoved(false), 100);
+    
+    // Save to parent in the background (non-blocking)
+    // Use requestAnimationFrame to ensure UI updates first
+    requestAnimationFrame(() => {
+      onPinsChange?.(updatedPins);
+    });
+  }, [draggingPinId, clientToPercent, onPinsChange, pins, externalPins, setPins]);
+
+  /**
+   * Handles keyboard navigation for pins
+   */
+  const handlePinKeyDown = useCallback((e: React.KeyboardEvent, pin: Pin) => {
+    if (!canInteract) return;
+    
+    const shift = e.shiftKey;
+    const step = shift ? 0.001 : 0.01; // 0.1% or 1% per keypress
+    
+    let newX = pin.x;
+    let newY = pin.y;
+    
+    switch (e.key) {
+      case 'ArrowLeft':
+        newX = clamp01(pin.x - step);
+        break;
+      case 'ArrowRight':
+        newX = clamp01(pin.x + step);
+        break;
+      case 'ArrowUp':
+        newY = clamp01(pin.y - step);
+        break;
+      case 'ArrowDown':
+        newY = clamp01(pin.y + step);
+        break;
+      case 'Enter':
+        editPin(pin);
+        return;
+      case 'Escape':
+        if (draggingPinId === pin.id) {
+          setDraggingPinId(null);
+          setDragStartPos(null);
+          // Reset to original position
+          setOptimisticPins(prev => 
+            prev.map(p => 
+              p.id === pin.id 
+                ? pins.find(orig => orig.id === pin.id) || pin
+                : p
+            )
+          );
+        }
+        return;
+      default:
+        return;
+    }
+    
+    e.preventDefault();
+    
+    // Create updated pins array with new position
+    const updatedPins = optimisticPins.map(p => 
+      p.id === pin.id 
+        ? { ...p, x: newX, y: newY }
+        : p
+    );
+    
+    // Update optimistic state immediately
+    setOptimisticPins(updatedPins);
+    
+    // Save to parent in the background (non-blocking)
+    requestAnimationFrame(() => {
+      onPinsChange?.(updatedPins);
+    });
+  }, [canInteract, draggingPinId, pins, editPin, onPinsChange, optimisticPins]);
+
+
 
   const pinEls = useMemo(
     () =>
-      pins.map((p) => (
+      optimisticPins.map((p) => (
         <button
           key={p.id}
-          className="pin"
-          title={p.name ?? undefined}          // ← fix: null -> undefined
-
+          className={`pin ${selectedPinId === p.id ? 'pin--selected' : ''} ${draggingPinId === p.id ? 'pin--dragging' : ''}`}
+          title={p.name ?? undefined}
           style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%` }}
           onClick={(e) => {
             e.stopPropagation();
-            editPin(p);
+            // Only open edit drawer if pin wasn't moved during drag
+            if (!pinWasMoved) {
+              editPin(p);
+            }
           }}
-          aria-label={p.name || "pin"}
+          aria-label={p.name || `Pin at ${Math.round(p.x * 100)}%, ${Math.round(p.y * 100)}%`}
+          onPointerDown={(e) => handlePinPointerDown(e, p)}
+          onPointerMove={handlePinPointerMove}
+          onPointerUp={handlePinPointerUp}
+          onKeyDown={(e) => handlePinKeyDown(e, p)}
+          tabIndex={0}
         />
       )),
-    [pins]
+    [optimisticPins, selectedPinId, draggingPinId, handlePinPointerDown, handlePinPointerMove, handlePinPointerUp, handlePinKeyDown, editPin, pinWasMoved]
   );
 
   return (
@@ -126,7 +344,7 @@ export default function PinDropper({
           </div>
         ) : (
           <div className="pinboard-stage">
-            <div className="image-shell">
+            <div className="image-shell" ref={containerRef}>
               <img
                 ref={imgRef}
                 src={imageUrl}
@@ -135,7 +353,15 @@ export default function PinDropper({
                 decoding="async"
                 draggable={false}
               />
-              <div className="pins-layer">{pinEls}</div>
+              <div 
+                className="pins-layer" 
+                style={{ 
+                  pointerEvents: isVisible ? 'auto' : 'none',
+                  userSelect: draggingPinId ? 'none' : 'auto'
+                }}
+              >
+                {pinEls}
+              </div>
               {children}
             </div>
           </div>
