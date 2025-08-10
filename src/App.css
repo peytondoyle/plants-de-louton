@@ -6,12 +6,18 @@
   --sp-2: 10px;
   --sp-3: 14px;
   --sp-4: 18px;
+
   --radius: 12px;
   --border: #e5e7eb;
-  --header-h: 56px;
 
-  /* One source of truth for side gutters (header + pages) */
+  --header-h: 56px;
   --page-pad: clamp(16px, 6vw, 100px);
+
+  /* Bed page layout tuning */
+  --stack-gap: 12px;          /* unified vertical rhythm spacing */
+  --sidebar-w: 520px;         /* widened sidebar */
+  --image-max: 800px;         /* final hero width cap */
+  --image-vh: 54vh;           /* final hero height cap */
 }
 
 *{ box-sizing:border-box; }
@@ -24,13 +30,11 @@ body{
 a{ color:inherit; text-decoration:none; }
 
 /* =========================
-   Fluid container (shared)
+   Shared container
    Use on: .site-header__inner and .app-root
 ========================= */
 .container{
   width: 100%;
-  max-width: none;
-  margin-inline: 0;
   padding-inline: var(--page-pad);
 }
 
@@ -51,7 +55,7 @@ a{ color:inherit; text-decoration:none; }
   display:flex;
   align-items:center;
   gap:10px;
-  padding-block: 0; /* keep side padding from .container */
+  padding-block: 0; /* side padding comes from .container */
 }
 .brand{
   font-weight:700;
@@ -64,11 +68,8 @@ a{ color:inherit; text-decoration:none; }
    App shell (below header)
 ========================= */
 .app-shell{
-  padding: calc(var(--header-h) + 8px) 0 16px;
   min-height:100vh;
-}
-@media (min-width:1024px){
-  .app-shell{ padding: calc(var(--header-h) + 10px) 0 20px; }
+  padding: calc(var(--header-h) + 10px) 0 20px;
 }
 
 /* =========================
@@ -80,12 +81,15 @@ a{ color:inherit; text-decoration:none; }
 /* =========================
    Titles / toolbar
 ========================= */
-.page-title{ margin: 0 0 16px; }
-@media (min-width:768px){ .page-title{ margin: 0 0 18px; } }
+.page-title{
+  font-size: clamp(28px, 3.5vw, 40px);
+  line-height: 1.1;
+  margin: 8px 0 14px;
+}
 
 .page-toolbar{
   display:flex; gap:8px; align-items:center;
-  margin:6px 0 12px;
+  margin:6px 0 var(--stack-gap);
 }
 .pill{
   font-size:14px; line-height:1;
@@ -112,12 +116,9 @@ a{ color:inherit; text-decoration:none; }
 .section-card:hover{ box-shadow:0 6px 22px rgba(0,0,0,.08); transform: translateY(-1px); }
 .section-thumb{ position:relative; width:100%; padding-top:70%; background:#f3f4f6; }
 .section-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
-.thumb-fallback{ position:absolute; inset:0; display:grid; place-items:center; color:#334155; }
-.fallback-emoji{ font-size:28px; }
 .section-meta{ padding:10px 12px; }
 .section-meta .name{ font-weight:600; }
 .section-meta .sub{ font-size:12px; color:#6b7280; }
-.muted{ color:#6b7280; }
 
 /* =========================
    Beds grid
@@ -146,65 +147,105 @@ a{ color:inherit; text-decoration:none; }
 ========================= */
 .page-grid{
   display:grid;
-  grid-template-columns: 1fr;   /* mobile: single column */
+  grid-template-columns: 1fr;     /* mobile */
   gap:16px;
   align-items:start;
 }
 @media (min-width:960px){
   .page-grid{
-    grid-template-columns: minmax(0,1fr) 320px; /* image left, pins right */
-    gap:16px;
+    grid-template-columns: minmax(0,1fr) var(--sidebar-w);
   }
 }
-.left-col .hint{ text-align:center; color:#6b7280; font-size:14px; margin-bottom:8px; }
 
-/* ===== Image history ===== */
-.image-history{
-  display:flex; gap:12px; overflow-x:auto; padding:8px 0; -webkit-overflow-scrolling:touch;
+/* Left column holds filmstrip + image as a stack */
+.left-col{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;          /* align with image edge (not centered) */
+  gap:10px;
 }
+
+/* Remove helper sentence above image */
+.left-col .hint{ display:none !important; }
+
+/* ===== Filmstrip (above the image) ===== */
+.image-history{
+  order:-1;                        /* ensure it appears above .image-shell */
+  width: min(100%, var(--image-max));
+  display:flex; gap:12px;
+  overflow-x:auto; padding:6px 0; margin: 0 0 calc(var(--stack-gap) + 2px);
+  -webkit-overflow-scrolling:touch;
+}
+.sidebar-filmstrip{
+  width: 100%;
+  max-width: 100%;
+  margin: 0 !important;     /* override .image-history bottom margin */
+  padding: 0;               /* arrows moved to wrapper padding */
+  display: flex;            /* row scroll */
+  gap: 10px;
+  overflow-x: auto;         /* horizontal scroll with arrows */
+  scroll-snap-type: x mandatory;
+}
+.sidebar-filmstrip .hist-thumb{
+  flex: 0 0 auto;
+  width: 180px;             /* base width */
+  height: auto;
+  aspect-ratio: 4 / 3;      /* default; can be overridden inline */
+  max-height: 110px;        /* guardrail */
+  scroll-snap-align: start;
+}
+
+/* filmstrip arrow buttons */
+.filmstrip-wrap{ position: relative; padding: 0 28px; }
+.filmstrip-arrow{ position:absolute; top:50%; transform: translateY(-50%); z-index:2; width:28px; height:28px; display:grid; place-items:center; color:#0f172a; background:#fff; border:1px solid #e5e7eb; border-radius:999px; box-shadow:0 2px 6px rgba(0,0,0,.12); font-weight:700; line-height:1; }
+.filmstrip-arrow.left{ left:0; }
+.filmstrip-arrow.right{ right:0; }
+.filmstrip-arrow:hover{ background:#f8fafc; }
+.filmstrip-arrow:disabled{ opacity:.35; cursor:default; box-shadow:none; }
+.sidebar-filmstrip .hist-meta{ font-size: 11px; padding: 3px 6px; }
+
 .hist-thumb{
-  position:relative; flex:0 0 auto; width:132px; height:92px;
+  position:relative; flex:0 0 auto; width:118px; height:84px;
   border:0; padding:0; border-radius:14px; overflow:hidden;
   background:transparent; box-shadow:0 1px 2px rgba(0,0,0,.10);
   cursor:pointer; transition:transform .12s ease, filter .12s ease;
 }
+@media (min-width:1280px){ .hist-thumb{ width:126px; height:90px; } }
 .hist-thumb > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; -webkit-user-drag:none; }
 .hist-thumb::after{ content:""; position:absolute; inset:0; border-radius:inherit; border:2px solid transparent; pointer-events:none; }
 .hist-thumb:hover::after,
 .hist-thumb:focus-visible::after{ border-color:#3b82f6; }
-.hist-thumb.active::after{ border-color:#3b82f6; }
+.hist-thumb.active::after{ border-color:#2563eb; }
 .thumb-check{
   position:absolute; top:6px; right:8px; width:18px; height:18px;
   display:grid; place-items:center; font-size:12px; font-weight:800;
   color:#fff; background:#2563eb; border-radius:9999px;
   box-shadow:0 1px 2px rgba(0,0,0,.25);
-  opacity:0; transform:scale(.9); transition:opacity .12s, transform .12s;
-  pointer-events:none; z-index:2;
+  opacity:1; transform:scale(1); pointer-events:none; z-index:2;
 }
-.hist-thumb.active .thumb-check{ opacity:1; transform:scale(1); }
 .hist-meta{
   position:absolute; left:0; right:0; bottom:0; z-index:1;
-  padding:6px 10px; color:#fff; font-weight:700;
+  padding:4px 8px; color:#fff; font-weight:700; font-size:12px;
   text-shadow:0 1px 2px rgba(0,0,0,.45);
   background:linear-gradient(to top, rgba(0,0,0,.35), rgba(0,0,0,0));
 }
-.hist-thumb:not(.active){ filter:saturate(.9) brightness(.96); }
-@media (hover:hover){
-  .hist-thumb:not(.active):hover,
-  .hist-thumb:not(.active):focus-visible{ filter:none; transform:translateY(-1px); }
-}
-.hist-thumb:focus-visible{ outline:none; }
 
-/* =========================
-   Pinboard
-========================= */
-.pinboard-stage{ display:grid; place-items:center; }
-.image-shell{ position: relative; width:100%; }
-.image-shell img{
-  width:100%; height:auto; max-height:70vh;
-  object-fit:contain; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.12);
+/* ===== Pinboard / image ===== */
+.pinboard-stage{ display:block; }
+.image-shell{
+  position: relative;
+  width: 100%;
 }
-.pins-layer{ position:absolute; left:0; top:0; right:0; bottom:0; pointer-events:none; }
+.image-shell img{
+  display:block;
+  width: 100%;
+  height: auto;           /* ensures no extra bottom space */
+  max-height: none;
+  object-fit: cover;      /* fills the card */
+  border-radius:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.12);
+}
+.pins-layer{ position:absolute; inset:0; pointer-events:none; }
 
 /* pins */
 .pin{ box-sizing: content-box; }
@@ -220,12 +261,12 @@ a{ color:inherit; text-decoration:none; }
 /* =========================
    Sidebar & panels
 ========================= */
-.sidebar{ position:sticky; top:16px; display:flex; flex-direction:column; gap:10px; }
+.sidebar{ position:sticky; top:12px; display:flex; flex-direction:column; gap:10px; }
 .card{
   border:1px solid #e5e7eb; border-radius:12px; background:#fff;
   box-shadow:0 6px 22px rgba(0,0,0,.06);
 }
-.panel{ padding:10px; }
+.panel{ padding:12px; }
 .panel-head{ display:flex; align-items:center; gap:8px; }
 .panel-title{ font-weight:600; }
 .panel-meta{ margin-left:auto; font-size:12px; color:#6b7280; }
@@ -273,40 +314,12 @@ a{ color:inherit; text-decoration:none; }
 .link-back:active{ transform: translateY(1px); }
 
 /* =========================
-   Pin interaction polish
-========================= */
-.pin:hover{
-  box-shadow:0 0 0 4px rgba(16,185,129,.30), 0 3px 10px rgba(0,0,0,.25);
-  filter:brightness(1.03);
-}
-.pin:focus-visible{
-  box-shadow:0 0 0 3px #fff, 0 0 0 6px #2563eb;
-}
-.pin:active{ transform:translate(-50%, -50%) scale(.95); }
-
-/* Button pin reset */
-button.pin{
-  -webkit-appearance:none; appearance:none; padding:0; margin:0;
-  border:2px solid #0f172a; background:#10b981; display:block; line-height:0;
-  position:absolute; left:0; top:0; transform:translate(-50%,-50%);
-  width:18px; height:18px; border-radius:50%;
-  box-shadow:0 0 0 2px rgba(16,185,129,.25), 0 2px 6px rgba(0,0,0,.18);
-  pointer-events:auto; cursor:pointer; z-index:5;
-}
-button.pin:hover{ filter:brightness(1.03); box-shadow:0 0 0 4px rgba(16,185,129,.30), 0 3px 10px rgba(0,0,0,.25); }
-button.pin:focus-visible{ outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px #2563eb; }
-button.pin:active{ transform:translate(-50%, -50%) scale(.95); }
-
-/* =========================
    Unified pills (links, buttons, labels)
 ========================= */
-a.ui-btn,
-button.ui-btn,
-label.ui-btn{
-  -webkit-appearance: none;
-  appearance: none;
-  display: inline-flex; align-items:center; gap:8px;
-  padding: 6px 12px; line-height:1; font-size:14px; font-weight:500;
+a.ui-btn, button.ui-btn, label.ui-btn{
+  -webkit-appearance:none; appearance:none;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 12px; line-height:1; font-size:14px; font-weight:500;
   border:1px solid #e5e7eb; border-radius:12px; background:#fff;
   text-decoration:none; cursor:pointer; user-select:none; color:#0f172a;
   transition: background .12s, border-color .12s, transform .06s, box-shadow .12s, color .12s;
@@ -327,7 +340,8 @@ label.ui-btn input[type="file"]{ display:none; }
    Tooltip
 ========================= */
 .tt-wrap{ position: relative; display: inline-flex; margin-left:6px; }
-.pill--icon{ padding:6px; display:inline-grid; place-items:center; }
+.tt-wrap--abs{ margin-left: 0; }
+.pill--icon{ padding:6px; display:inline-grid; place-items:center; border:0; background:transparent; }
 .tt{
   position:absolute; top:100%; right:0; margin-top:8px;
   max-width:260px; padding:8px 10px; font-size:12px; line-height:1.35;
@@ -335,18 +349,26 @@ label.ui-btn input[type="file"]{ display:none; }
   opacity:0; transform: translateY(-2px); pointer-events:none; transition:.12s;
   z-index:30;
 }
+.tt--up{ top:auto; bottom:100%; right:0; margin-top:0; margin-bottom:8px; }
+.tt-wrap:hover .tt,
+.tt-wrap:focus-within .tt{ opacity:1; transform: translateY(0); }
 .tt.open{ opacity:1; transform: translateY(0); }
 .tt::after{
   content:""; position:absolute; top:-6px; right:10px; width:10px; height:10px;
   background:#0f172a; transform: rotate(45deg);
 }
+.tt--up::after{ top:auto; bottom:-6px; right:6px; }
 
-/* =========================
-   Safety net (wins against any stray .container rules)
-========================= */
-.site-header__inner.container,
-.app-root.container{
-  width:100% !important;
-  max-width:none !important;
-  padding-inline: var(--page-pad) !important;
-}
+/* Ensure hero aligns with filmstrip - only apply to outer image card */
+.left-col .image-shell.card{ margin: 0 0 calc(var(--stack-gap) + 4px); }
+
+/* Keep legacy back pill hidden until removed in JSX */
+.page-toolbar .link-back{ display: none; }
+
+/* Right-side action row for image management (Upload / Manage / Delete) */
+.panel--images .panel-head{ display:flex; align-items:center; gap:8px; }
+.panel--images .panel-actions{ margin-left:auto; display:flex; gap:6px; }
+.panel--images .panel-actions .ui-btn{ padding:5px 10px; font-size:13px; }
+
+/* ensure the panels inside don’t shrink weirdly */
+.sidebar{ min-width: 340px; }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 import { supabase } from "../lib/supabaseClient";
@@ -8,7 +8,8 @@ import { listImagesForBed } from "../lib/listImagesForBed";
 
 import PinDropper from "../components/PinDropper";
 import PinsPanel from "../components/PinsPanel";
-import ImageHistory from "../components/ImageHistory";
+import Sidebar from "../components/Sidebar";
+import SidebarImageHistory from "../components/SidebarImageHistory";
 import PinEditorDrawer from "../components/PinEditorDrawer";
 
 import type { Bed, BedImage, Pin } from "../types/types";
@@ -29,10 +30,12 @@ export default function BedDetail() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draftInit, setDraftInit] = useState<Pin | { x: number; y: number } | undefined>(undefined);
   const [imgVer, setImgVer] = useState(0);
+  const [ready, setReady] = useState(false);
 
   const boardRef = useRef<HTMLDivElement | null>(null);
 
   async function refresh() {
+    setReady(false);
     const data = await getBed(bedId);
     setBed(data.bed);
     setImageUrl(data.publicUrl || "");
@@ -40,6 +43,7 @@ export default function BedDetail() {
     setActiveImageId(data.image?.id);
     const hist = await listImagesForBed(bedId);
     setImages(hist);
+    setReady(true);
   }
 
   useEffect(() => {
@@ -92,7 +96,7 @@ export default function BedDetail() {
       <h1 className="page-title">{bed?.name ?? "Bed"}</h1>
 
       {/* unified pill actions */}
-      <div className="page-toolbar">
+      {/* <div className="page-toolbar">
         <Link to={`/section/${slug}`} className="ui-btn ui-btn--sm">
           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
             <svg
@@ -119,24 +123,13 @@ export default function BedDetail() {
             style={{ display: "none" }}
           />
         </label>
-      </div>
+      </div> */}
 
-      {/* thumbnails */}
-      {images.length > 0 && (
-        <ImageHistory
-          images={images}
-          activePath={imagePath}
-          onSelect={(img, url) => {
-            setActiveImageId(img.id);
-            setImagePath(img.image_path);
-            setImageUrl(url);
-          }}
-        />
-      )}
-
+      {ready && (
       <div className="page-grid">
         <div className="left-col" ref={boardRef}>
           {imageUrl ? (
+            <>
             <div className="pinboard-stage">
               <div className="image-shell card">
                 <PinDropper
@@ -150,30 +143,46 @@ export default function BedDetail() {
                   onPinsChange={setPins}
                   useExternalEditor
                   showInlineHint
-                />
-              </div>
-              {images.length > 0 && (
-                <div
-                  style={{
-                    textAlign: "center",
-                    fontSize: 12,
-                    color: "#6b7280",
-                    marginTop: 8,
-                  }}
                 >
-                  Captured{" "}
-                  {new Date(
-                    images.find((i) => i.image_path === imagePath)?.created_at ?? Date.now()
-                  ).toLocaleString()}
-                </div>
-              )}
+                  {images.length > 0 && (
+                    <div className="tt-wrap tt-wrap--abs" style={{ position: "absolute", right: 10, bottom: 10 }}>
+                      <button className="pill pill--icon" aria-label="Captured info">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden>
+                          <circle cx="12" cy="12" r="11" fill="currentColor" opacity=".08"/>
+                          <path d="M12 8.5a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm-1.1 2.7h2.2v6.3h-2.2z" />
+                        </svg>
+                      </button>
+                      <span className="tt tt--up" role="tooltip">
+                        Captured {new Date(
+                          images.find((i) => i.image_path === imagePath)?.created_at ?? Date.now()
+                        ).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                </PinDropper>
+              </div>
+              
             </div>
+            
+            </>
           ) : (
             <div className="panel-empty">This bed has no image yet. Use “Change image”.</div>
           )}
         </div>
 
-        <aside className="sidebar">
+        <Sidebar>
+          <div className="card panel panel--images">
+            <SidebarImageHistory
+              images={images}
+              activePath={imagePath}
+              onSelect={(img, url) => {
+                setActiveImageId(img.id);
+                setImagePath(img.image_path);
+                setImageUrl(url);
+              }}
+            />
+          </div>
+
           <PinsPanel
             pins={pins}
             onAdd={() => {
@@ -195,8 +204,9 @@ export default function BedDetail() {
               images.
             </div>
           </div>
-        </aside>
+        </Sidebar>
       </div>
+      )}
 
       <PinEditorDrawer
         open={drawerOpen}

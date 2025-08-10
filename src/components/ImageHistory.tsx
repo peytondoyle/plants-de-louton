@@ -55,7 +55,7 @@ export default function ImageHistory({ images, activePath = null, onSelect }: Pr
                 {ts.toLocaleDateString()}
               </div>
             )}
-            <span className="thumb-check" aria-hidden="true">✓</span>
+            {active && <span className="thumb-check" aria-hidden="true">✓</span>}
           </button>
         );
       })}

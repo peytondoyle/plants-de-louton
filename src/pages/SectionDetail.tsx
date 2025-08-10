@@ -33,15 +33,13 @@ export default function SectionDetail() {
   }, [section]);
 
   return (
-    <div className="app-root">
-      <h1 className="text-3xl font-bold text-center mb-6 capitalize">
-        {section.replace("-", " ")}
-      </h1>
+    <div className="app-root container">
+      <h1 className="page-title capitalize">{section.replace("-", " ")}</h1>
 
       {/* New flow: upload image -> drop pins (Supabase beds/pins) */}
       {!ctx && (
-        <div className="pinboard-wrap" style={{ padding: 16, marginBottom: 16 }}>
-          <p className="hint">Start a new bed for this section.</p>
+        <div className="pinboard-wrap card panel" style={{ marginBottom: 16 }}>
+          <p className="hint" style={{ marginTop: 0 }}>Start a new bed for this section.</p>
           <ImageUploader
             initialSection={section}
             onReady={({ bed, publicUrl }) =>
