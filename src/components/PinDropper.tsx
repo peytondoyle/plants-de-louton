@@ -29,6 +29,8 @@ type Props = {
   selectedPinId?: string;
   /** Pins to display - if provided, component won't load its own pins */
   pins?: Pin[];
+  /** When true, clicking the image creates a new pin. Useful to avoid accidental taps on mobile. */
+  allowCreate?: boolean;
 };
 
 export default function PinDropper({
@@ -46,6 +48,7 @@ export default function PinDropper({
   isVisible = true,
   selectedPinId,
   pins: externalPins,
+  allowCreate = true,
 }: Props) {
   const [internalPins, setInternalPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -481,11 +484,10 @@ export default function PinDropper({
           title={p.name ?? undefined}
           onClick={(e) => {
             e.stopPropagation();
-            // Select and open editor when the pin wasn't dragged
+            // Select only (do not open editor) when the pin wasn't dragged
             if (!pinWasMoved) {
               const event = new CustomEvent('pin-selected', { detail: { id: p.id } });
               window.dispatchEvent(event);
-              editPin(p);
             }
           }}
           aria-label={p.name || `Pin at ${Math.round(p.x * 100)}%, ${Math.round(p.y * 100)}%`}
@@ -560,7 +562,7 @@ export default function PinDropper({
 
       <div
         className={`pinboard ${imageUrl ? "ready" : "empty"}`}
-        onClick={imageUrl ? handleImageClick : undefined}
+        onClick={imageUrl && allowCreate ? handleImageClick : undefined}
       >
         {!imageUrl ? (
           <div className="empty-state">

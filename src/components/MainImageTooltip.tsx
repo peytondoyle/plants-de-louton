@@ -12,7 +12,7 @@ export default function MainImageTooltip({ timestamp, corner = "br" }: Props) {
   return (
     <div style={{ position: "absolute", ...pos }}>
       <Tooltip
-        content={`Captured ${timestamp}`}
+        content={`Date & time taken: ${timestamp}`}
         placement="top"
         autoTheme
       >

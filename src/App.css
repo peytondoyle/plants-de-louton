@@ -410,7 +410,9 @@ a{ color:inherit; text-decoration:none; }
 .panel--images .panel-head{ margin-bottom:0; }
 .panel-head{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .panel-title{ font-weight:600; }
-.panel-meta{ margin-left:auto; font-size:12px; color:#6b7280; }
+.panel-meta{ font-size:12px; color:#6b7280; }
+.panel-head .panel-actions{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+.panel-head .panel-actions .ui-btn{ padding:5px 10px; font-size:13px; }
 .sidebar .panel.panel--images{ position:sticky; top:12px; }
 .panel-action{ font-size:12px; padding:6px 8px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; }
 .panel-empty{ font-size:13px; color:#6b7280; padding:6px 4px; }
@@ -452,13 +454,28 @@ a{ color:inherit; text-decoration:none; }
   background:#fff; box-shadow:-8px 0 24px rgba(0,0,0,.2);
   display:flex; flex-direction:column;
 }
-.drawer-header{ display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid #eee; }
+.drawer-header{ position:relative; display:flex; align-items:center; gap:8px; padding:18px 14px 12px; border-bottom:1px solid #eee; }
+.drawer-header .title{ position:absolute; left:50%; transform:translateX(-50%); text-align:center; width:auto; font-weight:600; }
+/* Centered drag handle above the title */
+.drag-handle{ position:absolute; top:6px; left:50%; transform:translateX(-50%); width:36px; height:4px; border-radius:999px; background:#e5e7eb; }
 .drawer-header .title{ font-weight:600; }
 .drawer-body{ padding:12px 14px; display:grid; gap:10px; }
 .field span{ display:block; font-size:12px; color:#6b7280; margin-bottom:4px; }
 .field input, .field textarea{ width:100%; padding:8px; border:1px solid #d1d5db; border-radius:8px; }
 .drawer-actions{ display:flex; gap:8px; padding:12px 14px; border-top:1px solid #eee; }
 .btn.danger{ background:#ef4444; color:#fff; border-radius:8px; padding:8px 12px; }
+
+/* Mobile: render drawer as a bottom sheet */
+@media (max-width: 959px){
+  .drawer{ padding-top: 0; }
+  .drawer-panel{
+    right: 0; left: 0; bottom: 0; top: auto;
+    width: 100%; height: min(92vh, 720px);
+    border-top-left-radius: 16px; border-top-right-radius: 16px;
+    box-shadow: 0 -10px 28px rgba(0,0,0,.25);
+  }
+  .drawer-header{ position: sticky; top: 0; background:#fff; z-index: 1; }
+}
 
 /* =========================
    Back link

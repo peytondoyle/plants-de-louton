@@ -107,9 +107,10 @@ export default function PinEditorDrawer({
   }
 
   return (
-    <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open}>
-      <div className="drawer-panel" role="dialog" aria-modal="true">
+    <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open} onClick={onClose}>
+      <div className="drawer-panel" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
+          <div className="drag-handle" aria-hidden="true" />
           <div className="title">{("id" in (draft ?? {})) ? "Edit pin" : "Add pin"}</div>
           <div style={{ marginLeft: "auto" }}>
             <button className="pill" onClick={onClose}>Close</button>
