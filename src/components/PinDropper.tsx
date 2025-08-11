@@ -481,11 +481,10 @@ export default function PinDropper({
           title={p.name ?? undefined}
           onClick={(e) => {
             e.stopPropagation();
-            // Select and open editor on click when the pin wasn't dragged
+            // Select only (no editor) when the pin wasn't dragged
             if (!pinWasMoved) {
               const event = new CustomEvent('pin-selected', { detail: { id: p.id } });
               window.dispatchEvent(event);
-              editPin(p);
             }
           }}
           aria-label={p.name || `Pin at ${Math.round(p.x * 100)}%, ${Math.round(p.y * 100)}%`}
