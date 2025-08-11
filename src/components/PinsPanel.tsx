@@ -1,5 +1,6 @@
 import type { Pin } from "../types/types";
 import PlantGalleryStrip from "./plant-gallery/PlantGalleryStrip";
+import PinGalleryStrip from "./plant-gallery/PinGalleryStrip";
 import React from "react";
 import { getPinColors } from "../lib/pinColor";
 import Tooltip from "./Tooltip/Tooltip";
@@ -14,9 +15,11 @@ type Props = {
   promoteSelected?: boolean;
   onToggleAddMode?: () => void;
   addMode?: boolean;
+  onOpenGallery?: (args: { pinId: string }) => void;
+  showGalleryStrip?: boolean;
 };
 
-export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onSelect, cardRef, promoteSelected = false, onToggleAddMode, addMode = false }: Props) {
+export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onSelect, cardRef, promoteSelected = false, onToggleAddMode, addMode = false, onOpenGallery, showGalleryStrip = false }: Props) {
   const sortedPins = promoteSelected && selectedPinId
     ? [
         ...pins.filter(p => p.id === selectedPinId),
@@ -61,11 +64,18 @@ export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onS
           <ul className="pin-rows" style={fullHeight ? { flex: 1 } : undefined}>
             {sortedPins.map((p) => (
               <li key={p.id}>
-                <button
-                  type="button"
+                <div
                   className={`pin-row ${selectedPinId === p.id ? 'is-selected' : ''}`}
                   onClick={(e) => { e.stopPropagation(); onSelect?.(selectedPinId === p.id ? null : p); }}
                   title={p.name ?? undefined}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelect?.(selectedPinId === p.id ? null : p);
+                    }
+                  }}
                 >
                   <span
                     className="pin-dot"
@@ -76,9 +86,7 @@ export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onS
                   />
                   <span className="pin-name">{p.name || "Untitled"}</span>
                   <span className="pin-spacer" />
-                  {p.plant_id ? (
-                    <PlantGalleryStrip plantId={p.plant_id} onOpen={() => onOpen(p)} />
-                  ) : null}
+                  <PinGalleryStrip pinId={p.id} onOpen={() => onOpenGallery?.({ pinId: p.id })} />
                   <span className="pin-edit-btn-wrap">
                     <button
                       type="button"
@@ -93,7 +101,7 @@ export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onS
                       </svg>
                     </button>
                   </span>
-                </button>
+                </div>
               </li>
             ))}
           </ul>

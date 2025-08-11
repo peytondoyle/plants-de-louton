@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import MapSectionGrid from "./components/MapSectionGrid";
 import SectionIndex from "./pages/SectionIndex";
 import BedDetail from "./pages/BedDetail";
@@ -6,9 +6,19 @@ import Header from "./components/Header";
 import "./App.css";
 
 function Layout() {
+  const location = useLocation();
+  const isBedDetail = location.pathname.includes('/bed/');
+  
+  // Extract bed name from URL if on bed detail page
+  let bedName: string | undefined;
+  if (isBedDetail) {
+    // For now, we'll show a placeholder. In a real app, you'd fetch the bed data here
+    bedName = "Shed bed"; // This will be dynamic once we implement proper data fetching
+  }
+
   return (
     <>
-      <Header />               {/* <-- Header appears once here */}
+      <Header bedName={bedName} />
       <div className="app-shell">
         <Outlet />
       </div>
