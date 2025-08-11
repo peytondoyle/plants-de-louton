@@ -15,8 +15,10 @@
 
   /* Bed page layout tuning */
   --stack-gap: 12px;          /* unified vertical rhythm spacing */
-  --sidebar-w: 520px;         /* widened sidebar */
-  --image-max: 800px;         /* final hero width cap */
+  /* Responsive layout sizing */
+  --layout-max: clamp(1200px, 96vw, 1600px);
+  --sidebar-w: clamp(380px, 34vw, 560px);
+  --image-max: clamp(760px, 66vw, 1240px);
   --image-vh: 54vh;           /* final hero height cap */
 }
 
@@ -35,7 +37,10 @@ a{ color:inherit; text-decoration:none; }
 ========================= */
 .container{
   width: 100%;
-  padding-inline: var(--page-pad);
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* =========================
@@ -75,7 +80,8 @@ a{ color:inherit; text-decoration:none; }
 /* =========================
    Page root
 ========================= */
-.app-root{}
+.app-root{ max-width: var(--layout-max); margin: 0 auto; }
+.app-root:focus{ outline:none; }
 .app-root > *:first-child{ margin-top:0 !important; padding-top:0 !important; }
 
 /* =========================
@@ -148,21 +154,32 @@ a{ color:inherit; text-decoration:none; }
 .page-grid{
   display:grid;
   grid-template-columns: 1fr;     /* mobile */
-  gap:16px;
+  gap:8px; /* match image↔gallery spacing */
   align-items:start;
 }
 @media (min-width:960px){
   .page-grid{
-    grid-template-columns: minmax(0,1fr) var(--sidebar-w);
+    grid-template-columns: minmax(520px, 1fr) var(--sidebar-w);
+    justify-content: center; /* keep centered within app-root width */
   }
+}
+
+/* Mobile adjustments */
+@media (max-width: 959px){
+  .page-grid{ grid-template-columns: 1fr; gap: var(--stack-gap); }
+  .sidebar{ position: static; }
+  .panel.panel--images{ position: static; }
+  .pin-rows{ max-height: none; }
+  /* On mobile, let the grid gap control spacing between image and pins */
+  .left-col .image-shell.card{ margin-bottom: 0; }
 }
 
 /* Left column holds filmstrip + image as a stack */
 .left-col{
   display:flex;
   flex-direction:column;
-  align-items:flex-start;          /* align with image edge (not centered) */
-  gap:10px;
+  align-items:flex-start;          /* left-align image so gutters read evenly */
+  gap:0;                           /* control spacing via margins on children */
 }
 
 /* Remove helper sentence above image */
@@ -173,7 +190,7 @@ a{ color:inherit; text-decoration:none; }
   order:-1;                        /* ensure it appears above .image-shell */
   width: min(100%, var(--image-max));
   display:flex; gap:12px;
-  overflow-x:auto; padding:6px 0; margin: 0 0 calc(var(--stack-gap) + 2px);
+  overflow-x:auto; padding:6px 0; margin: 0 0 var(--stack-gap);
   -webkit-overflow-scrolling:touch;
 }
 .sidebar-filmstrip{
@@ -237,10 +254,11 @@ a{ color:inherit; text-decoration:none; }
 }
 
 /* ===== Pinboard / image ===== */
-.pinboard-stage{ display:block; }
+.pinboard-stage{ display:flex; justify-content:center; width:100%; }
 .image-shell{
   position: relative;
-  width: 100%;
+  width: min(100%, var(--image-max));
+  max-width: var(--image-max);
 }
 .image-shell img{
   display:block;
@@ -251,6 +269,9 @@ a{ color:inherit; text-decoration:none; }
   border-radius:12px;
   box-shadow:0 2px 12px rgba(0,0,0,.12);
 }
+
+/* Scale the maximum image width slightly on ultra-wide screens */
+/* No extra hard breakpoints needed; clamp() handles progressive scaling */
 .pins-layer{ 
   position:absolute; 
   inset:0; 
@@ -284,9 +305,9 @@ a{ color:inherit; text-decoration:none; }
   /* Perfect circle */
   border-radius: 50% !important;
   
-  /* Visual styling */
-  background: #10b981 !important; 
-  border: 2px solid #0a1014 !important;
+  /* Visual styling (overridden per-pin inline styles) */
+  background: #10b981; 
+  border: 2px solid transparent;
   box-shadow: 0 0 0 2px rgba(16,185,129,.25);
   
   /* Prevent flexbox distortion */
@@ -300,14 +321,11 @@ a{ color:inherit; text-decoration:none; }
   /* Prevent any stretching or scaling */
   transform-origin: center center !important;
   
-  /* Enhanced visual appeal */
-  background: radial-gradient(circle at 30% 30%, #22d3aa 0%, #10b981 70%) !important;
-  box-shadow: 
-    0 0 0 2px rgba(16,185,129,.25),
-    0 2px 4px rgba(0,0,0,0.1);
+  /* Enhanced visual appeal (inline per-pin styles set gradient and shadow) */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   
-  /* Smooth transitions for hover effects only, not position changes */
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  /* Smooth transitions without transform to avoid jiggle */
+  transition: box-shadow 0.2s ease, background 0.2s ease;
   
   /* Additional safeguards */
   overflow: visible !important;
@@ -341,17 +359,23 @@ a{ color:inherit; text-decoration:none; }
   will-change: transform;
 }
 
-.pin:hover {
-  transform: translate(-50%,-50%) scale(1.1);
-  box-shadow: 
-    0 0 0 2px rgba(16,185,129,.4),
-    0 4px 8px rgba(0,0,0,0.15);
-  background: radial-gradient(circle at 30% 30%, #34d399 0%, #10b981 70%);
-}
+.pin:hover { transform: translate(-50%,-50%); }
 
 .pin:active {
-  transform: translate(-50%,-50%) scale(0.95);
+  transform: translate(-50%,-50%);
 }
+
+/* Inner core for modern, elegant pins */
+.pin-core{
+  position:absolute; inset:3px; border-radius:50%; display:block;
+  width:auto; height:auto;
+}
+
+.pin-glow{
+  position:absolute; border-radius:50%; pointer-events:none;
+}
+
+/* Removed the hard edge; contrast is now handled by adaptive core + glow */
 
 /* No transitions when dragging for instant response */
 .pin--dragging {
@@ -374,19 +398,31 @@ a{ color:inherit; text-decoration:none; }
 /* =========================
    Sidebar & panels
 ========================= */
-.sidebar{ position:sticky; top:12px; display:flex; flex-direction:column; gap:10px; }
+.sidebar{ position:static; display:flex; flex-direction:column; gap: var(--stack-gap); }
 .card{
   border:1px solid #e5e7eb; border-radius:12px; background:#fff;
   box-shadow:0 6px 22px rgba(0,0,0,.06);
+  box-sizing: border-box;
 }
 .panel{ padding:12px; }
-.panel-head{ display:flex; align-items:center; gap:8px; }
+.panel--fill{ display:flex; flex-direction:column; height:100%; box-sizing: border-box; }
+.panel--fill .pin-rows{ flex:1; overflow:auto; max-height:none; min-height:0; margin-bottom:0; gap:2px; }
+.panel--images .panel-head{ margin-bottom:0; }
+.panel-head{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .panel-title{ font-weight:600; }
 .panel-meta{ margin-left:auto; font-size:12px; color:#6b7280; }
+.sidebar .panel.panel--images{ position:sticky; top:12px; }
 .panel-action{ font-size:12px; padding:6px 8px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; }
-.panel-empty{ font-size:13px; color:#6b7280; padding:10px 4px; }
-.pin-rows{ list-style:none; padding:0; margin:8px 0 0; display:grid; gap:6px; max-height:260px; overflow:auto; }
-.pin-row{ width:100%; display:flex; align-items:center; gap:8px; text-align:left; padding:8px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; }
+.panel-empty{ font-size:13px; color:#6b7280; padding:6px 4px; }
+.pin-rows{ list-style:none; padding:0; margin:8px 0 0; display:grid; gap:1px; max-height:260px; overflow:auto; grid-auto-rows: min-content; align-items:start; }
+.pin-rows > li{ padding:0; margin:0; min-height:0; }
+.pin-row{ width:100%; display:flex; align-items:center; gap:8px; text-align:left; padding:2px 8px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; line-height:1.2; min-height:28px; }
+.pin-row.is-selected{ border-color:#2563eb; box-shadow:0 0 0 2px rgba(37,99,235,.15) inset; }
+.pin-row .pin-spacer{ flex:1; }
+.pin-row .pin-edit-btn-wrap{ opacity:0; transition:opacity .12s ease; }
+.pin-row.is-selected .pin-edit-btn-wrap{ opacity:1; }
+.pin-row .pin-edit{ border:1px solid #e5e7eb; background:#fff; border-radius:8px; padding:2px; width:24px; height:24px; display:grid; place-items:center; cursor:pointer; }
+.pin-row .pin-edit svg{ width:14px; height:14px; transform: rotate(-45deg); }
 .pin-dot{ 
   width: 10px; 
   height: 10px; 
@@ -496,7 +532,7 @@ label.ui-btn input[type="file"]{ display:none; }
 }
 
 /* Ensure hero aligns with filmstrip - only apply to outer image card */
-.left-col .image-shell.card{ margin: 0 0 calc(var(--stack-gap) + 4px); }
+.left-col .image-shell.card{ margin: 0 0 var(--stack-gap); }
 
 /* Keep legacy back pill hidden until removed in JSX */
 .page-toolbar .link-back{ display: none; }
@@ -508,6 +544,16 @@ label.ui-btn input[type="file"]{ display:none; }
 
 /* ensure the panels inside don’t shrink weirdly */
 .sidebar{ min-width: 340px; }
+
+/* Filmstrip collapsible */
+.filmstrip-collapsible{ overflow:hidden; transition: grid-template-rows .18s ease, opacity .18s ease, height .18s ease, margin .18s ease, padding .18s ease; display:grid; grid-template-rows: 1fr; opacity:1; }
+.filmstrip-collapsible.open{ margin-top:8px; }
+.filmstrip-collapsible.closed{ grid-template-rows: 0fr; opacity:.0; height:0; margin:0; padding:0; }
+.filmstrip-collapsible > *{ min-height:0; }
+
+/* Keep toggle size constant; center the CTA when closed without shifting title */
+.panel .toggle-btn{ min-width: 64px; display:inline-flex; justify-content:center; }
+.filmstrip-closed-cta{ display:flex; justify-content:center; padding: 6px 0 2px; }
 
 /* =========================
    Animations
@@ -804,6 +850,14 @@ label.ui-btn input[type="file"]{ display:none; }
     width: 22px;
     height: 22px;
   }
+}
+
+/* Final mobile spacing normalization (placed late to win cascade) */
+@media (max-width: 959px){
+  .page-grid{ gap: 24px; }
+  .sidebar{ gap: 24px; }
+  .image-history{ margin-bottom: 24px; }
+  .left-col .image-shell.card{ margin-bottom: 0 !important; }
 }
 
 @media (max-width: 480px) {
