@@ -13,6 +13,8 @@ export type Bed = {
   id: string;
   section: string;
   name: string;
+  main_image_id?: string | null;
+  filmstrip_visible?: boolean | null;
   created_at?: string;
 };
 
@@ -35,6 +37,7 @@ export type Pin = {
   y: number;
   created_at: string;
   updated_at: string | null;
+  plant_id?: string | null;
 };
 
 export type BedLatest = {
@@ -45,4 +48,25 @@ export type BedLatest = {
   image_path: string | null;
   image_created_at: string | null;
   pin_count: number;
+};
+
+// Plants & plant media
+export type Plant = {
+  id: string;
+  name: string;
+  scientific_name?: string | null;
+  notes?: string | null;
+  created_at: string;
+};
+
+export type PlantMedia = {
+  id: string;
+  plant_id: string;
+  image_id?: string | null;
+  pin_id?: string | null;
+  storage_path: string;
+  caption?: string | null;
+  captured_at?: string | null;
+  created_at: string;
+  url?: string;
 };

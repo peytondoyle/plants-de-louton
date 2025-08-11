@@ -10,15 +10,27 @@ export async function getBed(bedId: string): Promise<{
   const { data: bed, error: bedErr } = await supabase.from("beds").select("*").eq("id", bedId).single();
   if (bedErr) throw bedErr;
 
-  const { data: images, error: imgErr } = await supabase
-    .from("bed_images")
-    .select("*")
-    .eq("bed_id", bedId)
-    .order("created_at", { ascending: false })
-    .limit(1);
-  if (imgErr) throw imgErr;
-
-  const image = (images?.[0] ?? null) as BedImage | null;
+  // Choose the image: prefer bed.main_image_id if set, else latest
+  let image: BedImage | null = null;
+  if ((bed as Bed).main_image_id) {
+    const { data: mainImage, error: mainErr } = await supabase
+      .from("bed_images")
+      .select("*")
+      .eq("id", (bed as Bed).main_image_id as string)
+      .maybeSingle();
+    if (mainErr) throw mainErr;
+    image = (mainImage ?? null) as BedImage | null;
+  }
+  if (!image) {
+    const { data: latestImages, error: imgErr } = await supabase
+      .from("bed_images")
+      .select("*")
+      .eq("bed_id", bedId)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (imgErr) throw imgErr;
+    image = (latestImages?.[0] ?? null) as BedImage | null;
+  }
 
   const { data: pins, error: pinErr } = await supabase
     .from("pins")

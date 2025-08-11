@@ -1,0 +1,10 @@
+.pgm-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:3000; }
+.pgm{ width:min(900px, 96vw); max-height: 90vh; overflow:auto; background:#fff; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+.pgm-head{ display:flex; align-items:center; padding:12px; border-bottom:1px solid #eee; }
+.pgm-title{ font-weight:600; }
+.pgm-actions{ margin-left:auto; display:flex; gap:8px; }
+.pgm-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:8px; padding:12px; }
+.pgm-item{ border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; background:#fff; }
+.pgm-item img{ display:block; width:100%; height:140px; object-fit:cover; }
+.pgm-row{ display:flex; align-items:center; justify-content:space-between; padding:8px; }
+

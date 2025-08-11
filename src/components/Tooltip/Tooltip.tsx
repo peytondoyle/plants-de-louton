@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./Tooltip.css";
 
@@ -23,27 +23,13 @@ export default function Tooltip({
   const [isVisible, setIsVisible] = useState(false);
   const [theme, setTheme] = useState<Theme>("dark");
   const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [arrowPosition, setArrowPosition] = useState({ top: 0, left: 0 });
   
-  const triggerRef = useRef<HTMLElement>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
-  const portalContainer = useRef<HTMLDivElement | null>(null);
+  const tooltipId = useId();
 
-  // Create portal container if it doesn't exist
-  useEffect(() => {
-    if (!portalContainer.current) {
-      portalContainer.current = document.createElement("div");
-      portalContainer.current.id = "tooltip-portal";
-      document.body.appendChild(portalContainer.current);
-    }
-    
-    return () => {
-      if (portalContainer.current && document.body.contains(portalContainer.current)) {
-        document.body.removeChild(portalContainer.current);
-      }
-    };
-  }, []);
+  // No dedicated portal container needed; we'll portal directly to body
 
   // AutoTheme detection for images
   useEffect(() => {
@@ -119,33 +105,27 @@ export default function Tooltip({
 
     let top = 0;
     let left = 0;
-    let arrowTop = 0;
-    let arrowLeft = 0;
 
     switch (placement) {
       case "top":
         top = triggerRect.top + scrollY - tooltipRect.height - 8;
         left = triggerRect.left + scrollX + (triggerRect.width / 2) - (tooltipRect.width / 2);
-        arrowTop = tooltipRect.height - 1;
-        arrowLeft = tooltipRect.width / 2;
+        // no arrow
         break;
       case "bottom":
         top = triggerRect.bottom + scrollY + 8;
         left = triggerRect.left + scrollX + (triggerRect.width / 2) - (tooltipRect.width / 2);
-        arrowTop = -5;
-        arrowLeft = tooltipRect.width / 2;
+        // no arrow
         break;
       case "left":
         top = triggerRect.top + scrollY + (triggerRect.height / 2) - (tooltipRect.height / 2);
         left = triggerRect.left + scrollX - tooltipRect.width - 8;
-        arrowTop = tooltipRect.height / 2;
-        arrowLeft = tooltipRect.width - 1;
+        // no arrow
         break;
       case "right":
         top = triggerRect.top + scrollY + (triggerRect.height / 2) - (tooltipRect.height / 2);
         left = triggerRect.right + scrollX + 8;
-        arrowTop = tooltipRect.height / 2;
-        arrowLeft = -5;
+        // no arrow
         break;
     }
 
@@ -163,7 +143,6 @@ export default function Tooltip({
     }
 
     setPosition({ top, left });
-    setArrowPosition({ top: arrowTop, left: arrowLeft });
   }, [placement]);
 
   // Show/hide handlers with debouncing
@@ -212,25 +191,23 @@ export default function Tooltip({
     };
   }, [isVisible, calculatePosition]);
 
-  // Clone children and add refs and event handlers
-  const enhancedChildren = React.cloneElement(children, {
-    ref: triggerRef,
-    onMouseEnter: showTooltip,
-    onMouseLeave: hideTooltip,
-    onFocus: showTooltip,
-    onBlur: hideTooltip,
-    "aria-describedby": isVisible ? "tooltip-content" : undefined,
-  });
-
-  if (!portalContainer.current) return enhancedChildren;
-
   return (
     <>
-      {enhancedChildren}
+      <span
+        ref={triggerRef}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        onFocus={showTooltip}
+        onBlur={hideTooltip}
+        aria-describedby={isVisible ? tooltipId : undefined}
+        style={{ display: "inline-flex" }}
+      >
+        {children}
+      </span>
       {createPortal(
         <div
           ref={tooltipRef}
-          id="tooltip-content"
+          id={tooltipId}
           role="tooltip"
           className={`tooltip tooltip--${placement} tooltip--${theme} ${isVisible ? "tooltip--visible" : ""}`}
           style={{
@@ -240,15 +217,8 @@ export default function Tooltip({
           aria-hidden={!isVisible}
         >
           <div className="tooltip__content">{content}</div>
-          <div 
-            className="tooltip__arrow"
-            style={{
-              top: arrowPosition.top,
-              left: arrowPosition.left,
-            }}
-          />
         </div>,
-        portalContainer.current
+        document.body
       )}
     </>
   );
