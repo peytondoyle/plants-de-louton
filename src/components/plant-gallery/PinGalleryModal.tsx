@@ -1,19 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { deletePlantMedia, getPlantMedia, uploadPlantMedia } from "../../lib/plantMedia";
-import type { PlantMedia } from "../../types/types";
+import { deletePinMedia, getPinMedia, uploadPinMedia } from "../../lib/pinMedia";
+import type { Pin } from "../../types/types";
 import "./PlantGalleryModal.css";
 
-type Props = {
-  plantId: string;
-  onClose: () => void;
-  initialFocusId?: string;
-  linkBack?: { imageId?: string; pinId?: string };
-  onViewOnMap?: (args: { imageId?: string; pinId?: string }) => void;
-};
-
-export default function PlantGalleryModal({ plantId, onClose, initialFocusId, linkBack, onViewOnMap }: Props) {
-  const [items, setItems] = useState<PlantMedia[]>([]);
+export default function PinGalleryModal({ pinId, imageId, onClose }: { pinId: string; imageId?: string; onClose: () => void }) {
+  const [items, setItems] = useState<{ id: string; url: string }[]>([]);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -22,23 +14,17 @@ export default function PlantGalleryModal({ plantId, onClose, initialFocusId, li
   useEffect(() => {
     let cancel = false;
     (async () => {
-      const media = await getPlantMedia(plantId);
+      const media = await getPinMedia(pinId);
       if (!cancel) setItems(media);
     })();
     return () => { cancel = true; };
-  }, [plantId]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [pinId]);
 
   const upload = async (f: File) => {
     setBusy(true);
     try {
-      await uploadPlantMedia(plantId, f, { imageId: linkBack?.imageId, pinId: linkBack?.pinId });
-      const media = await getPlantMedia(plantId);
+      await uploadPinMedia(pinId, f, { imageId });
+      const media = await getPinMedia(pinId);
       setItems(media);
       setStatus({ type: 'success', message: 'Uploaded' });
       setTimeout(() => setStatus(null), 1500);
@@ -47,7 +33,7 @@ export default function PlantGalleryModal({ plantId, onClose, initialFocusId, li
 
   const remove = async (id: string) => {
     if (!confirm("Delete this photo?")) return;
-    await deletePlantMedia(id);
+    await deletePinMedia(id);
     setItems((prev) => prev.filter((m) => m.id !== id));
   };
 
@@ -55,25 +41,19 @@ export default function PlantGalleryModal({ plantId, onClose, initialFocusId, li
     <div className="pgm-backdrop" onClick={onClose}>
       <div className="pgm" onClick={(e) => e.stopPropagation()}>
         <div className="pgm-head">
-          <div className="pgm-title">Plant photos</div>
+          <div className="pgm-title">Pin photos</div>
           <div className="pgm-actions">
             <button className="ui-btn ui-btn--sm" onClick={() => inputRef.current?.click()} disabled={busy}>Upload</button>
             <button className="ui-btn ui-btn--sm ui-btn--ghost" onClick={onClose}>Close</button>
-            {busy ? (
-              <div className="pgm-status"><span className="pgm-spinner" aria-hidden />Uploading…</div>
-            ) : status ? (
-              <div className="pgm-status" role="status" aria-live="polite">{status.message}</div>
-            ) : null}
+            {busy ? (<div className="pgm-status"><span className="pgm-spinner" aria-hidden />Uploading…</div>) : status ? (<div className="pgm-status" role="status" aria-live="polite">{status.message}</div>) : null}
           </div>
         </div>
         <div className="pgm-grid">
           {items.map((m) => (
             <div key={m.id} className="pgm-item">
-              <img src={m.url} alt="Plant media" loading="lazy" />
+              <img src={m.url} alt="Pin media" loading="lazy" />
               <div className="pgm-row">
-                {m.image_id || m.pin_id ? (
-                  <button className="ui-btn ui-btn--sm" onClick={() => onViewOnMap?.({ imageId: m.image_id ?? undefined, pinId: m.pin_id ?? undefined })}>View on map</button>
-                ) : <span />}
+                <span />
                 <button className="ui-btn ui-btn--sm ui-btn--ghost" onClick={() => remove(m.id)}>Delete</button>
               </div>
             </div>
@@ -84,16 +64,13 @@ export default function PlantGalleryModal({ plantId, onClose, initialFocusId, li
           type="file"
           accept="image/*"
           style={{ display: "none" }}
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) upload(f);
-            e.currentTarget.value = ""; // allow re-selecting same file
-          }}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.currentTarget.value = ""; }}
         />
       </div>
     </div>,
     portal
   );
 }
+
 
 

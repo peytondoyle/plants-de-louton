@@ -22,8 +22,7 @@ export default function PlantGalleryStrip({ plantId, onOpen }: { plantId: string
     <div className="pg-strip">
       {items.map((m) => (
         <button key={m.id} className="pg-thumb" onClick={onOpen} aria-label="Open plant gallery">
-          {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <img src={m.url} loading="lazy" />
+          <img src={m.url} alt="Plant media thumbnail" loading="lazy" />
         </button>
       ))}
       <button className="pg-add" onClick={onOpen} aria-label="Add plant photo">+</button>

@@ -2,7 +2,8 @@ import { supabase } from "./supabaseClient";
 import type { PlantMedia } from "../types/types";
 import { v4 as uuidv4 } from "uuid";
 
-const BUCKET = "plant-media";
+// Use the existing bucket with bed images
+const BUCKET = "plant-images";
 
 export async function getPlantMedia(plantId: string): Promise<PlantMedia[]> {
   const { data, error } = await supabase

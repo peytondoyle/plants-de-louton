@@ -31,6 +31,8 @@ type Props = {
   pins?: Pin[];
   /** When true, clicking the image creates a new pin. Useful to avoid accidental taps on mobile. */
   allowCreate?: boolean;
+  /** Called when a pin is selected or deselected */
+  onSelect?: (pin: Pin | null) => void;
 };
 
 export default function PinDropper({
@@ -49,6 +51,7 @@ export default function PinDropper({
   selectedPinId,
   pins: externalPins,
   allowCreate = true,
+  onSelect,
 }: Props) {
   const [internalPins, setInternalPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,36 +65,9 @@ export default function PinDropper({
   const allowDragRef = useRef<boolean>(false);
   const longPressTimerRef = useRef<number | null>(null);
   const downPointer = useRef<{ id: number; target: EventTarget | null } | null>(null);
-  const [pinLuminance, setPinLuminance] = useState<Record<string, number | null>>({});
-  const [pinBgRgb, setPinBgRgb] = useState<Record<string, { r: number; g: number; b: number } | null>>({});
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const lastSampleTsRef = useRef<number>(0);
-  const pendingRafRef = useRef<number | null>(null);
 
-  // Helpers to adapt pin core color for background contrast
-  function parseHsl(hsl: string): { h: number; s: number; l: number } | null {
-    const m = /hsl\((\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\)/i.exec(hsl);
-    if (!m) return null;
-    return { h: Number(m[1]), s: Number(m[2]), l: Number(m[3]) };
-  }
-  function hsl(h: number, s: number, l: number) {
-    return `hsl(${h}, ${s}%, ${l}%)`;
-  }
-  function adaptiveCore(baseHsl: string, lum: number | null, rgb: { r: number; g: number; b: number } | null): { base: string; highlight: string } {
-    const parsed = parseHsl(baseHsl);
-    if (!parsed) return { base: baseHsl, highlight: baseHsl };
-    const { h, s } = parsed;
-    let l = 52; // neutral
-    if (typeof lum === "number") {
-      if (lum >= 200) l = 20;             // very bright bg → very dark
-      else if (lum >= 170) l = 30;        // bright → dark
-      else if (lum <= 55) l = 78;         // very dark → bright
-      else if (lum <= 85) l = 68;         // dark → lighter
-      else l = 52;                        // mid
-    }
-    const hl = Math.min(l + 12, 88);
-    return { base: hsl(h, s, l), highlight: hsl(h, s, hl) };
-  }
+
+
 
   // Use external pins if provided, otherwise use internal pins
   const pins = externalPins ?? internalPins;
@@ -125,7 +101,8 @@ export default function PinDropper({
 
       if (!cancel) {
         if (error) {
-          alert(error.message);
+          console.error('Failed to load pins:', error);
+          // Could add a toast notification here instead of alert
           setPins([]);
           setOptimisticPins([]);
         } else {
@@ -189,75 +166,13 @@ export default function PinDropper({
     };
   }, []);
 
-  // Helpers: sample luminance at a given percent position
-  const sampleBackground = useCallback((px: number, py: number): { lum: number | null; rgb: { r: number; g: number; b: number } | null } => {
-    const img = imgRef.current;
-    if (!img || img.naturalWidth === 0) return { lum: null, rgb: null };
-    if (!canvasRef.current) canvasRef.current = document.createElement('canvas');
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return { lum: null, rgb: null };
-    const sampleSize = 10;
-    canvas.width = sampleSize;
-    canvas.height = sampleSize;
-    const sx = Math.max(0, Math.min(img.naturalWidth - sampleSize, Math.round(px * img.naturalWidth) - Math.floor(sampleSize / 2)));
-    const sy = Math.max(0, Math.min(img.naturalHeight - sampleSize, Math.round(py * img.naturalHeight) - Math.floor(sampleSize / 2)));
-    ctx.clearRect(0, 0, sampleSize, sampleSize);
-    ctx.drawImage(img, sx, sy, sampleSize, sampleSize, 0, 0, sampleSize, sampleSize);
-    const data = ctx.getImageData(0, 0, sampleSize, sampleSize).data;
-    let total = 0;
-    let count = 0;
-    let rSum = 0; let gSum = 0; let bSum = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      total += 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      rSum += r; gSum += g; bSum += b;
-      count++;
-    }
-    const lum = count ? total / count : null;
-    const rgb = count ? { r: Math.round(rSum / count), g: Math.round(gSum / count), b: Math.round(bSum / count) } : null;
-    return { lum, rgb };
-  }, []);
 
-  // Sample luminance for all pins once when image loads or pin ids change
-  const optimisticIdsKey = useMemo(() => optimisticPins.map(p => p.id).join(','), [optimisticPins]);
-  useEffect(() => {
-    const img = imgRef.current;
-    if (!img || !imageUrl) return;
-    let cancelled = false;
-    (async () => {
-      if (!img.complete || img.naturalWidth === 0) {
-        await new Promise<void>((resolve) => {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        });
-      }
-      const next: Record<string, number | null> = {};
-      const nextRgb: Record<string, { r: number; g: number; b: number } | null> = {};
-      for (const p of optimisticPins) {
-        const { lum, rgb } = sampleBackground(p.x, p.y);
-        next[p.id] = lum;
-        nextRgb[p.id] = rgb;
-      }
-      if (!cancelled) { setPinLuminance(next); setPinBgRgb(nextRgb); }
-    })();
-    return () => { cancelled = true; };
-  }, [imageUrl, optimisticIdsKey, sampleBackground, optimisticPins]);
 
-  // Throttled per-drag sampling for the dragging pin only (avoids stutter)
-  const scheduleSampleFor = useCallback((pinId: string, x: number, y: number) => {
-    const now = performance.now();
-    if (now - (lastSampleTsRef.current || 0) < 60) return; // ~16fps sampling while dragging
-    lastSampleTsRef.current = now;
-    if (pendingRafRef.current) cancelAnimationFrame(pendingRafRef.current);
-    pendingRafRef.current = requestAnimationFrame(() => {
-      const { lum, rgb } = sampleBackground(x, y);
-      setPinLuminance(prev => ({ ...prev, [pinId]: lum }));
-      setPinBgRgb(prev => ({ ...prev, [pinId]: rgb }));
-    });
-  }, [sampleBackground]);
+  
+
+
+
+
 
   const canInteract = useMemo(
     () => Boolean(imageUrl && bedId && isVisible),
@@ -277,8 +192,18 @@ export default function PinDropper({
 
   const handleImageClick = (e: React.MouseEvent) => {
     if (!canInteract || !imgRef.current) return;
-    const { x, y } = clientToPercent(e.clientX, e.clientY);
-    onCreateAt?.({ x, y });
+    
+    // If there's a selected pin, deselect it when clicking on empty space
+    if (selectedPinId && onSelect) {
+      onSelect(null);
+      return;
+    }
+    
+    // Otherwise, create a new pin if allowed
+    if (allowCreate) {
+      const { x, y } = clientToPercent(e.clientX, e.clientY);
+      onCreateAt?.({ x, y });
+    }
   };
 
   const editPin = useCallback((pin: Pin) => onEditPin?.(pin), [onEditPin]);
@@ -335,7 +260,11 @@ export default function PinDropper({
         const tgt = downPointer.current?.target as HTMLElement | null;
         const pid = downPointer.current?.id;
         if (tgt && typeof pid === 'number') {
-          try { tgt.setPointerCapture(pid); } catch {}
+          try { 
+            tgt.setPointerCapture(pid); 
+          } catch (error) {
+            console.warn('Failed to capture pointer:', error);
+          }
         }
       }, 350);
     } else {
@@ -365,9 +294,7 @@ export default function PinDropper({
           : p
       )
     );
-    // Update luminance for only the dragging pin (throttled)
-    scheduleSampleFor(draggingPinId, x, y);
-  }, [draggingPinId, dragStartPos, clientToPercent, optimisticPins, scheduleSampleFor]);
+  }, [draggingPinId, dragStartPos, clientToPercent, optimisticPins]);
 
   /**
    * Handles pin drag end and saves position
@@ -407,7 +334,7 @@ export default function PinDropper({
     requestAnimationFrame(() => {
       onPinsChange?.(updatedPins);
     });
-  }, [draggingPinId, clientToPercent, onPinsChange, pins, externalPins, setPins]);
+  }, [draggingPinId, clientToPercent, onPinsChange, optimisticPins, externalPins, setPins]);
 
   /**
    * Handles keyboard navigation for pins
@@ -508,16 +435,10 @@ export default function PinDropper({
           })()}
         >
           {(() => {
-              const c = getPinColors(p.id);
+            const c = getPinColors(p.id);
             const isSelected = selectedPinId === p.id;
-            const lum = pinLuminance[p.id];
-              const bg = pinBgRgb[p.id];
-            let halo = 'rgba(17,24,39,0.38)';
-            if (typeof lum === 'number') {
-              if (lum > 170) halo = 'rgba(17,24,39,0.55)';
-              else if (lum < 85) halo = 'rgba(255,255,255,0.65)';
-              else halo = 'rgba(107,114,128,0.55)';
-            }
+            // Use consistent shadow color from getPinColors instead of adaptive colors
+            const halo = c.shadow;
             const glow = isSelected ? 9 : 7;
             return (
               <span
@@ -538,20 +459,15 @@ export default function PinDropper({
             className="pin-core"
             style={(() => {
               const c = getPinColors(p.id);
-              const bg = pinBgRgb[p.id];
-              const lum = pinLuminance[p.id] ?? null;
               return {
-                background: (() => {
-                  const core = adaptiveCore(c.base, lum, bg ?? null);
-                  return `radial-gradient(circle at 30% 30%, ${core.highlight} 0%, ${core.base} 70%)`;
-                })(),
+                background: `radial-gradient(circle at 30% 30%, ${c.highlight} 0%, ${c.base} 70%)`,
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.25), 0 1px 2px rgba(0,0,0,0.15)'
               } as React.CSSProperties;
             })()}
           />
         </button>
       )),
-    [optimisticPins, selectedPinId, draggingPinId, handlePinPointerDown, handlePinPointerMove, handlePinPointerUp, handlePinKeyDown, editPin, pinWasMoved]
+    [optimisticPins, selectedPinId, draggingPinId, handlePinPointerDown, handlePinPointerMove, handlePinPointerUp, handlePinKeyDown, pinWasMoved]
   );
 
   return (
@@ -559,10 +475,12 @@ export default function PinDropper({
       {showInlineHint && (
         <p className="hint">Click the image to drop a pin. Click a pin to edit or delete.</p>
       )}
+      
+
 
       <div
         className={`pinboard ${imageUrl ? "ready" : "empty"}`}
-        onClick={imageUrl && allowCreate ? handleImageClick : undefined}
+        onClick={imageUrl ? handleImageClick : undefined}
       >
         {!imageUrl ? (
           <div className="empty-state">

@@ -1,16 +1,20 @@
 import { Link, NavLink } from "react-router-dom";
 
-export default function Header() {
+interface HeaderProps {
+  bedName?: string;
+}
+
+export default function Header({ bedName }: HeaderProps) {
   return (
     <header className="site-header">
       {/* Share the same container as the page body for perfect alignment */}
       <div className="site-header__inner container">
-        {/* Brand — no internal padding so it lines up with page titles */}
+        {/* Title - positioned on the far left */}
         <Link to="/" className="brand">
           Plants de Louton
         </Link>
 
-        {/* Section tabs (ghost pills, unified hover/focus) */}
+        {/* Section tabs (ghost pills, unified hover/focus) - positioned in the middle */}
         <nav className="main-nav" aria-label="Sections">
           <NavLink
             to="/section/front-yard"
@@ -30,11 +34,18 @@ export default function Header() {
             end
           >
             Back yard
-          </NavLink>
+        </NavLink>
         </nav>
 
-        {/* Flex spacer pushes anything on the right edge (future utilities) */}
+        {/* Large white space */}
         <div style={{ flex: 1 }} />
+
+        {/* Bed name - positioned on the far right */}
+        {bedName && (
+          <div className="bed-name">
+            {bedName}
+          </div>
+        )}
       </div>
     </header>
   );

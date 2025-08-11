@@ -8,7 +8,11 @@ export async function getBed(bedId: string): Promise<{
   publicUrl: string;
 }> {
   const { data: bed, error: bedErr } = await supabase.from("beds").select("*").eq("id", bedId).single();
-  if (bedErr) throw bedErr;
+  
+  if (bedErr) {
+    console.error('Error fetching bed:', bedErr);
+    throw bedErr;
+  }
 
   // Choose the image: prefer bed.main_image_id if set, else latest
   let image: BedImage | null = null;

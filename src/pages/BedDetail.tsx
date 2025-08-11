@@ -10,6 +10,9 @@ import PinDropper from "../components/PinDropper";
 import PinsPanel from "../components/PinsPanel";
 import Sidebar from "../components/Sidebar";
 import Filmstrip from "../components/Filmstrip";
+import PlantGalleryModal from "../components/plant-gallery/PlantGalleryModal";
+import PinGalleryModal from "../components/plant-gallery/PinGalleryModal";
+import PinLightbox from "../components/plant-gallery/PinLightbox";
 import PinEditorDrawer from "../components/PinEditorDrawer";
 import MainImageTooltip from "../components/MainImageTooltip";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
@@ -52,37 +55,54 @@ export default function BedDetail() {
   const [isMobile, setIsMobile] = useState<boolean>(window.matchMedia('(max-width: 959px)').matches);
   const [promoteSelected, setPromoteSelected] = useState(false);
   const [allowCreate, setAllowCreate] = useState(false);
+  const [openPlantGallery, setOpenPlantGallery] = useState<{ plantId: string; pinId?: string } | null>(null);
+  const [openPinGallery, setOpenPinGallery] = useState<{ pinId: string } | null>(null);
+  const [openLightbox, setOpenLightbox] = useState<{ pinId: string } | null>(null);
 
   const refresh = useCallback(async () => {
-    setReady(false);
-    const data = await getBed(bedId);
-    setBed(data.bed);
-    
-    // Fallback preference (used only when DB has no main set)
-    const storedImageId = localStorage.getItem(`bed-${bedId}-selected-image`);
-    
-    const hist = await listImagesForBed(bedId);
-    setImages(hist);
-    
-    // Prefer DB main_image_id; else fall back to localStorage; else use server-provided image
-    let selectedImage = data.image;
-    if (data.bed?.main_image_id && hist.find(img => img.id === data.bed?.main_image_id)) {
-      selectedImage = hist.find(img => img.id === data.bed?.main_image_id) || data.image;
-    } else if (storedImageId && hist.find(img => img.id === storedImageId)) {
-      selectedImage = hist.find(img => img.id === storedImageId) || data.image;
+    try {
+      setReady(false);
+      
+      const data = await getBed(bedId);
+      
+      setBed(data.bed);
+      
+      // Fallback preference (used only when DB has no main set)
+      const storedImageId = localStorage.getItem(`bed-${bedId}-selected-image`);
+      
+      const hist = await listImagesForBed(bedId);
+      setImages(hist);
+      
+      // Prefer DB main_image_id; else fall back to localStorage; else use server-provided image
+      let selectedImage = data.image;
+      if (data.bed?.main_image_id && hist.find(img => img.id === data.bed?.main_image_id)) {
+        selectedImage = hist.find(img => img.id === data.bed?.main_image_id) || data.image;
+      } else if (storedImageId && hist.find(img => img.id === storedImageId)) {
+        selectedImage = hist.find(img => img.id === storedImageId) || data.image;
+      }
+      
+      setImageUrl(selectedImage ? supabase.storage.from("plant-images").getPublicUrl(selectedImage.image_path).data.publicUrl : "");
+      setImagePath(selectedImage?.image_path ?? null);
+      setActiveImageId(selectedImage?.id);
+      setMainImageId(data.bed?.main_image_id ?? undefined);
+      setPins(data.pins);
+      setReady(true);
+    } catch (error) {
+      console.error('Error refreshing bed data:', error);
+      setReady(false);
+      // Set some fallback values to prevent the page from being completely blank
+      setBed(null);
+      setImages([]);
+      setPins([]);
+      setImageUrl("");
     }
-    
-    setImageUrl(selectedImage ? supabase.storage.from("plant-images").getPublicUrl(selectedImage.image_path).data.publicUrl : "");
-    setImagePath(selectedImage?.image_path ?? null);
-    setActiveImageId(selectedImage?.id);
-    setMainImageId(data.bed?.main_image_id ?? undefined);
-    setPins(data.pins);
-    setReady(true);
   }, [bedId]);
 
   useEffect(() => {
-    if (bedId) {
+    if (bedId && bedId.trim() !== '') {
       void refresh();
+    } else {
+      setReady(false);
     }
   }, [bedId, refresh]);
 
@@ -117,24 +137,62 @@ export default function BedDetail() {
   }, [pins]);
 
   // Compute Pins panel height so Pins + Gallery total equals image height (desktop)
+  const computePinsPanelHeight = useCallback(() => {
+    const imgRect = imageCardRef.current?.getBoundingClientRect();
+    const galleryRect = filmstripRef.current?.getBoundingClientRect();
+    const imageH = imgRect?.height ?? 0;
+    const galleryH = galleryRect?.height ?? 0; // header-only when collapsed
+    const sidebarEl = document.querySelector('.sidebar') as HTMLElement | null;
+    const sidebarGap = sidebarEl ? parseInt(getComputedStyle(sidebarEl).gap || '10', 10) || 10 : 10;
+    const pinsH = Math.max(0, imageH - (galleryH + sidebarGap));
+    setPinsPanelHeight(pinsH || undefined);
+  }, []);
+
   useLayoutEffect(() => {
-    const compute = () => {
-      const imgRect = imageCardRef.current?.getBoundingClientRect();
-      const galleryRect = filmstripRef.current?.getBoundingClientRect();
-      const imageH = imgRect?.height ?? 0;
-      const galleryH = galleryRect?.height ?? 0; // header-only when collapsed
-      const sidebarEl = document.querySelector('.sidebar') as HTMLElement | null;
-      const sidebarGap = sidebarEl ? parseInt(getComputedStyle(sidebarEl).gap || '10', 10) || 10 : 10;
-      const pinsH = Math.max(0, imageH - (galleryH + sidebarGap));
-      setPinsPanelHeight(pinsH || undefined);
-    };
-    compute();
-    const ro = new ResizeObserver(compute);
+    computePinsPanelHeight();
+    const ro = new ResizeObserver(computePinsPanelHeight);
     if (imageCardRef.current) ro.observe(imageCardRef.current);
     if (filmstripRef.current) ro.observe(filmstripRef.current);
-    window.addEventListener('resize', compute);
-    return () => { ro.disconnect(); window.removeEventListener('resize', compute); };
-  }, [images.length, imageUrl, imgVer, showFilmstrip]);
+    window.addEventListener('resize', computePinsPanelHeight);
+    return () => { ro.disconnect(); window.removeEventListener('resize', computePinsPanelHeight); };
+  }, [images.length, imageUrl, imgVer, showFilmstrip, computePinsPanelHeight]);
+
+  // During filmstrip open/close animation, recompute height every frame to avoid visual jump
+  useEffect(() => {
+    const el = filmstripRef.current;
+    if (!el) return;
+
+    let rafId: number | null = null;
+    const startWatch = () => {
+      const start = performance.now();
+      const step = () => {
+        computePinsPanelHeight();
+        if (performance.now() - start < 400) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          rafId = null;
+          computePinsPanelHeight();
+        }
+      };
+      if (rafId == null) rafId = requestAnimationFrame(step);
+    };
+
+    const onEnd = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      computePinsPanelHeight();
+    };
+
+    el.addEventListener('transitionstart', startWatch);
+    el.addEventListener('transitionrun', startWatch);
+    el.addEventListener('transitionend', onEnd);
+    return () => {
+      el.removeEventListener('transitionstart', startWatch);
+      el.removeEventListener('transitionrun', startWatch);
+      el.removeEventListener('transitionend', onEnd);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [computePinsPanelHeight]);
 
   // Initialize filmstrip visibility from bed (persisted), defaulting to true on desktop and false on mobile if null
   useEffect(() => {
@@ -393,7 +451,19 @@ export default function BedDetail() {
       }}
     >
       {/* Page header */}
-      <h1 className="page-title">{bed?.name ?? "Bed"}</h1>
+      {/* <h1 className="page-title">{bed?.name ?? "Bed"}</h1> */}
+      
+      {/* Loading and error states */}
+      {!ready && (
+        <div style={{
+          padding: '16px',
+          textAlign: 'center',
+          color: '#6b7280',
+          fontSize: '14px'
+        }}>
+          Loading bed information...
+        </div>
+      )}
       
       {/* Pin save status indicator - hidden for position saves */}
       {/* {savingPins && (
@@ -461,7 +531,7 @@ export default function BedDetail() {
         </label>
       </div> */}
 
-      {ready && (
+      {ready ? (
       <div className="page-grid" style={{ alignItems: 'start' }}>
         <div className="left-col">
           {imageUrl ? (
@@ -483,8 +553,12 @@ export default function BedDetail() {
                   useExternalEditor
                   showInlineHint
                   pins={activeImageId ? pins.filter(pin => pin.image_id === activeImageId) : pins}
-                  selectedPinId={draftInit && 'id' in (draftInit as any) ? (draftInit as Pin).id : undefined}
+                  selectedPinId={draftInit && 'id' in draftInit ? (draftInit as Pin).id : undefined}
                   allowCreate={allowCreate}
+                  onSelect={(pin) => {
+                    setDraftInit(pin || undefined);
+                    setPromoteSelected(false);
+                  }}
                 >
                   {images.length > 0 && (
                     <MainImageTooltip
@@ -508,12 +582,14 @@ export default function BedDetail() {
         <Sidebar>
           <PinsPanel
             pins={activeImageId ? pins.filter(pin => pin.image_id === activeImageId) : pins}
-            selectedPinId={draftInit && 'id' in (draftInit as any) ? (draftInit as Pin).id : undefined}
+            selectedPinId={draftInit && 'id' in draftInit ? (draftInit as Pin).id : undefined}
             fullHeight={isMobile ? undefined : pinsPanelHeight}
             cardRef={pinsCardRef}
             promoteSelected={promoteSelected}
             addMode={allowCreate}
             onToggleAddMode={() => setAllowCreate(v => !v)}
+            onOpenGallery={(args) => setOpenLightbox(args)}
+            showGalleryStrip={false}
             onSelect={(pin) => {
               setDraftInit(pin || undefined);
               setPromoteSelected(false); // list-click selection shouldn't reorder
@@ -564,7 +640,7 @@ export default function BedDetail() {
               {(() => {
                 const items = images.map((img) => {
                   const { data } = supabase.storage.from("plant-images").getPublicUrl(img.image_path);
-                  const exifIso = (img as any).exif_date as string | undefined;
+                  const exifIso = (img as BedImage & { exif_date?: string }).exif_date;
                   const d = exifIso ? new Date(exifIso) : (img.created_at ? new Date(img.created_at) : null);
                   const label = d ? d.toLocaleDateString() : undefined;
                   return { id: img.id, url: data.publicUrl, label };
@@ -610,6 +686,15 @@ export default function BedDetail() {
 
         </Sidebar>
       </div>
+      ) : (
+        <div style={{
+          padding: '32px',
+          textAlign: 'center',
+          color: '#6b7280',
+          fontSize: '16px'
+        }}>
+          {bed ? 'Loading bed content...' : 'Failed to load bed information. Please check the console for errors.'}
+        </div>
       )}
 
       <PinEditorDrawer
@@ -634,7 +719,46 @@ export default function BedDetail() {
           setPins((prev) => prev.filter((p) => p.id !== id));
           setImgVer((v) => v + 1);
         }}
+        onOpenPinGallery={(args) => setOpenPinGallery(args)}
       />
+
+      {openPlantGallery ? (
+        <PlantGalleryModal
+          plantId={openPlantGallery.plantId}
+          onClose={() => setOpenPlantGallery(null)}
+          linkBack={{ imageId: activeImageId, pinId: openPlantGallery.pinId }}
+          onViewOnMap={({ imageId, pinId }) => {
+            if (!imageId) return;
+            const found = images.find(i => i.id === imageId);
+            if (found) {
+              const { data } = supabase.storage.from("plant-images").getPublicUrl(found.image_path);
+              setActiveImageId(found.id);
+              setImagePath(found.image_path);
+              setImageUrl(data.publicUrl);
+            }
+            if (pinId) {
+              const pin = pins.find(p => p.id === pinId);
+              if (pin) {
+                setDraftInit(pin);
+                setPromoteSelected(true);
+              }
+            }
+            setOpenPlantGallery(null);
+          }}
+        />
+      ) : null}
+
+      {openPinGallery ? (
+        <PinGalleryModal
+          pinId={openPinGallery.pinId}
+          imageId={activeImageId}
+          onClose={() => setOpenPinGallery(null)}
+        />
+      ) : null}
+
+      {openLightbox ? (
+        <PinLightbox pinId={openLightbox.pinId} onClose={() => setOpenLightbox(null)} />
+      ) : null}
 
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
@@ -675,7 +799,8 @@ export default function BedDetail() {
             }
           } catch (err) {
             console.error('Failed to import pins:', err);
-            alert(err instanceof Error ? err.message : String(err));
+            // Could add a toast notification here instead of alert
+            console.warn('Import failed:', err instanceof Error ? err.message : String(err));
           } finally {
             setShowImportPinsModal(false);
             setPendingImportTargetImageId(null);

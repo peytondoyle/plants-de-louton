@@ -38,6 +38,7 @@ export type Pin = {
   created_at: string;
   updated_at: string | null;
   plant_id?: string | null;
+  image_url?: string | null; // optional per-pin image url from plant_pins view
 };
 
 export type BedLatest = {
