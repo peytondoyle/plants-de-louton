@@ -144,9 +144,20 @@ export default function BedDetail() {
     const galleryH = galleryRect?.height ?? 0; // header-only when collapsed
     const sidebarEl = document.querySelector('.sidebar') as HTMLElement | null;
     const sidebarGap = sidebarEl ? parseInt(getComputedStyle(sidebarEl).gap || '10', 10) || 10 : 10;
-    const pinsH = Math.max(0, imageH - (galleryH + sidebarGap));
+    
+    // Calculate pins height with a minimum constraint to prevent shrinking
+    const calculatedPinsH = Math.max(0, imageH - (galleryH + sidebarGap));
+    const minPinsHeight = 300; // Minimum height to prevent jarring layout shifts
+    const pinsH = Math.max(calculatedPinsH, minPinsHeight);
+    
     setPinsPanelHeight(pinsH || undefined);
   }, []);
+
+  // Debounced height recalculation to prevent rapid layout changes
+  const debouncedComputeHeight = useCallback(() => {
+    const timeoutId = setTimeout(computePinsPanelHeight, 100);
+    return () => clearTimeout(timeoutId);
+  }, [computePinsPanelHeight]);
 
   useLayoutEffect(() => {
     computePinsPanelHeight();
@@ -155,7 +166,13 @@ export default function BedDetail() {
     if (filmstripRef.current) ro.observe(filmstripRef.current);
     window.addEventListener('resize', computePinsPanelHeight);
     return () => { ro.disconnect(); window.removeEventListener('resize', computePinsPanelHeight); };
-  }, [images.length, imageUrl, imgVer, showFilmstrip, computePinsPanelHeight]);
+  }, [imageUrl, imgVer, showFilmstrip, computePinsPanelHeight]);
+
+  // Separate effect for image count changes to use debounced calculation
+  useEffect(() => {
+    const cleanup = debouncedComputeHeight();
+    return cleanup;
+  }, [images.length, debouncedComputeHeight]);
 
   // During filmstrip open/close animation, recompute height every frame to avoid visual jump
   useEffect(() => {
