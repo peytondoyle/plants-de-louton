@@ -46,5 +46,10 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <!-- Supabase Configuration - Replace with your actual values -->
+    <key>SupabaseURL</key>
+    <string>your_supabase_url_here</string>
+    <key>SupabaseAnonKey</key>
+    <string>your_supabase_anon_key_here</string>
 </dict>
 </plist>

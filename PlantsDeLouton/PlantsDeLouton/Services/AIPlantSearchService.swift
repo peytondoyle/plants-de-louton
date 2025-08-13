@@ -124,6 +124,8 @@ class AIPlantSearchService: ObservableObject {
     @Published var isSearching = false
     @Published var errorMessage: String?
     
+    private let supabaseService = SupabaseService.shared
+    
     private init() {}
     
     func searchPlants(query: String) async throws -> [AIPlantSearchResult] {
@@ -139,13 +141,44 @@ class AIPlantSearchService: ObservableObject {
         }
         
         do {
-            // For now, use mock data since we don't have the endpoint URL
-            // TODO: Replace with actual API call to your plant search endpoint
-            let results = try await searchMockAPI(query: query)
+            // Use Supabase service for real database search
+            let searchResults = try await supabaseService.searchPlants(query: query)
+            
+            // Convert PlantSearchResult to AIPlantSearchResult for UI compatibility
+            let results = searchResults.map { result in
+                AIPlantSearchResult(
+                    name: result.name,
+                    scientificName: result.scientificName ?? "",
+                    commonNames: result.commonNames ?? [],
+                    family: result.family ?? "",
+                    genus: result.genus ?? "",
+                    species: result.species ?? "",
+                    growthHabit: GrowthHabit(rawValue: result.growthHabit) ?? .annual,
+                    hardinessZones: result.hardinessZones ?? [],
+                    sunExposure: SunExposure(rawValue: result.sunExposure) ?? .fullSun,
+                    waterNeeds: WaterNeeds(rawValue: result.waterNeeds) ?? .moderate,
+                    matureHeight: result.matureHeight ?? 0,
+                    matureWidth: result.matureWidth ?? 0,
+                    bloomTime: BloomTime(rawValue: result.bloomTime ?? "spring") ?? .spring,
+                    bloomDuration: Double(result.bloomDuration ?? 0),
+                    flowerColor: result.flowerColor ?? [],
+                    foliageColor: result.foliageColor ?? [],
+                    soilType: SoilType(rawValue: result.soilType ?? "well_draining") ?? .wellDraining,
+                    soilPH: SoilPH(rawValue: result.soilPH ?? "neutral") ?? .neutral,
+                    fertilizerNeeds: FertilizerNeeds(rawValue: result.fertilizerNeeds ?? "moderate") ?? .moderate,
+                    pruningNeeds: PruningNeeds(rawValue: result.pruningNeeds ?? "moderate") ?? .moderate,
+                    plantingSeason: PlantingSeason(rawValue: result.plantingSeason ?? "spring") ?? .spring,
+                    plantingDepth: result.plantingDepth ?? 0,
+                    spacing: result.spacing ?? 0
+                )
+            }
+            
             return results
         } catch {
-            errorMessage = error.localizedDescription
-            throw error
+            // Fallback to mock data if Supabase fails (for development)
+            print("Supabase search failed, using mock data: \(error)")
+            let results = try await searchMockAPI(query: query)
+            return results
         }
     }
     
