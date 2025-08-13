@@ -24,6 +24,9 @@
 		1A000000100000000000001D /* PlantDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000001E /* PlantDetailsViewModel.swift */; };
 		1A000000100000000000001F /* PlantDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000020 /* PlantDetailsView.swift */; };
 		1A0000001000000000000052 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000053 /* SupabaseService.swift */; };
+		1A0000001000000000000061 /* BedsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000060 /* BedsListView.swift */; };
+		1A0000001000000000000063 /* BedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000062 /* BedDetailView.swift */; };
+		1A0000001000000000000065 /* BedsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000064 /* BedsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +49,9 @@
 		1A000000100000000000001E /* PlantDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsViewModel.swift; sourceTree = "<group>"; };
 		1A0000001000000000000020 /* PlantDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000053 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
+		1A0000001000000000000060 /* BedsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedsListView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000062 /* BedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedDetailView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000064 /* BedsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +123,8 @@
 				1A000000100000000000001A /* PlantSearchSheet.swift */,
 				1A000000100000000000001C /* PlantDetailsFormView.swift */,
 				1A0000001000000000000020 /* PlantDetailsView.swift */,
+				1A0000001000000000000060 /* BedsListView.swift */,
+				1A0000001000000000000062 /* BedDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -126,6 +134,7 @@
 			children = (
 				1A0000001000000000000012 /* GardenViewModel.swift */,
 				1A000000100000000000001E /* PlantDetailsViewModel.swift */,
+				1A0000001000000000000064 /* BedsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -231,6 +240,9 @@
 				1A000000100000000000001D /* PlantDetailsViewModel.swift in Sources */,
 				1A000000100000000000001F /* PlantDetailsView.swift in Sources */,
 				1A0000001000000000000052 /* SupabaseService.swift in Sources */,
+				1A0000001000000000000061 /* BedsListView.swift in Sources */,
+				1A0000001000000000000063 /* BedDetailView.swift in Sources */,
+				1A0000001000000000000065 /* BedsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
