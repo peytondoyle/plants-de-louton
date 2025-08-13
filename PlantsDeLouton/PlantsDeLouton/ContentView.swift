@@ -18,7 +18,7 @@ struct ContentView: View {
                 PlantsView()
             }
             .tabItem {
-                Image(systemName: "leaf.fill")
+                Image(systemName: "leaf")
                 Text("Plants")
             }
             .tag(1)
