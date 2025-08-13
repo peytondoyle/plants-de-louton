@@ -4,7 +4,7 @@
 **Updated**: January 15, 2025  
 **Goal**: Transform React/TypeScript garden app into native SwiftUI iOS/macOS app  
 **Distribution**: TestFlight for iOS, App Store for macOS  
-**Status**: ✅ **Phase 1 Complete** - Foundation scaffolding finished and working!
+**Status**: ✅ **Phase 1 Complete** · ✅ **Phase 2a Complete** · ✅ **Phase 2b Complete** · 🚧 **Phase 2c In Progress**
 
 ## 📊 **Current Status Summary**
 
@@ -19,9 +19,11 @@
 - **✅ Repository Setup**: Clean git structure with proper .gitignore
 
 ### 🚧 **In Progress**
-- **🎯 Plant Details View**: AI-powered plant search integration (Priority 1)
-- **📋 Bed Management**: Create, edit, manage garden beds
-- **🔗 Supabase Integration**: Real data sync with existing backend
+- **📋 Bed Management (Phase 2c)**: Beds list/detail, assign plants to beds
+
+### ✅ Recently Completed
+- **🎯 Plant Details View (Phase 2b)**: AI-powered search + details form
+- **🔗 Supabase Integration**: Connected to live DB, search caching
 
 ### 📅 **Upcoming**
 - **📱 iOS Extensions**: Widgets and Siri shortcuts
@@ -191,22 +193,22 @@ struct ContentView: View {
         TabView {
             GardenOverviewView()
                 .tabItem {
-                    Image(systemName: "leaf.fill")
+                    Image(systemName: "house.fill") // Garden
                     Text("Garden")
                 }
-            
+
             PlantsView()
                 .tabItem {
-                    Image(systemName: "plant.fill")
+                    Image(systemName: "leaf.fill") // Plants
                     Text("Plants")
                 }
-            
+
             CareView()
                 .tabItem {
                     Image(systemName: "calendar")
                     Text("Care")
                 }
-            
+
             SettingsView()
                 .tabItem {
                     Image(systemName: "gear")
@@ -282,29 +284,28 @@ struct HeroCardView: View {
 }
 ```
 
-## 🚧 **CURRENT PHASE: Advanced UI Implementation**
+## 🚧 **CURRENT PHASE: Phase 2c - Bed Management**
 
-### **🎯 PRIORITY 1: Plant Details with AI Integration**
+### **🎯 PRIORITY 1: Bed Management Views**
 
-**Goal**: Recreate the stunning AI-powered plant search from the web app in native SwiftUI.
+**Goal**: Create bed list/detail views and enable assigning plants to beds, backed by Supabase.
 
 #### **Key Components to Build:**
-1. **AI Hero Card** - Recreate the beautiful blue/purple gradient card that encourages users to use AI search
-2. **Plant Search Modal** - Native sheet presentation with search functionality  
-3. **AI Search Integration** - Connect to existing AI plant search service
-4. **Plant Details Form** - Native form controls for plant information
-5. **Success State** - Show populated plant data after successful AI search
+1. Beds List (grid or list with counts)
+2. Bed Detail (plants in bed, add/remove)
+3. Assign-to-Bed flow from Plants
+4. Supabase tables: `beds`, `bed_plants` join
 
 #### **Implementation Steps:**
-```swift
-// 1. Create AIHeroCardView with gradient and feature cards
-// 2. Implement PlantSearchSheet with native search interface
-// 3. Create PlantDetailsFormView with SwiftUI form controls
-// 4. Connect to AI search service (existing endpoint)
-// 5. Handle loading states and error cases
+```text
+1) Models: Bed, BedPlant (join) to match Supabase
+2) Service: Supabase queries for beds and assignments
+3) Views: BedsListView, BedDetailView
+4) Integration: "Assign to Bed" action from PlantDetails/Plants list
+5) Persist + refresh Garden stats
 ```
 
-### **🎯 PRIORITY 2: Bed Management Views**
+### **🎯 PRIORITY 2: Plant Details with AI Integration (Completed)**
 
 #### **Modern Plant Details View**
 ```swift
