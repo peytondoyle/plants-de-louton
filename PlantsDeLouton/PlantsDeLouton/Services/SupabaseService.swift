@@ -124,6 +124,50 @@ class SupabaseService: ObservableObject {
         
         return plants
     }
+
+    // MARK: - Beds Methods
+
+    struct BedRow: Codable {
+        let id: UUID
+        let name: String
+        let section: String
+    }
+
+    /// List all beds (plants joined later)
+    func listBeds() async throws -> [Bed] {
+        let rows: [BedRow] = try await client
+            .from("beds")
+            .select()
+            .order("name", ascending: true)
+            .execute()
+            .value
+
+        // For now, return beds without joined plants; plant assignment will be added later
+        return rows.map { Bed(id: $0.id, name: $0.name, section: $0.section, plants: []) }
+    }
+
+    /// Create or update a bed
+    func saveBed(_ bed: Bed) async throws -> Bed {
+        // Persist only fields present in BedRow
+        let row = BedRow(id: bed.id, name: bed.name, section: bed.section)
+        let saved: BedRow = try await client
+            .from("beds")
+            .upsert(row)
+            .select()
+            .single()
+            .execute()
+            .value
+        return Bed(id: saved.id, name: saved.name, section: saved.section, plants: bed.plants)
+    }
+
+    /// Delete a bed by id
+    func deleteBed(id: UUID) async throws {
+        _ = try await client
+            .from("beds")
+            .delete()
+            .eq("id", value: id.uuidString)
+            .execute()
+    }
 }
 
 // MARK: - Data Models

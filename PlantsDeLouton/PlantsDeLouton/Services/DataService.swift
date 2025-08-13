@@ -18,12 +18,17 @@ actor DataService {
     }
     
     func fetchBeds() async throws -> [Bed] {
-        // TODO: Implement Supabase beds query
-        try await Task.sleep(nanoseconds: 500_000_000)
-        return [
-            Bed(name: "North Bed", section: "Front Garden"),
-            Bed(name: "South Bed", section: "Front Garden")
-        ]
+        // Supabase-backed beds
+        do {
+            return try await supabaseService.listBeds()
+        } catch {
+            // Fallback to mock if DB unavailable
+            try await Task.sleep(nanoseconds: 250_000_000)
+            return [
+                Bed(name: "North Bed", section: "Front Garden"),
+                Bed(name: "South Bed", section: "Front Garden")
+            ]
+        }
     }
     
     func savePlant(_ plant: Plant) async throws {
@@ -40,7 +45,6 @@ actor DataService {
     }
     
     func saveBed(_ bed: Bed) async throws {
-        // TODO: Implement Supabase beds save
-        try await Task.sleep(nanoseconds: 100_000_000)
+        _ = try await supabaseService.saveBed(bed)
     }
 }
