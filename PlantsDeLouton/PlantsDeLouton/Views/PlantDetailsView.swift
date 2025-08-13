@@ -41,6 +41,17 @@ struct PlantDetailsView: View {
                         )
                     }
                     .disabled(!viewModel.isValid || viewModel.isLoading)
+
+                    // Assign to Bed
+                    NavigationLink {
+                        BedsListView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.grid.2x2")
+                            Text("Assign to Bed")
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
                     
                     // Validation Message
                     if let validationMessage = viewModel.validationMessage {

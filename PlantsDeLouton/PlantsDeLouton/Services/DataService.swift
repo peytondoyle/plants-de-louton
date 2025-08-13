@@ -47,4 +47,17 @@ actor DataService {
     func saveBed(_ bed: Bed) async throws {
         _ = try await supabaseService.saveBed(bed)
     }
+
+    // MARK: - Bed ↔︎ Plant Assignment
+    func assignPlant(_ plantId: UUID, toBed bedId: UUID) async throws {
+        try await supabaseService.assignPlant(plantId: plantId, toBed: bedId)
+    }
+
+    func removePlant(_ plantId: UUID, fromBed bedId: UUID) async throws {
+        try await supabaseService.removePlant(plantId: plantId, fromBed: bedId)
+    }
+
+    func plants(inBed bedId: UUID) async throws -> [Plant] {
+        try await supabaseService.listPlants(inBed: bedId)
+    }
 }
