@@ -46,10 +46,10 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-    <!-- Supabase Configuration - Replace with your actual values -->
+    <!-- Supabase Configuration -->
     <key>SupabaseURL</key>
-    <string>your_supabase_url_here</string>
+    <string>https://qrhpqkqkfujsdwwqbgls.supabase.co</string>
     <key>SupabaseAnonKey</key>
-    <string>your_supabase_anon_key_here</string>
+    <string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyaHBxa3FrZnVqc2R3d3FiZ2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4MTA3NTMsImV4cCI6MjA1MjM4Njc1M30.AuKWpGfqLLdnhEA8g0Wn19LqeZGwjWqlBQqAEm6u8CY</string>
 </dict>
 </plist>
