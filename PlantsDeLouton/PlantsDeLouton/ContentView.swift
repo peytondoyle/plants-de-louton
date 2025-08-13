@@ -46,8 +46,38 @@ struct ContentView: View {
 
 struct PlantsView: View {
     var body: some View {
-        Text("Plants List")
-            .navigationTitle("Plants")
+        VStack(spacing: 20) {
+            Text("Manage your plants")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            NavigationLink(destination: PlantDetailsView()) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    Text("Add New Plant")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+                .background(
+                    LinearGradient(
+                        colors: [.green, .blue],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .padding(.horizontal)
+            
+            Spacer()
+        }
+        .navigationTitle("Plants")
     }
 }
 

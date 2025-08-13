@@ -14,9 +14,9 @@ struct Plant: Identifiable, Codable {
         id: UUID = UUID(),
         name: String,
         scientificName: String? = nil,
-        growthHabit: String = "Unknown",
-        sunExposure: String = "Full Sun",
-        waterNeeds: String = "Moderate",
+        growthHabit: String = "unknown",
+        sunExposure: String = "full_sun",
+        waterNeeds: String = "moderate",
         plantedDate: Date? = nil,
         healthStatus: String = "Healthy"
     ) {
