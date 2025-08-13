@@ -37,6 +37,19 @@ struct HeroCardView: View {
                 StatCard(title: "Sections", value: "3", icon: "folder.fill")
                 StatCard(title: "Recent", value: "2", icon: "clock.fill")
             }
+            
+            NavigationLink(destination: BedsListView()) {
+                HStack {
+                    Image(systemName: "square.grid.2x2")
+                    Text("Manage Beds")
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundColor(.white.opacity(0.8))
+                }
+                .padding()
+                .background(Color.white.opacity(0.15))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
         }
         .padding(24)
         .background(
