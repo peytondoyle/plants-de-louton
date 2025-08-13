@@ -3,6 +3,7 @@ import MapSectionGrid from "./components/MapSectionGrid";
 import SectionIndex from "./pages/SectionIndex";
 import BedDetail from "./pages/BedDetail";
 import Header from "./components/Header";
+import SectionOnboarding from "./components/SectionOnboarding";
 import "./App.css";
 
 function Layout() {
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/" element={<MapSectionGrid />} />
           <Route path="/section/:slug" element={<SectionIndex />} />
           <Route path="/section/:slug/bed/:bedId" element={<BedDetail />} />
+          <Route path="/onboarding" element={<SectionOnboarding />} />
           {/* legacy redirect */}
           <Route path="/map/:slug" element={<Navigate to="/section/:slug" replace />} />
         </Route>

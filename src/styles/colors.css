@@ -1,58 +1,62 @@
-/* Centralized Color System for Plants de Louton */
+/* Modern Color System for Plants de Louton */
 
 :root {
-  /* Primary Colors */
-  --color-primary: #2563eb;
-  --color-primary-light: #3b82f6;
-  --color-primary-dark: #1d4ed8;
+  /* Primary Colors - Modern Blue */
+  --color-primary: #3b82f6;
+  --color-primary-light: #60a5fa;
+  --color-primary-dark: #2563eb;
+  --color-primary-alpha: rgba(59, 130, 246, 0.1);
   
-  /* Success Colors */
+  /* Success Colors - Fresh Green */
   --color-success: #10b981;
   --color-success-light: #34d399;
   --color-success-dark: #059669;
+  --color-success-alpha: rgba(16, 185, 129, 0.1);
   
-  /* Danger Colors */
+  /* Danger Colors - Modern Red */
   --color-danger: #ef4444;
   --color-danger-light: #f87171;
   --color-danger-dark: #dc2626;
+  --color-danger-alpha: rgba(239, 68, 68, 0.1);
   
-  /* Warning Colors */
+  /* Warning Colors - Warm Orange */
   --color-warning: #f59e0b;
   --color-warning-light: #fbbf24;
   --color-warning-dark: #d97706;
+  --color-warning-alpha: rgba(245, 158, 11, 0.1);
   
-  /* Neutral Colors */
-  --color-text-primary: #0f172a;
+  /* Neutral Colors - Modern Grays */
+  --color-text-primary: #111827;
   --color-text-secondary: #374151;
   --color-text-muted: #6b7280;
   --color-text-inverse: #ffffff;
   
-  /* Background Colors */
+  /* Background Colors - Clean Whites */
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8fafc;
+  --color-bg-secondary: #f9fafb;
   --color-bg-tertiary: #f3f4f6;
-  --color-bg-dark: #0f172a;
+  --color-bg-dark: #111827;
   
-  /* Border Colors */
+  /* Border Colors - Subtle Borders */
   --color-border-primary: #e5e7eb;
   --color-border-secondary: #d1d5db;
   --color-border-tertiary: #cbd5e1;
   
-  /* Shadow Colors */
-  --color-shadow-light: rgba(0, 0, 0, 0.06);
-  --color-shadow-medium: rgba(0, 0, 0, 0.12);
-  --color-shadow-heavy: rgba(0, 0, 0, 0.25);
-  --color-shadow-overlay: rgba(0, 0, 0, 0.4);
+  /* Shadow Colors - Modern Shadows */
+  --color-shadow-light: rgba(0, 0, 0, 0.05);
+  --color-shadow-medium: rgba(0, 0, 0, 0.1);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.2);
+  --color-shadow-overlay: rgba(0, 0, 0, 0.5);
   
-  /* Overlay Colors */
-  --color-overlay-light: rgba(255, 255, 255, 0.75);
+  /* Overlay Colors - Glass Effect */
+  --color-overlay-light: rgba(255, 255, 255, 0.8);
   --color-overlay-dark: rgba(17, 24, 39, 0.95);
   
-  /* Pin Colors (for consistent styling) */
-  --pin-shadow: rgba(0, 0, 0, 0.15);
-  --pin-highlight: rgba(255, 255, 255, 0.25);
+  /* Pin Colors - Enhanced */
+  --pin-shadow: rgba(0, 0, 0, 0.2);
+  --pin-highlight: rgba(255, 255, 255, 0.3);
   
-  /* Status Colors */
+  /* Status Colors - Modern Alerts */
   --status-success-bg: #ecfdf5;
   --status-success-text: #065f46;
   --status-success-border: #a7f3d0;
@@ -61,8 +65,16 @@
   --status-error-text: #991b1b;
   --status-error-border: #fecaca;
   
-  /* Interactive States */
+  /* Interactive States - Enhanced */
   --color-hover: #f8fafc;
-  --color-focus: rgba(37, 99, 235, 0.55);
-  --color-selected: rgba(37, 99, 235, 0.15);
+  --color-focus: rgba(59, 130, 246, 0.2);
+  --color-selected: rgba(59, 130, 246, 0.1);
+  
+  /* Modern Gradients */
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  
+
 }
