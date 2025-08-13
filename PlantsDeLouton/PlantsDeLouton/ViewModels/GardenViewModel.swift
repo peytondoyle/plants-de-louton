@@ -5,31 +5,69 @@ import SwiftUI
 class GardenViewModel: ObservableObject {
     @Published var plants: [Plant] = []
     @Published var beds: [Bed] = []
+    @Published var careEvents: [CareEvent] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
     
+    private let dataService = DataService.shared
+    private let supabaseService = SupabaseService.shared
+    
     init() {
-        loadMockData()
+        Task {
+            await loadData()
+        }
     }
     
-    func loadMockData() {
-        plants = [
-            Plant(name: "Rose", scientificName: "Rosa", growthHabit: "Shrub"),
-            Plant(name: "Tomato", scientificName: "Solanum lycopersicum", growthHabit: "Annual"),
-            Plant(name: "Lavender", scientificName: "Lavandula", growthHabit: "Perennial")
-        ]
+    func loadData() async {
+        isLoading = true
+        errorMessage = nil
         
-        beds = [
-            Bed(name: "North Bed", section: "Front Garden"),
-            Bed(name: "South Bed", section: "Front Garden"),
-            Bed(name: "Vegetable Patch", section: "Back Garden")
-        ]
+        do {
+            async let plantsTask = dataService.fetchPlants()
+            async let bedsTask = dataService.fetchBeds()
+            async let careEventsTask = supabaseService.fetchCareEvents()
+            
+            let (plants, beds, careEvents) = try await (plantsTask, bedsTask, careEventsTask)
+            
+            self.plants = plants
+            self.beds = beds
+            self.careEvents = careEvents
+        } catch {
+            errorMessage = "Failed to load garden data: \(error.localizedDescription)"
+            print("Error loading garden data: \(error)")
+        }
+        
+        isLoading = false
     }
     
     func refresh() async {
-        isLoading = true
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        loadMockData()
-        isLoading = false
+        await loadData()
+    }
+    
+    func addPlant(_ plant: Plant) async {
+        do {
+            try await dataService.savePlant(plant)
+            await loadData()
+        } catch {
+            errorMessage = "Failed to add plant: \(error.localizedDescription)"
+        }
+    }
+    
+    func addBed(_ bed: Bed) async {
+        do {
+            try await dataService.saveBed(bed)
+            await loadData()
+        } catch {
+            errorMessage = "Failed to add bed: \(error.localizedDescription)"
+        }
+    }
+    
+    func addCareEvent(_ careEvent: CareEvent) async {
+        do {
+            try await supabaseService.saveCareEvent(careEvent)
+            await loadData()
+        } catch {
+            errorMessage = "Failed to add care event: \(error.localizedDescription)"
+        }
     }
 }

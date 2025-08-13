@@ -12,8 +12,20 @@ class BedsViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let fetched = try await dataService.fetchBeds()
-            self.beds = fetched
+            var fetchedBeds = try await dataService.fetchBeds()
+            
+            // Load plants for each bed to get accurate counts
+            for i in 0..<fetchedBeds.count {
+                do {
+                    let plantsInBed = try await dataService.plants(inBed: fetchedBeds[i].id)
+                    fetchedBeds[i].plants = plantsInBed
+                } catch {
+                    print("Failed to load plants for bed \(fetchedBeds[i].name): \(error)")
+                    fetchedBeds[i].plants = []
+                }
+            }
+            
+            self.beds = fetchedBeds
         } catch {
             self.errorMessage = error.localizedDescription
         }

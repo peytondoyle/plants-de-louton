@@ -24,11 +24,11 @@ struct ContentView: View {
             .tag(1)
             
             NavigationStack {
-                CareView()
+                BedsListView()
             }
             .tabItem {
-                Image(systemName: "calendar")
-                Text("Care")
+                Image(systemName: "square.grid.2x2")
+                Text("Beds")
             }
             .tag(2)
             
@@ -45,55 +45,102 @@ struct ContentView: View {
 }
 
 struct PlantsView: View {
+    @State private var plants: [Plant] = []
+    @StateObject private var supabaseService = SupabaseService.shared
+    
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Manage your plants")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            NavigationLink(destination: PlantDetailsView()) {
-                HStack {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.white)
-                    Text("Add New Plant")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.white.opacity(0.8))
-                }
-                .padding()
-                .background(
-                    LinearGradient(
-                        colors: [.green, .blue],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+        VStack {
+            if !supabaseService.isSignedIn {
+                AuthRequiredView()
+            } else {
+                PlantListView(plants: plants)
             }
-            .padding(.horizontal)
-            
-            Spacer()
         }
         .navigationTitle("Plants")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink(destination: PlantDetailsView()) {
+                    Image(systemName: "plus")
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+        .task {
+            if supabaseService.isSignedIn {
+                await loadPlants()
+            }
+        }
+    }
+    
+    private func loadPlants() async {
+        do {
+            plants = try await DataService.shared.fetchPlants()
+        } catch {
+            print("Error loading plants: \(error)")
+        }
     }
 }
 
-struct CareView: View {
+
+
+struct PlantListView: View {
+    let plants: [Plant]
+    
     var body: some View {
-        Text("Care Schedule")
-            .navigationTitle("Care")
+        VStack {
+            if plants.isEmpty {
+                PlantsEmptyState {
+                    // This will be handled by the navigation link in the toolbar
+                }
+            } else {
+                List {
+                    ForEach(plants) { plant in
+                        NavigationLink(destination: PlantDetailsView()) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "leaf.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.green)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(plant.name)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    
+                                    if let scientificName = plant.scientificName, !scientificName.isEmpty {
+                                        Text(scientificName)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    } else {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "pencil")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                            Text("Add details")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        Text("Settings")
-            .navigationTitle("Settings")
-    }
-}
+
+
+// SettingsView is defined in Views/SettingsView.swift
 
 #Preview {
     ContentView()

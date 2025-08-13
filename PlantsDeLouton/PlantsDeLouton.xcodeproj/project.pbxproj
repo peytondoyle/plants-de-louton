@@ -27,10 +27,14 @@
 		1A0000001000000000000061 /* BedsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000060 /* BedsListView.swift */; };
 		1A0000001000000000000063 /* BedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000062 /* BedDetailView.swift */; };
 		1A0000001000000000000065 /* BedsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000064 /* BedsViewModel.swift */; };
+		1A0000001000000000000067 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000066 /* SettingsView.swift */; };
+		1A0000001000000000000069 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000068 /* WeatherService.swift */; };
+		1A000000100000000000006B /* SectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006A /* SectionDetailView.swift */; };
+		1A000000100000000000006C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006D /* EmptyStateView.swift */; };
+		9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000001000000000000051 /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1A0000001000000000000021 /* PlantsDeLouton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlantsDeLouton.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A0000001000000000000002 /* PlantsDeLoutonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantsDeLoutonApp.swift; sourceTree = "<group>"; };
 		1A0000001000000000000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -41,17 +45,23 @@
 		1A0000001000000000000010 /* GardenOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenOverviewView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000012 /* GardenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewModel.swift; sourceTree = "<group>"; };
 		1A0000001000000000000014 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
-		1A0000001000000000000022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A0000001000000000000016 /* AIHeroCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHeroCardView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000018 /* AIPlantSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIPlantSearchService.swift; sourceTree = "<group>"; };
 		1A000000100000000000001A /* PlantSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantSearchSheet.swift; sourceTree = "<group>"; };
 		1A000000100000000000001C /* PlantDetailsFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsFormView.swift; sourceTree = "<group>"; };
 		1A000000100000000000001E /* PlantDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsViewModel.swift; sourceTree = "<group>"; };
 		1A0000001000000000000020 /* PlantDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000021 /* PlantsDeLouton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlantsDeLouton.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000001000000000000022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A0000001000000000000053 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		1A0000001000000000000060 /* BedsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedsListView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000062 /* BedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedDetailView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000064 /* BedsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedsViewModel.swift; sourceTree = "<group>"; };
+		1A0000001000000000000066 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000068 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		1A000000100000000000006A /* SectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionDetailView.swift; sourceTree = "<group>"; };
+		1A000000100000000000006D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlantsDeLouton.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +87,7 @@
 		1A0000001000000000000025 /* PlantsDeLouton */ = {
 			isa = PBXGroup;
 			children = (
+				9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */,
 				1A0000001000000000000002 /* PlantsDeLoutonApp.swift */,
 				1A0000001000000000000004 /* ContentView.swift */,
 				1A0000001000000000000027 /* Models */,
@@ -95,14 +107,6 @@
 				1A0000001000000000000021 /* PlantsDeLouton.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		1A000000100000000000002B /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				1A0000001000000000000008 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		1A0000001000000000000027 /* Models */ = {
@@ -125,6 +129,9 @@
 				1A0000001000000000000020 /* PlantDetailsView.swift */,
 				1A0000001000000000000060 /* BedsListView.swift */,
 				1A0000001000000000000062 /* BedDetailView.swift */,
+				1A0000001000000000000066 /* SettingsView.swift */,
+				1A000000100000000000006A /* SectionDetailView.swift */,
+				1A000000100000000000006D /* EmptyStateView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -135,6 +142,7 @@
 				1A0000001000000000000012 /* GardenViewModel.swift */,
 				1A000000100000000000001E /* PlantDetailsViewModel.swift */,
 				1A0000001000000000000064 /* BedsViewModel.swift */,
+				1A0000001000000000000068 /* PlantsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -145,8 +153,17 @@
 				1A0000001000000000000014 /* DataService.swift */,
 				1A0000001000000000000018 /* AIPlantSearchService.swift */,
 				1A0000001000000000000053 /* SupabaseService.swift */,
+				1A0000001000000000000068 /* WeatherService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		1A000000100000000000002B /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000001000000000000008 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,10 +181,10 @@
 			);
 			dependencies = (
 			);
+			name = PlantsDeLouton;
 			packageProductDependencies = (
 				1A0000001000000000000051 /* Supabase */,
 			);
-			name = PlantsDeLouton;
 			productName = PlantsDeLouton;
 			productReference = 1A0000001000000000000021 /* PlantsDeLouton.app */;
 			productType = "com.apple.product-type.application";
@@ -243,6 +260,10 @@
 				1A0000001000000000000061 /* BedsListView.swift in Sources */,
 				1A0000001000000000000063 /* BedDetailView.swift in Sources */,
 				1A0000001000000000000065 /* BedsViewModel.swift in Sources */,
+				1A0000001000000000000067 /* SettingsView.swift in Sources */,
+				1A0000001000000000000069 /* WeatherService.swift in Sources */,
+				1A000000100000000000006B /* SectionDetailView.swift in Sources */,
+				1A000000100000000000006C /* EmptyStateView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,6 +394,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PlantsDeLouton/PlantsDeLouton.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PlantsDeLouton/Preview Content\"";
@@ -404,6 +426,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PlantsDeLouton/PlantsDeLouton.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PlantsDeLouton/Preview Content\"";
@@ -433,20 +456,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1A0000001000000000000031 /* Build configuration list for PBXProject "PlantsDeLouton" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1A0000001000000000000032 /* Debug */,
-				1A0000001000000000000033 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		1A000000100000000000002D /* Build configuration list for PBXNativeTarget "PlantsDeLouton" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1A0000001000000000000034 /* Debug */,
 				1A0000001000000000000035 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A0000001000000000000031 /* Build configuration list for PBXProject "PlantsDeLouton" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A0000001000000000000032 /* Debug */,
+				1A0000001000000000000033 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

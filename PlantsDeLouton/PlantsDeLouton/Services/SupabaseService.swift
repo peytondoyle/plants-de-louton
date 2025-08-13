@@ -1,10 +1,37 @@
 import Foundation
 import Supabase
+import AuthenticationServices
+import Auth
+
+// MARK: - Error Types
+
+enum SupabaseError: LocalizedError {
+    case networkError(Error)
+    case unexpectedResponse
+    case decodingError(Error)
+    case notAuthenticated
+    
+    var errorDescription: String? {
+        switch self {
+        case .networkError(let error):
+            return "Network error: \(error.localizedDescription)"
+        case .unexpectedResponse:
+            return "Unexpected response from server"
+        case .decodingError(let error):
+            return "Failed to decode response: \(error.localizedDescription)"
+        case .notAuthenticated:
+            return "User not authenticated. Please sign in."
+        }
+    }
+}
 
 class SupabaseService: ObservableObject {
     static let shared = SupabaseService()
     
     private let client: SupabaseClient
+    
+    @Published var isSignedIn: Bool = false
+    @Published var currentUser: User?
     
     private init() {
         // For now, we'll use environment variables or hardcoded values
@@ -20,6 +47,30 @@ class SupabaseService: ObservableObject {
             supabaseURL: URL(string: supabaseURL)!,
             supabaseKey: supabaseKey
         )
+        
+        // Check initial session status
+        Task { @MainActor in
+            await checkSessionStatus()
+        }
+    }
+    
+    // MARK: - Authentication Status
+    
+    @MainActor
+    private func checkSessionStatus() async {
+        do {
+            let session = try await client.auth.session
+            self.isSignedIn = true
+            self.currentUser = User(
+                id: session.user.id.uuidString,
+                email: session.user.email,
+                fullName: session.user.userMetadata["full_name"] as? String,
+                avatarUrl: session.user.userMetadata["avatar_url"] as? String
+            )
+        } catch {
+            self.isSignedIn = false
+            self.currentUser = nil
+        }
     }
     
     // MARK: - Plant Search Cache Methods
@@ -78,51 +129,94 @@ class SupabaseService: ObservableObject {
     /// Search external API (mock for now, can be replaced with real Trefle API)
     private func searchExternalAPI(query: String) async throws -> [PlantSearchResult] {
         // This would connect to your existing Trefle API or other plant database
-        // For now, return mock data based on query
-        return generateMockResults(for: query)
+        // For now, return empty array - implement when external API is ready
+        return []
     }
     
-    // MARK: - Plant Details Methods
+    // MARK: - Plant Details Methods (now using pins table)
     
     /// Get plant details by ID
-    func getPlantDetails(id: UUID) async throws -> PlantDetails? {
+    func getPlantDetails(id: UUID) async throws -> Plant? {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
         do {
-            let plantDetails: PlantDetails = try await client
-                .from("plant_details")
+            let pinRow: PinRow = try await client
+                .from("pins")
                 .select()
                 .eq("id", value: id.uuidString)
                 .single()
                 .execute()
                 .value
-            return plantDetails
+            return Plant(
+                id: pinRow.id,
+                name: pinRow.name,
+                bedId: pinRow.bed_id,
+                x: pinRow.x,
+                y: pinRow.y
+            )
         } catch {
             return nil
         }
     }
     
-    /// Create or update plant details
-    func savePlantDetails(_ plant: PlantDetails) async throws -> PlantDetails {
-        let savedPlant: PlantDetails = try await client
-            .from("plant_details")
-            .upsert(plant)
+    /// Create or update plant (pin)
+    func savePlant(_ plant: Plant) async throws -> Plant {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let pinRow = PinRow(
+            id: plant.id,
+            bed_id: plant.bedId,
+            x: plant.x,
+            y: plant.y,
+            name: plant.name
+        )
+        
+        let savedPin: PinRow = try await client
+            .from("pins")
+            .upsert(pinRow)
             .select()
             .single()
             .execute()
             .value
         
-        return savedPlant
+        return Plant(
+            id: savedPin.id,
+            name: savedPin.name,
+            bedId: savedPin.bed_id,
+            x: savedPin.x,
+            y: savedPin.y
+        )
     }
     
-    /// List all plant details
-    func listPlantDetails() async throws -> [PlantDetails] {
-        let plants: [PlantDetails] = try await client
-            .from("plant_details")
+    /// List all plants (pins)
+    func listPlants() async throws -> [Plant] {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let pins: [PinRow] = try await client
+            .from("pins")
             .select()
             .order("name", ascending: true)
             .execute()
             .value
         
-        return plants
+        return pins.map { pin in
+            Plant(
+                id: pin.id,
+                name: pin.name,
+                bedId: pin.bed_id,
+                x: pin.x,
+                y: pin.y
+            )
+        }
     }
 
     // MARK: - Beds Methods
@@ -133,8 +227,13 @@ class SupabaseService: ObservableObject {
         let section: String
     }
 
-    /// List all beds (plants joined later)
+    /// List all beds
     func listBeds() async throws -> [Bed] {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
         let rows: [BedRow] = try await client
             .from("beds")
             .select()
@@ -142,13 +241,16 @@ class SupabaseService: ObservableObject {
             .execute()
             .value
 
-        // For now, return beds without joined plants; plant assignment will be added later
         return rows.map { Bed(id: $0.id, name: $0.name, section: $0.section, plants: []) }
     }
 
     /// Create or update a bed
     func saveBed(_ bed: Bed) async throws -> Bed {
-        // Persist only fields present in BedRow
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
         let row = BedRow(id: bed.id, name: bed.name, section: bed.section)
         let saved: BedRow = try await client
             .from("beds")
@@ -162,6 +264,11 @@ class SupabaseService: ObservableObject {
 
     /// Delete a bed by id
     func deleteBed(id: UUID) async throws {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
         _ = try await client
             .from("beds")
             .delete()
@@ -169,70 +276,263 @@ class SupabaseService: ObservableObject {
             .execute()
     }
 
-    // MARK: - Bed ↔︎ Plant Assignment
+    // MARK: - Bed ↔︎ Plant Assignment (simplified - pins already have bed_id)
 
-    struct BedPlantRow: Codable {
-        let bed_id: UUID
-        let plant_id: UUID
-    }
-
-    /// Assign a plant to a bed
-    func assignPlant(plantId: UUID, toBed bedId: UUID) async throws {
-        let row = BedPlantRow(bed_id: bedId, plant_id: plantId)
-        _ = try await client
-            .from("bed_plants")
-            .upsert(row)
-            .execute()
-    }
-
-    /// Remove a plant from a bed
-    func removePlant(plantId: UUID, fromBed bedId: UUID) async throws {
-        _ = try await client
-            .from("bed_plants")
-            .delete()
-            .eq("bed_id", value: bedId.uuidString)
-            .eq("plant_id", value: plantId.uuidString)
-            .execute()
-    }
-
-    /// List plants assigned to a bed
+    /// List plants in a bed (direct query since pins have bed_id)
     func listPlants(inBed bedId: UUID) async throws -> [Plant] {
-        // 1) Fetch plant ids from join table
-        let links: [BedPlantRow] = try await client
-            .from("bed_plants")
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let pins: [PinRow] = try await client
+            .from("pins")
             .select()
             .eq("bed_id", value: bedId.uuidString)
+            .order("name", ascending: true)
             .execute()
             .value
 
-        let plantIds = links.map { $0.plant_id.uuidString }
-        guard !plantIds.isEmpty else { return [] }
-
-        // 2) Fetch plant details
-        let details: [PlantDetails] = try await client
-            .from("plant_details")
-            .select()
-            .in("id", values: plantIds)
-            .execute()
-            .value
-
-        // 3) Map to app Plant model (subset)
-        return details.map { details in
+        return pins.map { pin in
             Plant(
-                id: details.id,
-                name: details.name,
-                scientificName: details.scientificName,
-                growthHabit: details.growthHabit ?? "unknown",
-                sunExposure: details.sunExposure ?? "full_sun",
-                waterNeeds: details.waterNeeds ?? "moderate",
-                plantedDate: nil,
-                healthStatus: "Healthy"
+                id: pin.id,
+                name: pin.name,
+                bedId: pin.bed_id,
+                x: pin.x,
+                y: pin.y
+            )
+        }
+    }
+
+    /// Assign a plant to a bed (update the pin's bed_id)
+    func assignPlant(plantId: UUID, toBed bedId: UUID) async throws {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        _ = try await client
+            .from("pins")
+            .update(["bed_id": bedId.uuidString])
+            .eq("id", value: plantId.uuidString)
+            .execute()
+    }
+
+    /// Remove a plant from a bed (delete the pin)
+    func removePlant(plantId: UUID, fromBed bedId: UUID) async throws {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        _ = try await client
+            .from("pins")
+            .delete()
+            .eq("id", value: plantId.uuidString)
+            .execute()
+    }
+
+    // MARK: - Authentication (Sign in with Apple)
+
+    func signInWithApple(idToken: String, nonce: String) async throws {
+        let credentials = Auth.OpenIDConnectCredentials(provider: .apple, idToken: idToken, nonce: nonce)
+        _ = try await client.auth.signInWithIdToken(credentials: credentials)
+        await checkSessionStatus()
+    }
+
+    func signOut() async {
+        do { 
+            try await client.auth.signOut() 
+        } catch { 
+            print("Sign out error: \(error)")
+        }
+        await checkSessionStatus()
+    }
+    
+    // MARK: - Section-based queries
+    
+    /// List beds in a specific section
+    func listBeds(inSection section: String) async throws -> [Bed] {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let rows: [BedRow] = try await client
+            .from("beds")
+            .select()
+            .eq("section", value: section)
+            .order("name", ascending: true)
+            .execute()
+            .value
+
+        return rows.map { Bed(id: $0.id, name: $0.name, section: $0.section, plants: []) }
+    }
+    
+    /// List plants in a specific section (joins beds and pins)
+    func listPlants(inSection section: String) async throws -> [Plant] {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        // First get all beds in the section
+        let sectionBeds = try await listBeds(inSection: section)
+        let bedIds = sectionBeds.map { $0.id.uuidString }
+        
+        // Then get all plants in those beds
+        var allPlants: [Plant] = []
+        for bedId in bedIds {
+            if let uuid = UUID(uuidString: bedId) {
+                let plantsInBed = try await listPlants(inBed: uuid)
+                allPlants.append(contentsOf: plantsInBed)
+            }
+        }
+        
+        return allPlants
+    }
+
+    // MARK: - Care Events Methods
+
+    /// Fetch all care events for the current user
+    func fetchCareEvents() async throws -> [CareEvent] {
+        let response: [CareEventRow] = try await client
+            .from("care_events")
+            .select()
+            .order("event_date", ascending: false)
+            .execute()
+            .value
+        
+        return response.map { row in
+            CareEvent(
+                id: row.id,
+                type: CareEvent.CareType(rawValue: row.event_type) ?? .other,
+                date: row.event_date,
+                notes: row.description,
+                plantId: row.plant_instance_id
+            )
+        }
+    }
+
+    /// Save a care event
+    func saveCareEvent(_ careEvent: CareEvent) async throws -> CareEvent {
+        let careEventRow = CareEventRow(
+            id: careEvent.id,
+            plant_instance_id: careEvent.plantId ?? UUID(),
+            event_type: careEvent.type.rawValue,
+            event_date: careEvent.date,
+            description: careEvent.notes ?? "",
+            notes: careEvent.notes,
+            cost: nil,
+            images: nil,
+            created_at: careEvent.date,
+            updated_at: careEvent.date
+        )
+        
+        let response: CareEventRow = try await client
+            .from("care_events")
+            .insert(careEventRow)
+            .select()
+            .single()
+            .execute()
+            .value
+        
+        return CareEvent(
+            id: response.id,
+            type: CareEvent.CareType(rawValue: response.event_type) ?? .other,
+            date: response.event_date,
+            notes: response.description,
+            plantId: response.plant_instance_id
+        )
+    }
+
+    /// Update a care event
+    func updateCareEvent(_ careEvent: CareEvent) async throws -> CareEvent {
+        let careEventRow = CareEventRow(
+            id: careEvent.id,
+            plant_instance_id: careEvent.plantId ?? UUID(),
+            event_type: careEvent.type.rawValue,
+            event_date: careEvent.date,
+            description: careEvent.notes ?? "",
+            notes: careEvent.notes,
+            cost: nil,
+            images: nil,
+            created_at: careEvent.date,
+            updated_at: careEvent.date
+        )
+        
+        let response: CareEventRow = try await client
+            .from("care_events")
+            .update(careEventRow)
+            .eq("id", value: careEvent.id.uuidString)
+            .select()
+            .single()
+            .execute()
+            .value
+        
+        return CareEvent(
+            id: response.id,
+            type: CareEvent.CareType(rawValue: response.event_type) ?? .other,
+            date: response.event_date,
+            notes: response.description,
+            plantId: response.plant_instance_id
+        )
+    }
+
+    /// Delete a care event
+    func deleteCareEvent(_ careEventId: UUID) async throws {
+        try await client
+            .from("care_events")
+            .delete()
+            .eq("id", value: careEventId.uuidString)
+            .execute()
+    }
+
+    /// Fetch care events for a specific plant instance
+    func fetchCareEvents(forPlantInstance plantInstanceId: UUID) async throws -> [CareEvent] {
+        let response: [CareEventRow] = try await client
+            .from("care_events")
+            .select()
+            .eq("plant_instance_id", value: plantInstanceId.uuidString)
+            .order("event_date", ascending: false)
+            .execute()
+            .value
+        
+        return response.map { row in
+            CareEvent(
+                id: row.id,
+                type: CareEvent.CareType(rawValue: row.event_type) ?? .other,
+                date: row.event_date,
+                notes: row.description,
+                plantId: row.plant_instance_id
             )
         }
     }
 }
 
 // MARK: - Data Models
+
+struct User: Codable {
+    let id: String
+    let email: String?
+    let fullName: String?
+    let avatarUrl: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case email
+        case fullName = "full_name"
+        case avatarUrl = "avatar_url"
+    }
+}
+
+struct PinRow: Codable {
+    let id: UUID
+    let bed_id: UUID
+    let x: Double
+    let y: Double
+    let name: String
+}
 
 struct PlantSearchCacheEntry: Codable {
     let query: String
@@ -332,10 +632,10 @@ struct PlantSearchResult: Identifiable, Codable {
         self.family = nil // Plant model doesn't have this
         self.genus = nil // Plant model doesn't have this
         self.species = nil // Plant model doesn't have this
-        self.growthHabit = plant.growthHabit
+        self.growthHabit = plant.growthHabit ?? "unknown"
         self.hardinessZones = nil // Plant model doesn't have this
-        self.sunExposure = plant.sunExposure
-        self.waterNeeds = plant.waterNeeds
+        self.sunExposure = plant.sunExposure ?? "full_sun"
+        self.waterNeeds = plant.waterNeeds ?? "moderate"
         self.matureHeight = nil // Plant model doesn't have this
         self.matureWidth = nil // Plant model doesn't have this
         self.bloomTime = nil // Plant model doesn't have this
@@ -352,149 +652,24 @@ struct PlantSearchResult: Identifiable, Codable {
     }
 }
 
-struct PlantDetails: Identifiable, Codable {
+// MARK: - External API Integration
+
+private func searchExternalAPI(query: String) async throws -> [PlantSearchResult] {
+    // This would connect to your existing Trefle API or other plant database
+    // For now, return empty array - implement when external API is ready
+    return []
+}
+
+// MARK: - Care Event Row Structure
+private struct CareEventRow: Codable {
     let id: UUID
-    var name: String
-    var scientificName: String?
-    var commonNames: [String]?
-    var family: String?
-    var genus: String?
-    var species: String?
-    var cultivar: String?
-    
-    // Growth Characteristics
-    var growthHabit: String?
-    var hardinessZones: [Int]?
-    var sunExposure: String?
-    var waterNeeds: String?
-    var matureHeight: Int?
-    var matureWidth: Int?
-    
-    // Blooming & Seasons
-    var bloomTime: String?
-    var bloomDuration: Int?
-    var flowerColor: [String]?
-    var foliageColor: [String]?
-    
-    // Care Requirements
-    var soilType: String?
-    var soilPH: String?
-    var fertilizerNeeds: String?
-    var pruningNeeds: String?
-    
-    // Planting Info
-    var plantingSeason: String?
-    var plantingDepth: Int?
-    var spacing: Int?
-    
-    let createdAt: Date
-    let updatedAt: Date
-    
-    init(from plant: Plant) {
-        self.id = plant.id
-        self.name = plant.name
-        self.scientificName = plant.scientificName
-        self.commonNames = nil // Plant model doesn't have this
-        self.family = nil // Plant model doesn't have this
-        self.genus = nil // Plant model doesn't have this
-        self.species = nil // Plant model doesn't have this
-        self.cultivar = nil // Not in Plant model
-        self.growthHabit = plant.growthHabit
-        self.hardinessZones = nil // Plant model doesn't have this
-        self.sunExposure = plant.sunExposure
-        self.waterNeeds = plant.waterNeeds
-        self.matureHeight = nil // Plant model doesn't have this
-        self.matureWidth = nil // Plant model doesn't have this
-        self.bloomTime = nil // Plant model doesn't have this
-        self.bloomDuration = nil // Plant model doesn't have this
-        self.flowerColor = nil // Plant model doesn't have this
-        self.foliageColor = nil // Plant model doesn't have this
-        self.soilType = nil // Plant model doesn't have this
-        self.soilPH = nil // Plant model doesn't have this
-        self.fertilizerNeeds = nil // Plant model doesn't have this
-        self.pruningNeeds = nil // Plant model doesn't have this
-        self.plantingSeason = nil // Plant model doesn't have this
-        self.plantingDepth = nil // Plant model doesn't have this
-        self.spacing = nil // Plant model doesn't have this
-        self.createdAt = Date()
-        self.updatedAt = Date()
-    }
-}
-
-enum SupabaseError: LocalizedError {
-    case unexpectedResponse
-    case decodingError(Error)
-    
-    var errorDescription: String? {
-        switch self {
-        case .unexpectedResponse:
-            return "Unexpected response from database"
-        case .decodingError(let error):
-            return "Failed to decode response: \(error.localizedDescription)"
-        }
-    }
-}
-
-// MARK: - Mock Data Generation
-
-private func generateMockResults(for query: String) -> [PlantSearchResult] {
-    let mockResults = [
-        PlantSearchResult(
-            id: UUID(),
-            name: "Tomato",
-            scientificName: "Solanum lycopersicum",
-            commonNames: ["Tomato", "Garden Tomato"],
-            family: "Solanaceae",
-            genus: "Solanum",
-            species: "lycopersicum",
-            growthHabit: "annual",
-            hardinessZones: [9, 10, 11],
-            sunExposure: "full_sun",
-            waterNeeds: "moderate",
-            matureHeight: 48.0,
-            matureWidth: 24.0,
-            bloomTime: "summer",
-            bloomDuration: 12,
-            flowerColor: ["yellow"],
-            foliageColor: ["green"],
-            soilType: "well_draining",
-            soilPH: "neutral",
-            fertilizerNeeds: "moderate",
-            pruningNeeds: "moderate",
-            plantingSeason: "spring",
-            plantingDepth: 0.25,
-            spacing: 18.0
-        ),
-        PlantSearchResult(
-            id: UUID(),
-            name: "Rose",
-            scientificName: "Rosa rubiginosa",
-            commonNames: ["Rose", "Garden Rose", "Sweet Briar"],
-            family: "Rosaceae",
-            genus: "Rosa",
-            species: "rubiginosa",
-            growthHabit: "shrub",
-            hardinessZones: [4, 5, 6, 7, 8, 9],
-            sunExposure: "full_sun",
-            waterNeeds: "moderate",
-            matureHeight: 60.0,
-            matureWidth: 48.0,
-            bloomTime: "summer",
-            bloomDuration: 8,
-            flowerColor: ["pink", "red", "white"],
-            foliageColor: ["green"],
-            soilType: "well_draining",
-            soilPH: "neutral",
-            fertilizerNeeds: "moderate",
-            pruningNeeds: "heavy",
-            plantingSeason: "spring",
-            plantingDepth: 2.0,
-            spacing: 36.0
-        )
-    ]
-    
-    return mockResults.filter { result in
-        result.name.lowercased().contains(query.lowercased()) || 
-        result.scientificName?.lowercased().contains(query.lowercased()) == true
-    }
+    let plant_instance_id: UUID
+    let event_type: String
+    let event_date: Date
+    let description: String
+    let notes: String?
+    let cost: Decimal?
+    let images: [String]?
+    let created_at: Date?
+    let updated_at: Date?
 }
