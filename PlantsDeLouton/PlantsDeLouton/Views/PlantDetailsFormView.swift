@@ -122,26 +122,22 @@ struct PlantDetailsFormView: View {
                         }
                     }
                     
-                    // Health Status (user editable)
-                    FormField(title: "Health Status") {
-                        TextField("Health status", text: Binding(
-                            get: { plant.healthStatus },
-                            set: { plant.healthStatus = $0 }
+                    // Notes (user editable)
+                    FormField(title: "Notes") {
+                        TextField("Plant notes", text: Binding(
+                            get: { plant.notes ?? "" },
+                            set: { plant.notes = $0.isEmpty ? nil : $0 }
                         ))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                     
-                    // Planted Date (user editable)
-                    FormField(title: "Planted Date") {
-                        DatePicker(
-                            "Planted Date",
-                            selection: Binding(
-                                get: { plant.plantedDate ?? Date() },
-                                set: { plant.plantedDate = $0 }
-                            ),
-                            displayedComponents: .date
-                        )
-                        .datePickerStyle(CompactDatePickerStyle())
+                    // Notes (user editable)
+                    FormField(title: "Notes") {
+                        TextField("Plant notes", text: Binding(
+                            get: { plant.notes ?? "" },
+                            set: { plant.notes = $0.isEmpty ? nil : $0 }
+                        ))
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                 }
             }
@@ -286,35 +282,8 @@ struct FormField<Content: View>: View {
 }
 
 #Preview {
-    ScrollView {
-        PlantDetailsFormView(
-            plant: .constant(Plant(name: "Test Plant")),
-            plantSearchData: AIPlantSearchResult(
-                name: "Tomato",
-                scientificName: "Solanum lycopersicum",
-                commonNames: ["Tomato", "Love Apple"],
-                family: "Solanaceae",
-                genus: "Solanum",
-                species: "lycopersicum",
-                growthHabit: .annual,
-                hardinessZones: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                sunExposure: .fullSun,
-                waterNeeds: .moderate,
-                matureHeight: 60,
-                matureWidth: 24,
-                bloomTime: .summer,
-                bloomDuration: 12,
-                flowerColor: ["yellow"],
-                foliageColor: ["green"],
-                soilType: .wellDraining,
-                soilPH: .neutral,
-                fertilizerNeeds: .moderate,
-                pruningNeeds: .moderate,
-                plantingSeason: .spring,
-                plantingDepth: 0.25,
-                spacing: 24
-            )
-        )
-        .padding()
-    }
+    PlantDetailsFormView(
+        plant: .constant(Plant(name: "Test Plant", bedId: UUID(), x: 0.5, y: 0.5)),
+        plantSearchData: nil
+    )
 }

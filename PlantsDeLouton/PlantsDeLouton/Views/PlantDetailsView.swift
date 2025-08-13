@@ -83,9 +83,7 @@ struct PlantDetailsView: View {
         .navigationTitle("Plant Details")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showingAISearch) {
-            PlantSearchSheet { searchResult in
-                viewModel.applyAISearchData(searchResult)
-            }
+            PlantSearchSheet()
         }
         .alert("Plant Saved!", isPresented: $showingSaveSuccess) {
             Button("OK") {

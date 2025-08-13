@@ -46,10 +46,24 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <!-- Sign in with Apple capability: set your team and bundle id in Xcode project settings -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.louton.plants</string>
+            </array>
+        </dict>
+    </array>
+    <!-- Location Permission for Weather -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We use your location to provide local weather information for better plant care recommendations.</string>
+    
     <!-- Supabase Configuration -->
     <key>SupabaseURL</key>
-    <string>https://qrhpqkqkfujsdwwqbgls.supabase.co</string>
+    <string>https://edhyajfowwcgrdrazkwf.supabase.co</string>
     <key>SupabaseAnonKey</key>
-    <string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyaHBxa3FrZnVqc2R3d3FiZ2xzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4MTA3NTMsImV4cCI6MjA1MjM4Njc1M30.AuKWpGfqLLdnhEA8g0Wn19LqeZGwjWqlBQqAEm6u8CY</string>
+    <string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaHlhamZvd3djZ3JkcmF6a3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMTIzNDMsImV4cCI6MjA2OTc4ODM0M30.6E-0-_FoyYKd46scjUexd41miiU-EZJg2LlZGogDgHU</string>
 </dict>
 </plist>

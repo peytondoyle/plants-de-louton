@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 // MARK: - Models matching the TypeScript interface
 struct AIPlantSearchResult: Codable, Identifiable {
@@ -116,219 +117,214 @@ enum PlantingSeason: String, Codable, CaseIterable {
     case winter = "winter"
 }
 
-// MARK: - Service
+// MARK: - AI Plant Search Service
 @MainActor
 class AIPlantSearchService: ObservableObject {
     static let shared = AIPlantSearchService()
     
-    @Published var isSearching = false
+    @Published var searchResults: [AIPlantSearchResult] = []
+    @Published var isLoading = false
     @Published var errorMessage: String?
     
-    private let supabaseService = SupabaseService.shared
+    // TODO: Add OpenAI integration when API key is available
+    // private let openAI = OpenAI(apiToken: "your-openai-api-key")
     
     private init() {}
     
+    // MARK: - Text-Based Plant Search
+    
+    /// Search for plants using text query
     func searchPlants(query: String) async throws -> [AIPlantSearchResult] {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return []
         }
         
-        isSearching = true
+        isLoading = true
         errorMessage = nil
         
-        defer {
-            isSearching = false
-        }
+        // TODO: Implement ChatGPT search when OpenAI is integrated
+        // For now, return empty results
+        isLoading = false
+        return []
+    }
+    
+    // MARK: - Image-Based Plant Identification
+    
+    /// Identify plant from photo using ChatGPT Vision
+    func identifyPlantFromImage(_ image: UIImage) async throws -> AIPlantSearchResult {
+        isLoading = true
+        errorMessage = nil
         
-        do {
-            // Use Supabase service for real database search
-            let searchResults = try await supabaseService.searchPlants(query: query)
-            
-            // Convert PlantSearchResult to AIPlantSearchResult for UI compatibility
-            let results = searchResults.map { result in
-                AIPlantSearchResult(
-                    name: result.name,
-                    scientificName: result.scientificName ?? "",
-                    commonNames: result.commonNames ?? [],
-                    family: result.family ?? "",
-                    genus: result.genus ?? "",
-                    species: result.species ?? "",
-                    growthHabit: GrowthHabit(rawValue: result.growthHabit) ?? .annual,
-                    hardinessZones: result.hardinessZones ?? [],
-                    sunExposure: SunExposure(rawValue: result.sunExposure) ?? .fullSun,
-                    waterNeeds: WaterNeeds(rawValue: result.waterNeeds) ?? .moderate,
-                    matureHeight: result.matureHeight ?? 0,
-                    matureWidth: result.matureWidth ?? 0,
-                    bloomTime: BloomTime(rawValue: result.bloomTime ?? "spring") ?? .spring,
-                    bloomDuration: Double(result.bloomDuration ?? 0),
-                    flowerColor: result.flowerColor ?? [],
-                    foliageColor: result.foliageColor ?? [],
-                    soilType: SoilType(rawValue: result.soilType ?? "well_draining") ?? .wellDraining,
-                    soilPH: SoilPH(rawValue: result.soilPH ?? "neutral") ?? .neutral,
-                    fertilizerNeeds: FertilizerNeeds(rawValue: result.fertilizerNeeds ?? "moderate") ?? .moderate,
-                    pruningNeeds: PruningNeeds(rawValue: result.pruningNeeds ?? "moderate") ?? .moderate,
-                    plantingSeason: PlantingSeason(rawValue: result.plantingSeason ?? "spring") ?? .spring,
-                    plantingDepth: result.plantingDepth ?? 0,
-                    spacing: result.spacing ?? 0
-                )
-            }
-            
-            return results
-        } catch {
-            // Fallback to mock data if Supabase fails (for development)
-            print("Supabase search failed, using mock data: \(error)")
-            let results = try await searchMockAPI(query: query)
-            return results
+        // TODO: Implement ChatGPT Vision when OpenAI is integrated
+        // For now, return a mock result
+        isLoading = false
+        
+        // Return a mock plant for demonstration
+        return AIPlantSearchResult(
+            name: "Unknown Plant",
+            scientificName: "Species unknown",
+            commonNames: ["Unknown"],
+            family: "Unknown",
+            genus: "Unknown",
+            species: "unknown",
+            growthHabit: .annual,
+            hardinessZones: [5, 6, 7, 8],
+            sunExposure: .fullSun,
+            waterNeeds: .moderate,
+            matureHeight: 24.0,
+            matureWidth: 18.0,
+            bloomTime: .summer,
+            bloomDuration: 4,
+            flowerColor: ["Unknown"],
+            foliageColor: ["Green"],
+            soilType: .wellDraining,
+            soilPH: .neutral,
+            fertilizerNeeds: .moderate,
+            pruningNeeds: .moderate,
+            plantingSeason: .spring,
+            plantingDepth: 1.0,
+            spacing: 12.0
+        )
+    }
+    
+    // MARK: - ChatGPT Text Search
+    
+    /// Search for plants using ChatGPT
+    private func searchWithChatGPT(query: String) async throws -> [AIPlantSearchResult] {
+        // TODO: Implement ChatGPT search when OpenAI is integrated
+        // For now, return empty results
+        return []
+    }
+    
+    // MARK: - Health Analysis
+    
+    /// Analyze plant health from photo
+    func analyzePlantHealth(_ image: UIImage) async throws -> PlantHealthAnalysis {
+        isLoading = true
+        errorMessage = nil
+        
+        // TODO: Implement ChatGPT Vision health analysis when OpenAI is integrated
+        // For now, return a mock health analysis
+        isLoading = false
+        
+        return PlantHealthAnalysis(
+            overallHealth: .good,
+            healthScore: 85,
+            issues: ["Slight yellowing on lower leaves"],
+            recommendations: ["Ensure proper watering", "Check for pests", "Consider fertilizing"],
+            diseases: [],
+            pests: [],
+            nutrientDeficiencies: ["Possible nitrogen deficiency"],
+            confidence: 75
+        )
+    }
+    
+    // Real API implementation - replace with actual plant database
+    private func searchMockAPI(query: String) async throws -> [AIPlantSearchResult] {
+        // This will be replaced with real plant database integration
+        // For now, return empty array - implement when external API is ready
+        return []
+    }
+}
+
+// MARK: - Response Models
+
+struct ChatGPTPlantResponse: Codable {
+    let name: String
+    let scientificName: String
+    let commonNames: [String]
+    let family: String
+    let genus: String
+    let species: String
+    let growthHabit: String
+    let hardinessZones: [Int]
+    let sunExposure: String
+    let waterNeeds: String
+    let matureHeight: Double
+    let matureWidth: Double
+    let bloomTime: String
+    let bloomDuration: Int
+    let flowerColor: [String]
+    let foliageColor: [String]
+    let soilType: String
+    let soilPH: String
+    let fertilizerNeeds: String
+    let pruningNeeds: String
+    let plantingSeason: String
+    let plantingDepth: Double
+    let spacing: Double
+    let careInstructions: String?
+    let identificationConfidence: Int?
+}
+
+struct ChatGPTHealthResponse: Codable {
+    let overallHealth: String
+    let healthScore: Int
+    let issues: [String]
+    let recommendations: [String]
+    let diseases: [String]
+    let pests: [String]
+    let nutrientDeficiencies: [String]
+    let confidence: Int
+}
+
+// MARK: - Plant Health Models
+
+struct PlantHealthAnalysis: Codable {
+    let overallHealth: PlantHealth
+    let healthScore: Int
+    let issues: [String]
+    let recommendations: [String]
+    let diseases: [String]
+    let pests: [String]
+    let nutrientDeficiencies: [String]
+    let confidence: Int
+}
+
+enum PlantHealth: String, CaseIterable, Codable {
+    case excellent = "excellent"
+    case good = "good"
+    case fair = "fair"
+    case poor = "poor"
+    case critical = "critical"
+    
+    var color: String {
+        switch self {
+        case .excellent: return "green"
+        case .good: return "blue"
+        case .fair: return "yellow"
+        case .poor: return "orange"
+        case .critical: return "red"
         }
     }
     
-    // Mock API implementation matching your TypeScript mock data
-    private func searchMockAPI(query: String) async throws -> [AIPlantSearchResult] {
-        // Simulate network delay
-        try await Task.sleep(nanoseconds: 800_000_000)
-        
-        let mockPlants: [String: AIPlantSearchResult] = [
-            "calendula": AIPlantSearchResult(
-                name: "Calendula",
-                scientificName: "Calendula officinalis",
-                commonNames: ["Pot Marigold", "English Marigold"],
-                family: "Asteraceae",
-                genus: "Calendula",
-                species: "officinalis",
-                growthHabit: .annual,
-                hardinessZones: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                sunExposure: .fullSun,
-                waterNeeds: .moderate,
-                matureHeight: 24,
-                matureWidth: 12,
-                bloomTime: .spring,
-                bloomDuration: 16,
-                flowerColor: ["orange", "yellow"],
-                foliageColor: ["green"],
-                soilType: .wellDraining,
-                soilPH: .neutral,
-                fertilizerNeeds: .low,
-                pruningNeeds: .minimal,
-                plantingSeason: .spring,
-                plantingDepth: 0.25,
-                spacing: 12
-            ),
-            "tomato": AIPlantSearchResult(
-                name: "Tomato",
-                scientificName: "Solanum lycopersicum",
-                commonNames: ["Tomato", "Love Apple"],
-                family: "Solanaceae",
-                genus: "Solanum",
-                species: "lycopersicum",
-                growthHabit: .annual,
-                hardinessZones: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                sunExposure: .fullSun,
-                waterNeeds: .moderate,
-                matureHeight: 60,
-                matureWidth: 24,
-                bloomTime: .summer,
-                bloomDuration: 12,
-                flowerColor: ["yellow"],
-                foliageColor: ["green"],
-                soilType: .wellDraining,
-                soilPH: .neutral,
-                fertilizerNeeds: .moderate,
-                pruningNeeds: .moderate,
-                plantingSeason: .spring,
-                plantingDepth: 0.25,
-                spacing: 24
-            ),
-            "basil": AIPlantSearchResult(
-                name: "Basil",
-                scientificName: "Ocimum basilicum",
-                commonNames: ["Sweet Basil", "Common Basil"],
-                family: "Lamiaceae",
-                genus: "Ocimum",
-                species: "basilicum",
-                growthHabit: .annual,
-                hardinessZones: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                sunExposure: .fullSun,
-                waterNeeds: .moderate,
-                matureHeight: 18,
-                matureWidth: 12,
-                bloomTime: .summer,
-                bloomDuration: 8,
-                flowerColor: ["white", "pink"],
-                foliageColor: ["green"],
-                soilType: .wellDraining,
-                soilPH: .neutral,
-                fertilizerNeeds: .low,
-                pruningNeeds: .minimal,
-                plantingSeason: .spring,
-                plantingDepth: 0.25,
-                spacing: 12
-            ),
-            "rose": AIPlantSearchResult(
-                name: "Rose",
-                scientificName: "Rosa",
-                commonNames: ["Rose", "Garden Rose"],
-                family: "Rosaceae",
-                genus: "Rosa",
-                species: "",
-                growthHabit: .shrub,
-                hardinessZones: [3, 4, 5, 6, 7, 8, 9, 10],
-                sunExposure: .fullSun,
-                waterNeeds: .moderate,
-                matureHeight: 48,
-                matureWidth: 36,
-                bloomTime: .spring,
-                bloomDuration: 16,
-                flowerColor: ["red", "pink", "white", "yellow", "orange"],
-                foliageColor: ["green"],
-                soilType: .wellDraining,
-                soilPH: .neutral,
-                fertilizerNeeds: .moderate,
-                pruningNeeds: .moderate,
-                plantingSeason: .spring,
-                plantingDepth: 1,
-                spacing: 36
-            ),
-            "lavender": AIPlantSearchResult(
-                name: "Lavender",
-                scientificName: "Lavandula angustifolia",
-                commonNames: ["English Lavender", "Common Lavender"],
-                family: "Lamiaceae",
-                genus: "Lavandula",
-                species: "angustifolia",
-                growthHabit: .perennial,
-                hardinessZones: [5, 6, 7, 8, 9],
-                sunExposure: .fullSun,
-                waterNeeds: .low,
-                matureHeight: 24,
-                matureWidth: 18,
-                bloomTime: .summer,
-                bloomDuration: 8,
-                flowerColor: ["purple", "blue"],
-                foliageColor: ["silver", "green"],
-                soilType: .wellDraining,
-                soilPH: .alkaline,
-                fertilizerNeeds: .low,
-                pruningNeeds: .minimal,
-                plantingSeason: .spring,
-                plantingDepth: 0.5,
-                spacing: 18
-            )
-        ]
-        
-        // Search through mock plants
-        var results: [AIPlantSearchResult] = []
-        let searchTerm = query.lowercased()
-        
-        for (key, plant) in mockPlants {
-            if key.contains(searchTerm) ||
-               plant.name.lowercased().contains(searchTerm) ||
-               plant.scientificName.lowercased().contains(searchTerm) ||
-               plant.commonNames.contains(where: { $0.lowercased().contains(searchTerm) }) {
-                results.append(plant)
-            }
+    var icon: String {
+        switch self {
+        case .excellent: return "checkmark.circle.fill"
+        case .good: return "checkmark.circle"
+        case .fair: return "exclamationmark.triangle"
+        case .poor: return "exclamationmark.triangle.fill"
+        case .critical: return "xmark.circle.fill"
         }
-        
-        return Array(results.prefix(5))
+    }
+}
+
+// MARK: - Error Types
+
+enum AIError: Error, LocalizedError {
+    case imageProcessingFailed
+    case parsingFailed
+    case apiError(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .imageProcessingFailed:
+            return "Failed to process image"
+        case .parsingFailed:
+            return "Failed to parse AI response"
+        case .apiError(let message):
+            return "API Error: \(message)"
+        }
     }
 }
 

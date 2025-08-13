@@ -5,9 +5,14 @@ struct BedDetailView: View {
     @State private var plants: [Plant] = []
     @State private var isLoading = false
     @State private var errorMessage: String?
+    @StateObject private var supabaseService = SupabaseService.shared
     
     var body: some View {
-        List {
+        Group {
+            if !supabaseService.isSignedIn {
+                AuthRequiredView()
+            } else {
+                List {
             Section(header: Text("Bed Info")) {
                 LabeledContent("Name", value: bed.name)
                 LabeledContent("Section", value: bed.section)
@@ -16,8 +21,10 @@ struct BedDetailView: View {
             
             Section(header: Text("Plants in this Bed")) {
                 if plants.isEmpty {
-                    Text("No plants assigned yet.")
-                        .foregroundColor(.secondary)
+                    BedPlantsEmptyState(bedName: bed.name) {
+                        // This will be handled by the user manually
+                        // In the future, we could add a "Add Plant to Bed" button here
+                    }
                 } else {
                     ForEach(plants) { plant in
                         HStack {
@@ -33,13 +40,27 @@ struct BedDetailView: View {
                     }
                 }
             }
+                }
+            }
         }
         .navigationTitle(bed.name)
         .overlay {
             if isLoading { ProgressView("Loading plants...") }
             if let msg = errorMessage { Text(msg).foregroundColor(.red).padding() }
         }
-        .task { await loadPlants() }
+        .task {
+            if supabaseService.isSignedIn {
+                await loadPlants()
+            }
+        }
+        .onChange(of: supabaseService.isSignedIn) { oldValue, newValue in
+            if newValue {
+                Task { await loadPlants() }
+            } else {
+                plants = []
+                errorMessage = nil
+            }
+        }
     }
 
     private func loadPlants() async {
