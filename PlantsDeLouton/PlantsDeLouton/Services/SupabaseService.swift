@@ -168,6 +168,68 @@ class SupabaseService: ObservableObject {
             .eq("id", value: id.uuidString)
             .execute()
     }
+
+    // MARK: - Bed ↔︎ Plant Assignment
+
+    struct BedPlantRow: Codable {
+        let bed_id: UUID
+        let plant_id: UUID
+    }
+
+    /// Assign a plant to a bed
+    func assignPlant(plantId: UUID, toBed bedId: UUID) async throws {
+        let row = BedPlantRow(bed_id: bedId, plant_id: plantId)
+        _ = try await client
+            .from("bed_plants")
+            .upsert(row)
+            .execute()
+    }
+
+    /// Remove a plant from a bed
+    func removePlant(plantId: UUID, fromBed bedId: UUID) async throws {
+        _ = try await client
+            .from("bed_plants")
+            .delete()
+            .eq("bed_id", value: bedId.uuidString)
+            .eq("plant_id", value: plantId.uuidString)
+            .execute()
+    }
+
+    /// List plants assigned to a bed
+    func listPlants(inBed bedId: UUID) async throws -> [Plant] {
+        // 1) Fetch plant ids from join table
+        let links: [BedPlantRow] = try await client
+            .from("bed_plants")
+            .select()
+            .eq("bed_id", value: bedId.uuidString)
+            .execute()
+            .value
+
+        let plantIds = links.map { $0.plant_id.uuidString }
+        guard !plantIds.isEmpty else { return [] }
+
+        // 2) Fetch plant details
+        let details: [PlantDetails] = try await client
+            .from("plant_details")
+            .select()
+            .in("id", values: plantIds)
+            .execute()
+            .value
+
+        // 3) Map to app Plant model (subset)
+        return details.map { details in
+            Plant(
+                id: details.id,
+                name: details.name,
+                scientificName: details.scientificName,
+                growthHabit: details.growthHabit ?? "unknown",
+                sunExposure: details.sunExposure ?? "full_sun",
+                waterNeeds: details.waterNeeds ?? "moderate",
+                plantedDate: nil,
+                healthStatus: "Healthy"
+            )
+        }
+    }
 }
 
 // MARK: - Data Models
