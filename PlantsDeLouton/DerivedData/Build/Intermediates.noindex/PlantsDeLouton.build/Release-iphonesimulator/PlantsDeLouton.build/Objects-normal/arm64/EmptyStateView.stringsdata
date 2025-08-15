@@ -1,0 +1,40 @@
+{
+  "source": "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/PlantsDeLouton/Views/EmptyStateView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "No Plants Found",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search for Plants",
+        "location": {
+          "startingColumn": 56,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Try a different search term or browse our plant database",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 139
+        }
+      },
+      {
+        "comment": "",
+        "key": "Discover new plants and add them to your garden",
+        "location": {
+          "startingColumn": 97,
+          "startingLine": 139
+        }
+      }
+    ]
+  },
+  "version": 1
+}

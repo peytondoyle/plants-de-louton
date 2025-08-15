@@ -2,13 +2,15 @@ import SwiftUI
 
 struct PlantDetailsFormView: View {
     @Binding var plant: Plant
-    let plantSearchData: AIPlantSearchResult?
+    let plantInfo: PlantInfo?
+    @StateObject private var bedsViewModel = BedsViewModel()
+    @State private var showingBedSelection = false
     
     var body: some View {
         VStack(spacing: 20) {
-            if let searchData = plantSearchData {
+            if let info = plantInfo {
                 // AI Success Card
-                AISuccessCard(plantData: searchData)
+                AISuccessCard(plantInfo: info)
             }
             
             // Plant Information Form
@@ -27,239 +29,148 @@ struct PlantDetailsFormView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                     
-                    if let searchData = plantSearchData {
-                        FormField(title: "Scientific Name") {
-                            TextField("Scientific name", text: .constant(searchData.scientificName))
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .disabled(true)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        FormField(title: "Growth Habit") {
-                            TextField("Growth habit", text: .constant(searchData.growthHabit.displayName))
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .disabled(true)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        FormField(title: "Sun Exposure") {
+                    // Bed Assignment
+                    FormField(title: "Assigned Bed") {
+                        Button(action: { showingBedSelection = true }) {
                             HStack {
-                                Image(systemName: searchData.sunExposure.icon)
-                                    .foregroundColor(.orange)
-                                TextField("Sun exposure", text: .constant(searchData.sunExposure.displayName))
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .disabled(true)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        
-                        FormField(title: "Water Needs") {
-                            HStack {
-                                Image(systemName: searchData.waterNeeds.icon)
-                                    .foregroundColor(.blue)
-                                TextField("Water needs", text: .constant(searchData.waterNeeds.displayName))
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .disabled(true)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        
-                        // Plant Size Information
-                        HStack(spacing: 12) {
-                            FormField(title: "Mature Height") {
-                                TextField("Height", text: .constant("\(Int(searchData.matureHeight))\""))
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .disabled(true)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            FormField(title: "Mature Width") {
-                                TextField("Width", text: .constant("\(Int(searchData.matureWidth))\""))
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .disabled(true)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        
-                        // Care Information
-                        FormField(title: "Planting Season") {
-                            TextField("Season", text: .constant(searchData.plantingSeason.rawValue.capitalized))
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .disabled(true)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        FormField(title: "Bloom Time") {
-                            HStack {
-                                Text("🌸")
-                                TextField("Bloom time", text: .constant(searchData.bloomTime.rawValue.capitalized))
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .disabled(true)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        
-                        // Flower Colors
-                        if !searchData.flowerColor.isEmpty {
-                            FormField(title: "Flower Colors") {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 8) {
-                                        ForEach(searchData.flowerColor, id: \.self) { color in
-                                            Text(color.capitalized)
-                                                .font(.caption)
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 6)
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 8)
-                                                        .fill(colorForName(color).opacity(0.2))
-                                                )
-                                                .foregroundColor(colorForName(color))
-                                        }
-                                    }
-                                    .padding(.horizontal, 4)
+                                if let bedName = getBedName(for: plant.bedId) {
+                                    Text(bedName)
+                                        .foregroundColor(.primary)
+                                } else {
+                                    Text("Select a bed")
+                                        .foregroundColor(.secondary)
                                 }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                        }
+                        .sheet(isPresented: $showingBedSelection) {
+                            BedSelectionSheet(selectedBedId: $plant.bedId)
                         }
                     }
                     
-                    // Notes (user editable)
-                    FormField(title: "Notes") {
-                        TextField("Plant notes", text: Binding(
-                            get: { plant.notes ?? "" },
-                            set: { plant.notes = $0.isEmpty ? nil : $0 }
-                        ))
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    // Scientific Name (from AI)
+                    if let scientificName = plant.scientificName, !scientificName.isEmpty {
+                        FormField(title: "Scientific Name") {
+                            Text(scientificName)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
                     }
                     
-                    // Notes (user editable)
+                    // Growth Habit (from AI)
+                    if let growthHabit = plant.growthHabit, !growthHabit.isEmpty {
+                        FormField(title: "Growth Habit") {
+                            Text(growthHabit)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
+                    }
+                    
+                    // Sun Exposure (from AI)
+                    if let sunExposure = plant.sunExposure, !sunExposure.isEmpty {
+                        FormField(title: "Sun Exposure") {
+                            Text(sunExposure)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
+                    }
+                    
+                    // Water Needs (from AI)
+                    if let waterNeeds = plant.waterNeeds, !waterNeeds.isEmpty {
+                        FormField(title: "Water Needs") {
+                            Text(waterNeeds)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                        }
+                    }
+                    
+                    // Notes
                     FormField(title: "Notes") {
-                        TextField("Plant notes", text: Binding(
+                        TextField("Add notes about this plant", text: Binding(
                             get: { plant.notes ?? "" },
                             set: { plant.notes = $0.isEmpty ? nil : $0 }
-                        ))
+                        ), axis: .vertical)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .lineLimit(3...6)
                     }
                 }
             }
             .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(UIColor.systemBackground))
-                    .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
-            )
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        }
+        .task {
+            await bedsViewModel.loadBeds()
         }
     }
     
-    private func colorForName(_ colorName: String) -> Color {
-        switch colorName.lowercased() {
-        case "red": return .red
-        case "pink": return .pink
-        case "orange": return .orange
-        case "yellow": return .yellow
-        case "green": return .green
-        case "blue": return .blue
-        case "purple": return .purple
-        case "white": return .gray
-        default: return .gray
-        }
+    // Helper methods
+    private func getBedName(for bedId: UUID) -> String? {
+        bedsViewModel.beds.first { $0.id == bedId }?.name
     }
 }
 
+// MARK: - AI Success Card
 struct AISuccessCard: View {
-    let plantData: AIPlantSearchResult
+    let plantInfo: PlantInfo
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             HStack {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.green)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("AI Search Complete!")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    Text("Found detailed information for \(plantData.name)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
+                Image(systemName: "sparkles")
+                    .foregroundColor(.yellow)
+                Text("AI Plant Information")
+                    .font(.headline)
+                    .fontWeight(.semibold)
                 Spacer()
             }
             
-            // Quick Summary
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
-                QuickInfoCard(
-                    icon: "info.circle.fill",
-                    title: "Family",
-                    value: plantData.family,
-                    color: .blue
-                )
-                QuickInfoCard(
-                    icon: "calendar",
-                    title: "Growth Type",
-                    value: plantData.growthHabit.displayName,
-                    color: .green
-                )
-                QuickInfoCard(
-                    icon: plantData.sunExposure.icon,
-                    title: "Sun Needs",
-                    value: plantData.sunExposure.displayName,
-                    color: .orange
-                )
-                QuickInfoCard(
-                    icon: plantData.waterNeeds.icon,
-                    title: "Water Needs",
-                    value: plantData.waterNeeds.displayName,
-                    color: .blue
-                )
+            VStack(spacing: 8) {
+                if let description = plantInfo.description {
+                    Text(description)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                if let careInstructions = plantInfo.careInstructions {
+                    Text("Care: \(careInstructions)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                }
             }
         }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.green.opacity(0.05))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.green.opacity(0.2), lineWidth: 1)
-                )
+                .fill(Color(.systemGray6))
         )
     }
 }
 
-struct QuickInfoCard: View {
-    let icon: String
-    let title: String
-    let value: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(color)
-            
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            Text(value)
-                .font(.caption)
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(color.opacity(0.1))
-        )
-    }
-}
-
+// MARK: - Form Field Helper
 struct FormField<Content: View>: View {
     let title: String
     let content: Content
@@ -270,7 +181,7 @@ struct FormField<Content: View>: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.subheadline)
                 .fontWeight(.medium)
@@ -281,9 +192,55 @@ struct FormField<Content: View>: View {
     }
 }
 
-#Preview {
-    PlantDetailsFormView(
-        plant: .constant(Plant(name: "Test Plant", bedId: UUID(), x: 0.5, y: 0.5)),
-        plantSearchData: nil
-    )
+// MARK: - Bed Selection Sheet
+struct BedSelectionSheet: View {
+    @Binding var selectedBedId: UUID
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var bedsViewModel = BedsViewModel()
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(bedsViewModel.beds) { bed in
+                    Button(action: {
+                        selectedBedId = bed.id
+                        dismiss()
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(bed.name)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                
+                                if !bed.section.isEmpty {
+                                    Text(bed.section)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            if selectedBedId == bed.id {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Select Bed")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .task {
+            await bedsViewModel.loadBeds()
+        }
+    }
 }

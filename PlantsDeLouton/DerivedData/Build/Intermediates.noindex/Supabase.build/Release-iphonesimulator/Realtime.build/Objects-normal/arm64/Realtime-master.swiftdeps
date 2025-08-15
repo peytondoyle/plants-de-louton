@@ -1,0 +1,61 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "934681d1402f8fa12fd5b56d948902d54c37e10097599332e618cfc64fbd3787"
+build_start_time: [1755273953, 203413000]
+build_end_time: [1755273959, 4309000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/CallbackManager.swift"
+  : [1755273935, 567026038]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/Defaults.swift"
+  : [1755273935, 567185080]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/Delegated.swift"
+  : [1755273935, 567287248]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/Deprecated.swift"
+  : [1755273935, 567382790]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/HeartbeatTimer.swift"
+  : [1755273935, 567545208]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/PhoenixTransport.swift"
+  : [1755273935, 567702708]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/Presence.swift"
+  : [1755273935, 567847626]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/Push.swift"
+  : [1755273935, 567984252]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/RealtimeChannel.swift"
+  : [1755273935, 568135628]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/RealtimeClient.swift"
+  : [1755273935, 568290087]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/RealtimeMessage.swift"
+  : [1755273935, 568425505]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Deprecated/TimeoutTimer.swift"
+  : [1755273935, 568569131]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Exports.swift"
+  : [1755273935, 568668256]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/PostgresAction.swift"
+  : [1755273935, 568774299]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/PostgresActionData.swift"
+  : [1755273935, 568871591]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/PresenceAction.swift"
+  : [1755273935, 568967967]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/PushV2.swift"
+  : [1755273935, 569055717]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimeChannel+AsyncAwait.swift"
+  : [1755273935, 569176218]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimeChannelV2.swift"
+  : [1755273935, 569299427]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimeClientV2.swift"
+  : [1755273935, 569443845]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimeError.swift"
+  : [1755273935, 569552595]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimeJoinConfig.swift"
+  : [1755273935, 569651263]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimeMessageV2.swift"
+  : [1755273935, 569741888]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimePostgresFilter.swift"
+  : [1755273935, 569849514]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/RealtimePostgresFilterValue.swift"
+  : [1755273935, 569932515]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/Types.swift"
+  : [1755273935, 570030223]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/WebSocket/URLSessionWebSocket.swift"
+  : [1755273935, 570225516]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Realtime/WebSocket/WebSocket.swift"
+  : [1755273935, 570374059]

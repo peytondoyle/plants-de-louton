@@ -10,6 +10,8 @@ enum SupabaseError: LocalizedError {
     case unexpectedResponse
     case decodingError(Error)
     case notAuthenticated
+    case invalidData
+    case invalidURL
     
     var errorDescription: String? {
         switch self {
@@ -21,6 +23,10 @@ enum SupabaseError: LocalizedError {
             return "Failed to decode response: \(error.localizedDescription)"
         case .notAuthenticated:
             return "User not authenticated. Please sign in."
+        case .invalidData:
+            return "Invalid data provided"
+        case .invalidURL:
+            return "Invalid URL provided"
         }
     }
 }
@@ -64,8 +70,8 @@ class SupabaseService: ObservableObject {
             self.currentUser = User(
                 id: session.user.id.uuidString,
                 email: session.user.email,
-                fullName: session.user.userMetadata["full_name"] as? String,
-                avatarUrl: session.user.userMetadata["avatar_url"] as? String
+                fullName: session.user.userMetadata["full_name"]?.stringValue,
+                avatarUrl: session.user.userMetadata["avatar_url"]?.stringValue
             )
         } catch {
             self.isSignedIn = false
@@ -194,6 +200,84 @@ class SupabaseService: ObservableObject {
         )
     }
     
+    /// Update plant (pin)
+    func updatePlant(_ plant: Plant) async throws -> Plant {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let pinRow = PinRow(
+            id: plant.id,
+            bed_id: plant.bedId,
+            x: plant.x,
+            y: plant.y,
+            name: plant.name
+        )
+        
+        let updatedPin: PinRow = try await client
+            .from("pins")
+            .update(pinRow)
+            .eq("id", value: plant.id)
+            .select()
+            .single()
+            .execute()
+            .value
+        
+        return Plant(
+            id: updatedPin.id,
+            name: updatedPin.name,
+            bedId: updatedPin.bed_id,
+            x: updatedPin.x,
+            y: updatedPin.y
+        )
+    }
+    
+    /// Delete plant (pin)
+    func deletePlant(_ plantId: UUID) async throws {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        try await client
+            .from("pins")
+            .delete()
+            .eq("id", value: plantId)
+            .execute()
+    }
+    
+    /// Update bed
+    func updateBed(_ bed: Bed) async throws -> Bed {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let bedRow = BedRow(
+            id: bed.id,
+            name: bed.name,
+            section: bed.section,
+            image_url: bed.imageURL
+        )
+        
+        let updatedBed: BedRow = try await client
+            .from("beds")
+            .update(bedRow)
+            .eq("id", value: bed.id)
+            .select()
+            .single()
+            .execute()
+            .value
+        
+        return Bed(
+            id: updatedBed.id,
+            name: updatedBed.name,
+            section: updatedBed.section,
+            imageURL: updatedBed.image_url
+        )
+    }
+    
     /// List all plants (pins)
     func listPlants() async throws -> [Plant] {
         // Check authentication first
@@ -218,6 +302,32 @@ class SupabaseService: ObservableObject {
             )
         }
     }
+    
+    /// List plants (pins) for a specific bed
+    func listPlants(forBed bedId: UUID) async throws -> [Plant] {
+        // Check authentication first
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        let pins: [PinRow] = try await client
+            .from("pins")
+            .select()
+            .eq("bed_id", value: bedId.uuidString)
+            .order("name", ascending: true)
+            .execute()
+            .value
+        
+        return pins.map { pin in
+            Plant(
+                id: pin.id,
+                name: pin.name,
+                bedId: pin.bed_id,
+                x: pin.x,
+                y: pin.y
+            )
+        }
+    }
 
     // MARK: - Beds Methods
 
@@ -225,6 +335,11 @@ class SupabaseService: ObservableObject {
         let id: UUID
         let name: String
         let section: String
+        let image_url: String?
+    }
+    
+    struct BedImageRow: Codable {
+        let image_path: String
     }
 
     /// List all beds
@@ -241,7 +356,35 @@ class SupabaseService: ObservableObject {
             .execute()
             .value
 
-        return rows.map { Bed(id: $0.id, name: $0.name, section: $0.section, plants: []) }
+        // For each bed, try to get the image URL from bed_images if image_url is not set
+        var beds: [Bed] = []
+        for row in rows {
+            var imageURL = row.image_url
+            
+            // If no image_url is set, try to get it from bed_images table
+            if imageURL == nil {
+                do {
+                    let bedImages: [BedImageRow] = try await client
+                        .from("bed_images")
+                        .select("image_path")
+                        .eq("bed_id", value: row.id)
+                        .order("created_at", ascending: false)
+                        .limit(1)
+                        .execute()
+                        .value
+                    
+                    if let latestImage = bedImages.first {
+                        imageURL = "https://edhyajfowwcgrdrazkwf.supabase.co/storage/v1/object/public/plant-images/\(latestImage.image_path)"
+                    }
+                } catch {
+                    print("Failed to fetch image for bed \(row.id): \(error)")
+                }
+            }
+            
+            beds.append(Bed(id: row.id, name: row.name, section: row.section, plants: [], imageURL: imageURL))
+        }
+
+        return beds
     }
 
     /// Create or update a bed
@@ -251,7 +394,7 @@ class SupabaseService: ObservableObject {
             throw SupabaseError.notAuthenticated
         }
         
-        let row = BedRow(id: bed.id, name: bed.name, section: bed.section)
+        let row = BedRow(id: bed.id, name: bed.name, section: bed.section, image_url: bed.imageURL)
         let saved: BedRow = try await client
             .from("beds")
             .upsert(row)
@@ -259,7 +402,7 @@ class SupabaseService: ObservableObject {
             .single()
             .execute()
             .value
-        return Bed(id: saved.id, name: saved.name, section: saved.section, plants: bed.plants)
+        return Bed(id: saved.id, name: saved.name, section: saved.section, plants: bed.plants, imageURL: saved.image_url)
     }
 
     /// Delete a bed by id
@@ -366,7 +509,7 @@ class SupabaseService: ObservableObject {
             .execute()
             .value
 
-        return rows.map { Bed(id: $0.id, name: $0.name, section: $0.section, plants: []) }
+        return rows.map { Bed(id: $0.id, name: $0.name, section: $0.section, plants: [], imageURL: $0.image_url) }
     }
     
     /// List plants in a specific section (joins beds and pins)
@@ -406,10 +549,14 @@ class SupabaseService: ObservableObject {
         return response.map { row in
             CareEvent(
                 id: row.id,
-                type: CareEvent.CareType(rawValue: row.event_type) ?? .other,
-                date: row.event_date,
-                notes: row.description,
-                plantId: row.plant_instance_id
+                plantId: row.plant_instance_id,
+                eventType: row.event_type,
+                eventDate: row.event_date,
+                description: row.description ?? "Care event",
+                notes: row.notes,
+                cost: row.cost != nil ? Double(truncating: row.cost! as NSDecimalNumber) : nil,
+                createdAt: row.created_at ?? Date(),
+                updatedAt: row.updated_at ?? Date()
             )
         }
     }
@@ -418,15 +565,15 @@ class SupabaseService: ObservableObject {
     func saveCareEvent(_ careEvent: CareEvent) async throws -> CareEvent {
         let careEventRow = CareEventRow(
             id: careEvent.id,
-            plant_instance_id: careEvent.plantId ?? UUID(),
-            event_type: careEvent.type.rawValue,
-            event_date: careEvent.date,
-            description: careEvent.notes ?? "",
+            plant_instance_id: careEvent.plantId,
+            event_type: careEvent.eventType,
+            event_date: careEvent.eventDate,
+            description: careEvent.description,
             notes: careEvent.notes,
-            cost: nil,
+            cost: careEvent.cost != nil ? Decimal(careEvent.cost!) : nil,
             images: nil,
-            created_at: careEvent.date,
-            updated_at: careEvent.date
+            created_at: careEvent.createdAt,
+            updated_at: careEvent.updatedAt
         )
         
         let response: CareEventRow = try await client
@@ -439,10 +586,14 @@ class SupabaseService: ObservableObject {
         
         return CareEvent(
             id: response.id,
-            type: CareEvent.CareType(rawValue: response.event_type) ?? .other,
-            date: response.event_date,
-            notes: response.description,
-            plantId: response.plant_instance_id
+            plantId: response.plant_instance_id,
+            eventType: response.event_type,
+            eventDate: response.event_date,
+            description: response.description ?? "Care event",
+            notes: response.notes,
+            cost: response.cost != nil ? Double(truncating: response.cost! as NSDecimalNumber) : nil,
+            createdAt: response.created_at ?? Date(),
+            updatedAt: response.updated_at ?? Date()
         )
     }
 
@@ -450,15 +601,15 @@ class SupabaseService: ObservableObject {
     func updateCareEvent(_ careEvent: CareEvent) async throws -> CareEvent {
         let careEventRow = CareEventRow(
             id: careEvent.id,
-            plant_instance_id: careEvent.plantId ?? UUID(),
-            event_type: careEvent.type.rawValue,
-            event_date: careEvent.date,
-            description: careEvent.notes ?? "",
+            plant_instance_id: careEvent.plantId,
+            event_type: careEvent.eventType,
+            event_date: careEvent.eventDate,
+            description: careEvent.description,
             notes: careEvent.notes,
-            cost: nil,
+            cost: careEvent.cost != nil ? Decimal(careEvent.cost!) : nil,
             images: nil,
-            created_at: careEvent.date,
-            updated_at: careEvent.date
+            created_at: careEvent.createdAt,
+            updated_at: careEvent.updatedAt
         )
         
         let response: CareEventRow = try await client
@@ -472,10 +623,14 @@ class SupabaseService: ObservableObject {
         
         return CareEvent(
             id: response.id,
-            type: CareEvent.CareType(rawValue: response.event_type) ?? .other,
-            date: response.event_date,
-            notes: response.description,
-            plantId: response.plant_instance_id
+            plantId: response.plant_instance_id,
+            eventType: response.event_type,
+            eventDate: response.event_date,
+            description: response.description ?? "Care event",
+            notes: response.notes,
+            cost: response.cost != nil ? Double(truncating: response.cost! as NSDecimalNumber) : nil,
+            createdAt: response.created_at ?? Date(),
+            updatedAt: response.updated_at ?? Date()
         )
     }
 
@@ -501,10 +656,14 @@ class SupabaseService: ObservableObject {
         return response.map { row in
             CareEvent(
                 id: row.id,
-                type: CareEvent.CareType(rawValue: row.event_type) ?? .other,
-                date: row.event_date,
-                notes: row.description,
-                plantId: row.plant_instance_id
+                plantId: row.plant_instance_id,
+                eventType: row.event_type,
+                eventDate: row.event_date,
+                description: row.description ?? "Care event",
+                notes: row.notes,
+                cost: row.cost != nil ? Double(truncating: row.cost! as NSDecimalNumber) : nil,
+                createdAt: row.created_at ?? Date(),
+                updatedAt: row.updated_at ?? Date()
             )
         }
     }
@@ -672,4 +831,53 @@ private struct CareEventRow: Codable {
     let images: [String]?
     let created_at: Date?
     let updated_at: Date?
+}
+
+// MARK: - Image Storage
+extension SupabaseService {
+    
+    /// Upload image to Supabase Storage
+    func uploadImage(_ image: UIImage, forBed bedId: UUID) async throws -> String {
+        guard isSignedIn else {
+            throw SupabaseError.notAuthenticated
+        }
+        
+        // Convert UIImage to Data
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw SupabaseError.invalidData
+        }
+        
+        let fileName = "bed-\(bedId.uuidString)-\(Date().timeIntervalSince1970).jpg"
+        
+        // Upload to Supabase Storage
+        try await client.storage
+            .from("bed-images")
+            .upload(
+                path: fileName,
+                file: imageData,
+                options: FileOptions(cacheControl: "3600")
+            )
+        
+        // Get public URL
+        let publicURL = try client.storage
+            .from("bed-images")
+            .getPublicURL(path: fileName)
+        
+        return publicURL.absoluteString
+    }
+    
+    /// Download image from Supabase Storage
+    func downloadImage(from urlString: String) async throws -> UIImage {
+        guard let url = URL(string: urlString) else {
+            throw SupabaseError.invalidURL
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        guard let image = UIImage(data: data) else {
+            throw SupabaseError.invalidData
+        }
+        
+        return image
+    }
 }

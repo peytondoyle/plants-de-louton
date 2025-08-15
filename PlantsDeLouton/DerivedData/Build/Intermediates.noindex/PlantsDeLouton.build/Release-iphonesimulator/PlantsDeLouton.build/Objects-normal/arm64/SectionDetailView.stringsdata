@@ -1,0 +1,88 @@
+{
+  "source": "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/PlantsDeLouton/Views/SectionDetailView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Beds in %@",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 143
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recent Plants",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 192
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld plants in %lld %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 228
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 271
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld plants",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 302
+        }
+      },
+      {
+        "comment": "",
+        "key": "No beds in %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 358
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create your first bed to start organizing your plants",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 363
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create Bed",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 369
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create New Bed",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 395
+        }
+      },
+      {
+        "comment": "",
+        "key": "New Bed",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 396
+        }
+      }
+    ]
+  },
+  "version": 1
+}

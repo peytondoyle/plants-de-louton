@@ -2,7 +2,7 @@ import SwiftUI
 
 struct GardenOverviewView: View {
     @StateObject private var viewModel = GardenViewModel()
-    @StateObject private var weatherService = GardenWeatherService.shared
+    @StateObject private var weatherService = SimpleWeatherService.shared
     // @StateObject private var notificationService = NotificationService.shared
     @State private var plants: [Plant] = []
     @State private var beds: [Bed] = []
@@ -439,7 +439,7 @@ struct QuickActionCard: View {
 }
 
 struct WeatherCard: View {
-    @StateObject private var weatherService = GardenWeatherService.shared
+    @StateObject private var weatherService = SimpleWeatherService.shared
     
     var body: some View {
         HStack(spacing: 12) {
@@ -481,7 +481,7 @@ struct WeatherCard: View {
                 .fill(.ultraThinMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(borderColor.opacity(0.3), lineWidth: 1)
+                        .stroke(borderColor.opacity(0.3) as Color, lineWidth: 1)
                 )
         )
         .onAppear {
@@ -494,7 +494,7 @@ struct WeatherCard: View {
             return "Fetching current conditions..."
         }
         
-        return "\(weather.temperatureString) • \(weather.conditionDescription) • \(weather.main.humidity)% humidity"
+        return "\(weather.temperatureString) • \(weather.conditionDescription) • \(weather.humidityString) humidity"
     }
     
     private var wateringIcon: String {
@@ -502,9 +502,9 @@ struct WeatherCard: View {
             return "💧"
         }
         
-        if weather.main.humidity > 70 {
+        if weather.humidity > 70 {
             return "💧"
-        } else if weather.main.temp > 85 {
+        } else if weather.temperature > 85 {
             return "🌡️"
         } else {
             return "💧"
@@ -516,9 +516,9 @@ struct WeatherCard: View {
             return "Loading..."
         }
         
-        if weather.main.humidity > 70 {
+        if weather.humidity > 70 {
             return "Humid day\nwater less"
-        } else if weather.main.temp > 85 {
+        } else if weather.temperature > 85 {
             return "Hot day\nwater more"
         } else if weather.isGoodForGardening {
             return "Good day\nto water"
@@ -538,47 +538,75 @@ struct WeatherCard: View {
 
 // MARK: - Smart Care Reminders Card
 struct SmartCareRemindersCard: View {
-    let weatherService: GardenWeatherService
+    let weatherService: SimpleWeatherService
     
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                Image(systemName: "brain.head.profile")
+                Image(systemName: "leaf.fill")
                     .font(.title3)
-                    .foregroundColor(.purple)
+                    .foregroundColor(.green)
                 
-                Text("Smart Care Recommendations")
+                Text("Garden Tips")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
                 
                 Spacer()
-                
-                Text("\(weatherService.careRecommendations.count)")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .frame(width: 20, height: 20)
-                    .background(Circle().fill(.purple))
             }
             
-            if weatherService.careRecommendations.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.green)
-                    
-                    Text("All plants are well cared for!")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.vertical, 8)
-            } else {
-                VStack(spacing: 8) {
-                    ForEach(weatherService.careRecommendations.prefix(3)) { recommendation in
-                        SmartCareRecommendationItem(recommendation: recommendation)
+            VStack(spacing: 8) {
+                if let weather = weatherService.currentWeather {
+                    VStack(spacing: 8) {
+                        HStack {
+                            Image(systemName: "thermometer")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                            
+                            Text("Temperature: \(weather.temperatureString)")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Image(systemName: "humidity")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                            
+                            Text("Humidity: \(weather.humidityString)")
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Image(systemName: "sun.max")
+                                .font(.caption)
+                                .foregroundColor(.yellow)
+                            
+                            Text(weather.gardeningTip)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(2)
+                            
+                            Spacer()
+                        }
                     }
+                } else {
+                    VStack(spacing: 8) {
+                        Image(systemName: "cloud.fill")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                        
+                        Text("Loading weather data...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.vertical, 8)
                 }
             }
         }
@@ -588,55 +616,13 @@ struct SmartCareRemindersCard: View {
                 .fill(.ultraThinMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(.purple.opacity(0.3), lineWidth: 1)
+                        .stroke(.green.opacity(0.3) as Color, lineWidth: 1)
                 )
         )
     }
 }
 
-// MARK: - Smart Care Recommendation Item
-struct SmartCareRecommendationItem: View {
-    let recommendation: CareRecommendation
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: recommendation.type.icon)
-                .font(.caption)
-                .foregroundColor(colorForPriority(recommendation.priority))
-                .frame(width: 12)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(recommendation.type.displayName)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                
-                Text(recommendation.reason)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-            }
-            
-            Spacer()
-            
-            if recommendation.isUrgent {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.caption2)
-                    .foregroundColor(.red)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-    
-    private func colorForPriority(_ priority: CarePriority) -> Color {
-        switch priority {
-        case .low: return .green
-        case .medium: return .yellow
-        case .high: return .orange
-        case .critical: return .red
-        }
-    }
-}
+
 
 // MARK: - Legacy Care Reminders Card (for backward compatibility)
 struct CareRemindersCard: View {
@@ -672,10 +658,10 @@ struct CareRemindersCard: View {
                 VStack(spacing: 8) {
                     ForEach(viewModel.careEvents.prefix(3)) { careEvent in
                         CareReminderItem(
-                            icon: iconForCareType(careEvent.type),
-                            task: careEvent.notes ?? careEvent.type.rawValue,
-                            time: formatDate(careEvent.date),
-                            color: colorForCareType(careEvent.type)
+                            icon: iconForCareType(careEvent.eventType),
+                            task: careEvent.notes ?? careEvent.description,
+                            time: formatDate(careEvent.eventDate),
+                            color: colorForCareType(careEvent.eventType)
                         )
                     }
                 }
@@ -761,25 +747,25 @@ private func formatDate(_ date: Date) -> String {
     return formatter.string(from: date)
 }
 
-private func colorForCareType(_ careType: CareEvent.CareType) -> Color {
-    switch careType {
-    case .watering: return .blue
-    case .fertilizing: return .green
-    case .pruning: return .orange
-    case .repotting: return .yellow
-    case .other: return .gray
+    private func colorForCareType(_ careType: String) -> Color {
+        switch careType {
+        case "watering": return .blue
+        case "fertilizing": return .green
+        case "pruning": return .orange
+        case "repotting": return .yellow
+        default: return .gray
+        }
     }
-}
 
-private func iconForCareType(_ careType: CareEvent.CareType) -> String {
-    switch careType {
-    case .watering: return "drop.fill"
-    case .fertilizing: return "leaf.fill"
-    case .pruning: return "scissors"
-    case .repotting: return "arrow.up.arrow.down"
-    case .other: return "ellipsis.circle"
+    private func iconForCareType(_ careType: String) -> String {
+        switch careType {
+        case "watering": return "drop.fill"
+        case "fertilizing": return "leaf.fill"
+        case "pruning": return "scissors"
+        case "repotting": return "arrow.up.arrow.down"
+        default: return "ellipsis.circle"
+        }
     }
-}
 
 struct AuthRequiredView: View {
     var body: some View {

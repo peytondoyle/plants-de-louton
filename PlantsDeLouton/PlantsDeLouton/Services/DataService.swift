@@ -34,7 +34,7 @@ actor DataService {
     }
 
     func plants(inBed bedId: UUID) async throws -> [Plant] {
-        try await supabaseService.listPlants(inBed: bedId)
+        try await supabaseService.listPlants(forBed: bedId)
     }
     
     // MARK: - Section-based queries
@@ -44,5 +44,23 @@ actor DataService {
     
     func plants(inSection section: String) async throws -> [Plant] {
         try await supabaseService.listPlants(inSection: section)
+    }
+    
+    // MARK: - Plant CRUD Operations
+    func createPlant(_ plant: Plant) async throws -> Plant {
+        return try await supabaseService.savePlant(plant)
+    }
+    
+    func updatePlant(_ plant: Plant) async throws -> Plant {
+        return try await supabaseService.updatePlant(plant)
+    }
+    
+    func deletePlant(_ plantId: UUID) async throws {
+        try await supabaseService.deletePlant(plantId)
+    }
+    
+    // MARK: - Bed Operations
+    func updateBed(_ bed: Bed) async throws -> Bed {
+        return try await supabaseService.updateBed(bed)
     }
 }

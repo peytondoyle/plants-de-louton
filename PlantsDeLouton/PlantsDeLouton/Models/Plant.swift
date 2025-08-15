@@ -4,9 +4,9 @@ import Foundation
 struct Plant: Identifiable, Codable {
     let id: UUID
     var name: String
-    let bedId: UUID
-    let x: Double
-    let y: Double
+    var bedId: UUID
+    var x: Double
+    var y: Double
     var scientificName: String?
     var growthHabit: String?
     var sunExposure: String?

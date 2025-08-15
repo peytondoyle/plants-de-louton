@@ -1,0 +1,9 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "991b38c92f011b3c92eb72e7bc38316df1303488e7e3671ae45f1cdfc5c91288"
+build_start_time: [1755273946, 331790000]
+build_end_time: [1755273947, 203880000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/xctest-dynamic-overlay/Sources/XCTestDynamicOverlay/Internal/Deprecations.swift"
+  : [1755273935, 400257099]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/xctest-dynamic-overlay/Sources/XCTestDynamicOverlay/Internal/Exports.swift"
+  : [1755273935, 400381767]

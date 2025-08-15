@@ -1,0 +1,176 @@
+{
+  "source": "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/PlantsDeLouton/Views/GardenOverviewView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Dashboard",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "Today's Garden",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Quick Actions",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 53
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 247
+        }
+      },
+      {
+        "comment": "",
+        "key": "plants",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 251
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 260
+        }
+      },
+      {
+        "comment": "",
+        "key": "beds",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 264
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 298
+        }
+      },
+      {
+        "comment": "",
+        "key": "Loading your garden...",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 352
+        }
+      },
+      {
+        "comment": "",
+        "key": "Oops!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 370
+        }
+      },
+      {
+        "comment": "",
+        "key": "Garden Tips",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 550
+        }
+      },
+      {
+        "comment": "",
+        "key": "Temperature: %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 566
+        }
+      },
+      {
+        "comment": "",
+        "key": "Humidity: %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 578
+        }
+      },
+      {
+        "comment": "",
+        "key": "Loading weather data...",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 604
+        }
+      },
+      {
+        "comment": "",
+        "key": "No upcoming care tasks",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 654
+        }
+      },
+      {
+        "comment": "",
+        "key": "Care Reminders",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 638
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 645
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld plants",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 724
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sign In Required",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 777
+        }
+      },
+      {
+        "comment": "",
+        "key": "Please sign in with Apple to view your garden",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 780
+        }
+      },
+      {
+        "comment": "",
+        "key": "Go to Settings",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 786
+        }
+      }
+    ]
+  },
+  "version": 1
+}

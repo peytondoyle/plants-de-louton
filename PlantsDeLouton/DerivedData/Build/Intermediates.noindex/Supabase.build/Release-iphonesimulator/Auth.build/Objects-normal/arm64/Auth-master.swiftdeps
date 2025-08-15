@@ -1,0 +1,55 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "3272926e0174677ab2ecae983aaf48a087047785002d263a05528b86761091f7"
+build_start_time: [1755273953, 203421000]
+build_end_time: [1755273959, 280069000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/AuthAdmin.swift"
+  : [1755273935, 559928701]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/AuthClient.swift"
+  : [1755273935, 560135744]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/AuthClientConfiguration.swift"
+  : [1755273935, 560280578]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/AuthError.swift"
+  : [1755273935, 560428454]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/AuthMFA.swift"
+  : [1755273935, 560531746]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/AuthStateChangeListener.swift"
+  : [1755273935, 560634288]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Defaults.swift"
+  : [1755273935, 560717206]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Deprecated.swift"
+  : [1755273935, 560802706]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Exports.swift"
+  : [1755273935, 560873498]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/APIClient.swift"
+  : [1755273935, 561048958]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/CodeVerifierStorage.swift"
+  : [1755273935, 561147917]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/Constants.swift"
+  : [1755273935, 561396418]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/Dependencies.swift"
+  : [1755273935, 561470002]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/EventEmitter.swift"
+  : [1755273935, 561624503]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/FixedWidthInteger+Random.swift"
+  : [1755273935, 561744546]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/Helpers.swift"
+  : [1755273935, 561844671]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/Keychain.swift"
+  : [1755273935, 561984964]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/PKCE.swift"
+  : [1755273935, 562094381]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/SessionManager.swift"
+  : [1755273935, 562192757]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/SessionStorage.swift"
+  : [1755273935, 562291591]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Internal/URLOpener.swift"
+  : [1755273935, 562377966]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Storage/AuthLocalStorage.swift"
+  : [1755273935, 562538676]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Storage/KeychainLocalStorage.swift"
+  : [1755273935, 562633801]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Storage/WinCredLocalStorage.swift"
+  : [1755273935, 562717135]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Auth/Types.swift"
+  : [1755273935, 562835594]

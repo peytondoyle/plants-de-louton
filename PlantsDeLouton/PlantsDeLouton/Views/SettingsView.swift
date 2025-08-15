@@ -5,7 +5,7 @@ struct SettingsView: View {
     @State private var showingAppleSignInError: String?
     @ObservedObject private var supabase = SupabaseService.shared
     // @StateObject private var notificationService = NotificationService.shared
-    @StateObject private var weatherService = GardenWeatherService.shared
+    @StateObject private var weatherService = SimpleWeatherService.shared
     
     var body: some View {
         List {

@@ -1,0 +1,72 @@
+{
+  "source": "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/PlantsDeLouton/Views/PlantDetailsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Add New Plant",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 53
+        }
+      },
+      {
+        "comment": "",
+        "key": "Plant Saved!",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 55
+        }
+      },
+      {
+        "comment": "",
+        "key": "Saving...",
+        "location": {
+          "startingColumn": 56,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save Plant",
+        "location": {
+          "startingColumn": 70,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your plant has been saved successfully.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "AI-Powered Plant Discovery",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 112
+        }
+      },
+      {
+        "comment": "",
+        "key": "Let our intelligent system automatically fill in comprehensive plant details for you",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 118
+        }
+      }
+    ]
+  },
+  "version": 1
+}

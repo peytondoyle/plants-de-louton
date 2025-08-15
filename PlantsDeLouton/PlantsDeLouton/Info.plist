@@ -65,5 +65,26 @@
     <string>https://edhyajfowwcgrdrazkwf.supabase.co</string>
     <key>SupabaseAnonKey</key>
     <string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaHlhamZvd3djZ3JkcmF6a3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMTIzNDMsImV4cCI6MjA2OTc4ODM0M30.6E-0-_FoyYKd46scjUexd41miiU-EZJg2LlZGogDgHU</string>
+    
+    <!-- App Transport Security Settings -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>edhyajfowwcgrdrazkwf.supabase.co</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <false/>
+                <key>NSExceptionMinimumTLSVersion</key>
+                <string>TLSv1.2</string>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
 </dict>
 </plist>

@@ -1,0 +1,27 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "860b03945adcfaafd7e08fea7f7ac3e727acadf7ec7fac8616f6e19313cac7a4"
+build_start_time: [1755273943, 797902000]
+build_end_time: [1755273945, 731340000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/ActorIsolated.swift"
+  : [1755273935, 208983922]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/AnyHashableSendable.swift"
+  : [1755273935, 209141548]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/AsyncStream.swift"
+  : [1755273935, 209259798]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/AsyncThrowingStream.swift"
+  : [1755273935, 209361174]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/Internal/Locking.swift"
+  : [1755273935, 210410722]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/Internal/UncheckedBox.swift"
+  : [1755273935, 210501015]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/LockIsolated.swift"
+  : [1755273935, 210660807]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/MainSerialExecutor.swift"
+  : [1755273935, 210775225]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/Result.swift"
+  : [1755273935, 210880767]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/Task.swift"
+  : [1755273935, 210969726]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-concurrency-extras/Sources/ConcurrencyExtras/UncheckedSendable.swift"
+  : [1755273935, 211051143]
