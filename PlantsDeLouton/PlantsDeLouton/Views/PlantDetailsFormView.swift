@@ -4,11 +4,60 @@ struct PlantDetailsFormView: View {
     @Binding var plant: Plant
     let plantSearchData: AIPlantSearchResult?
     
+    @State private var selectedImage: UIImage?
+    @State private var showingImagePicker = false
+    @State private var showingCamera = false
+    @State private var showingActionSheet = false
+    
     var body: some View {
         VStack(spacing: 20) {
             if let searchData = plantSearchData {
                 // AI Success Card
                 AISuccessCard(plantData: searchData)
+            }
+            
+            // Plant Photo Section
+            VStack(spacing: 16) {
+                Text("Plant Photo")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if let image = selectedImage {
+                    VStack(spacing: 12) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 200, height: 200)
+                            .clipped()
+                            .cornerRadius(12)
+                        
+                        Button("Change Photo") {
+                            showingActionSheet = true
+                        }
+                        .foregroundColor(.blue)
+                    }
+                } else {
+                    VStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(width: 200, height: 200)
+                            .overlay(
+                                VStack(spacing: 8) {
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray)
+                                    Text("Add Photo")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            )
+                        
+                        Button("Add Photo") {
+                            showingActionSheet = true
+                        }
+                        .foregroundColor(.blue)
+                    }
+                }
             }
             
             // Plant Information Form
@@ -29,7 +78,7 @@ struct PlantDetailsFormView: View {
                     
                     if let searchData = plantSearchData {
                         FormField(title: "Scientific Name") {
-                            TextField("Scientific name", text: .constant(searchData.scientificName))
+                            TextField("Scientific name", text: .constant(searchData.scientificName ?? ""))
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .disabled(true)
                                 .foregroundColor(.secondary)
@@ -67,14 +116,14 @@ struct PlantDetailsFormView: View {
                         // Plant Size Information
                         HStack(spacing: 12) {
                             FormField(title: "Mature Height") {
-                                TextField("Height", text: .constant("\(Int(searchData.matureHeight))\""))
+                                TextField("Height", text: .constant("\(Int(searchData.matureHeight ?? 0))\""))
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .disabled(true)
                                     .foregroundColor(.secondary)
                             }
                             
                             FormField(title: "Mature Width") {
-                                TextField("Width", text: .constant("\(Int(searchData.matureWidth))\""))
+                                TextField("Width", text: .constant("\(Int(searchData.matureWidth ?? 0))\""))
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .disabled(true)
                                     .foregroundColor(.secondary)
@@ -83,7 +132,7 @@ struct PlantDetailsFormView: View {
                         
                         // Care Information
                         FormField(title: "Planting Season") {
-                            TextField("Season", text: .constant(searchData.plantingSeason.rawValue.capitalized))
+                            TextField("Season", text: .constant("Spring"))
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .disabled(true)
                                 .foregroundColor(.secondary)
@@ -92,7 +141,7 @@ struct PlantDetailsFormView: View {
                         FormField(title: "Bloom Time") {
                             HStack {
                                 Text("🌸")
-                                TextField("Bloom time", text: .constant(searchData.bloomTime.rawValue.capitalized))
+                                TextField("Bloom time", text: .constant(searchData.bloomTime ?? "Unknown"))
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .disabled(true)
                                     .foregroundColor(.secondary)
@@ -100,11 +149,11 @@ struct PlantDetailsFormView: View {
                         }
                         
                         // Flower Colors
-                        if !searchData.flowerColor.isEmpty {
+                        if let flowerColors = searchData.flowerColor, !flowerColors.isEmpty {
                             FormField(title: "Flower Colors") {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 8) {
-                                        ForEach(searchData.flowerColor, id: \.self) { color in
+                                        ForEach(flowerColors, id: \.self) { color in
                                             Text(color.capitalized)
                                                 .font(.caption)
                                                 .padding(.horizontal, 12)
@@ -147,6 +196,27 @@ struct PlantDetailsFormView: View {
                     .fill(Color(UIColor.systemBackground))
                     .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
             )
+        }
+        .actionSheet(isPresented: $showingActionSheet) {
+            ActionSheet(
+                title: Text("Add Plant Photo"),
+                message: Text("Choose how you'd like to add a photo"),
+                buttons: [
+                    .default(Text("Take Photo")) {
+                        showingCamera = true
+                    },
+                    .default(Text("Choose from Library")) {
+                        showingImagePicker = true
+                    },
+                    .cancel()
+                ]
+            )
+        }
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(selectedImage: $selectedImage)
+        }
+        .sheet(isPresented: $showingCamera) {
+            CameraView(selectedImage: $selectedImage)
         }
     }
     
@@ -193,7 +263,7 @@ struct AISuccessCard: View {
                 QuickInfoCard(
                     icon: "info.circle.fill",
                     title: "Family",
-                    value: plantData.family,
+                    value: plantData.family ?? "",
                     color: .blue
                 )
                 QuickInfoCard(
@@ -283,7 +353,45 @@ struct FormField<Content: View>: View {
 
 #Preview {
     PlantDetailsFormView(
-        plant: .constant(Plant(name: "Test Plant", bedId: UUID(), x: 0.5, y: 0.5)),
+        plant: .constant(Plant(name: "New Plant", bedId: UUID(), x: 0.5, y: 0.5)),
         plantSearchData: nil
     )
+}
+
+// MARK: - Camera View
+struct CameraView: UIViewControllerRepresentable {
+    @Binding var selectedImage: UIImage?
+    @Environment(\.presentationMode) var presentationMode
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = .camera
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraView
+        
+        init(_ parent: CameraView) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.selectedImage = image
+            }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+    }
 }

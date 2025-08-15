@@ -1,9 +1,8 @@
 // Plants de Louton - Configuration
-// Add your Supabase credentials here
 
 // Supabase Configuration
-SUPABASE_URL = your_supabase_url_here
-SUPABASE_ANON_KEY = your_supabase_anon_key_here
+SUPABASE_URL = https://edhyajfowwcgrdrazkwf.supabase.co
+SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkaHlhamZvd3djZ3JkcmF6a3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMTIzNDMsImV4cCI6MjA2OTc4ODM0M30.6E-0-_FoyYKd46scjUexd41miiU-EZJg2LlZGogDgHU
 
 // Optional: Trefle API for external plant data
 TREFLE_API_TOKEN = your_trefle_api_token_here

@@ -2,134 +2,158 @@ import SwiftUI
 
 struct PlantDetailsView: View {
     @StateObject private var viewModel = PlantDetailsViewModel()
-    @State private var showingAISearch = false
-    @State private var showingSaveSuccess = false
+    @State private var showingSearchSheet = false
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                // AI Hero Card (shown when no plant data)
-                if !viewModel.hasPlantData {
-                    AIHeroCardView(showingSearch: $showingAISearch)
-                }
+            VStack(spacing: 20) {
+                // Plant Image Placeholder
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemGray5))
+                    .frame(height: 200)
+                    .overlay(
+                        Image(systemName: "leaf.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.green)
+                    )
                 
-                // Plant Details Form
-                PlantDetailsFormView(
-                    plant: $viewModel.plant,
-                    plantSearchData: viewModel.selectedPlantData
-                )
-                
-                // Save Button
-                VStack(spacing: 12) {
-                    Button(action: savePlant) {
-                        HStack {
-                            if viewModel.isLoading {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                                    .foregroundColor(.white)
-                            } else {
-                                Image(systemName: "checkmark.circle")
-                            }
-                            Text(viewModel.isLoading ? "Saving..." : "Save Plant")
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 48)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(viewModel.isValid ? Color.green : Color.gray)
-                        )
-                    }
-                    .disabled(!viewModel.isValid || viewModel.isLoading)
-
-                    // Assign to Bed
-                    NavigationLink {
-                        BedsListView()
-                    } label: {
-                        HStack {
-                            Image(systemName: "square.grid.2x2")
-                            Text("Assign to Bed")
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    
-                    // Validation Message
-                    if let validationMessage = viewModel.validationMessage {
-                        Text(validationMessage)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                    
-                    // Error Message
-                    if let errorMessage = viewModel.errorMessage {
-                        HStack {
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundColor(.orange)
-                            Text(errorMessage)
-                                .font(.caption)
+                // Plant Information
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(viewModel.plant.name)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        if let scientificName = viewModel.plant.scientificName {
+                            Text(scientificName)
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
+                                .italic()
                         }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.orange.opacity(0.1))
+                    }
+                    
+                    // Plant Details Grid
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 12) {
+                        if let growthHabit = viewModel.plant.growthHabit {
+                            PlantDetailCard(
+                                icon: "leaf.fill",
+                                title: "Growth Habit",
+                                value: growthHabit
+                            )
+                        }
+                        
+                        if let sunExposure = viewModel.plant.sunExposure {
+                            PlantDetailCard(
+                                icon: "sun.max.fill",
+                                title: "Sun Exposure",
+                                value: sunExposure
+                            )
+                        }
+                        
+                        if let waterNeeds = viewModel.plant.waterNeeds {
+                            PlantDetailCard(
+                                icon: "drop.fill",
+                                title: "Water Needs",
+                                value: waterNeeds
+                            )
+                        }
+                        
+                        PlantDetailCard(
+                            icon: "location.fill",
+                            title: "Location",
+                            value: "Bed \(viewModel.plant.bedId.uuidString.prefix(8))"
                         )
                     }
+                    
+                    // Action Buttons
+                    VStack(spacing: 12) {
+                        Button(action: {
+                            showingSearchSheet = true
+                        }) {
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                Text("Search Plant Info")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.blue)
+                            )
+                            .foregroundColor(.white)
+                            .fontWeight(.medium)
+                        }
+                        
+                        Button(action: {
+                            Task {
+                                try? await viewModel.savePlant()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                Text("Save Changes")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(.green, lineWidth: 1)
+                            )
+                            .foregroundColor(.green)
+                            .fontWeight(.medium)
+                        }
+                        .disabled(viewModel.isLoading)
+                    }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
             }
-            .padding()
         }
         .navigationTitle("Plant Details")
-        .navigationBarTitleDisplayMode(.large)
-        .sheet(isPresented: $showingAISearch) {
-            PlantSearchSheet()
-        }
-        .alert("Plant Saved!", isPresented: $showingSaveSuccess) {
-            Button("OK") {
-                // Could navigate back or reset form
-            }
-        } message: {
-            Text("Your plant has been saved successfully!")
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button(action: { showingAISearch = true }) {
-                        Label("Search with AI", systemImage: "magnifyingglass")
-                    }
-                    
-                    Button(action: { viewModel.reset() }) {
-                        Label("Reset Form", systemImage: "arrow.clockwise")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingSearchSheet) {
+            PlantSearchSheet { aiPlant in
+                viewModel.applyAISearchData(aiPlant)
             }
         }
     }
+}
+
+struct PlantDetailCard: View {
+    let icon: String
+    let title: String
+    let value: String
     
-    private func savePlant() {
-        Task {
-            await viewModel.savePlant()
-            if viewModel.errorMessage == nil {
-                showingSaveSuccess = true
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
             }
+            
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
         }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.ultraThinMaterial)
+        )
     }
 }
 
-#Preview("Empty State") {
+#Preview {
     NavigationView {
         PlantDetailsView()
-    }
-}
-
-#Preview("With Data") {
-    NavigationView {
-        PlantDetailsView()
-    }
-    .onAppear {
-        // This won't work in preview, but shows the structure
     }
 }

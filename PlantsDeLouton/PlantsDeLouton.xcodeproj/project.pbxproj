@@ -31,6 +31,11 @@
 		1A0000001000000000000069 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000068 /* WeatherService.swift */; };
 		1A000000100000000000006B /* SectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006A /* SectionDetailView.swift */; };
 		1A000000100000000000006C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006D /* EmptyStateView.swift */; };
+		1A000000100000000000006F /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006E /* NotificationService.swift */; };
+		1A0000001000000000000070 /* AuthRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000071 /* AuthRequiredView.swift */; };
+		1A0000001000000000000072 /* PlantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000073 /* PlantsViewModel.swift */; };
+		1A0000001000000000000074 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000075 /* LoadingView.swift */; };
+		1A0000001000000000000076 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000077 /* ErrorView.swift */; };
 		9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000001000000000000051 /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +66,11 @@
 		1A0000001000000000000068 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		1A000000100000000000006A /* SectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionDetailView.swift; sourceTree = "<group>"; };
 		1A000000100000000000006D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		1A000000100000000000006E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		1A0000001000000000000071 /* AuthRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRequiredView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000073 /* PlantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantsViewModel.swift; sourceTree = "<group>"; };
+		1A0000001000000000000075 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000077 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlantsDeLouton.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,6 +142,9 @@
 				1A0000001000000000000066 /* SettingsView.swift */,
 				1A000000100000000000006A /* SectionDetailView.swift */,
 				1A000000100000000000006D /* EmptyStateView.swift */,
+				1A0000001000000000000071 /* AuthRequiredView.swift */,
+				1A0000001000000000000075 /* LoadingView.swift */,
+				1A0000001000000000000077 /* ErrorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -142,7 +155,7 @@
 				1A0000001000000000000012 /* GardenViewModel.swift */,
 				1A000000100000000000001E /* PlantDetailsViewModel.swift */,
 				1A0000001000000000000064 /* BedsViewModel.swift */,
-				1A0000001000000000000068 /* PlantsViewModel.swift */,
+				1A0000001000000000000073 /* PlantsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -154,6 +167,7 @@
 				1A0000001000000000000018 /* AIPlantSearchService.swift */,
 				1A0000001000000000000053 /* SupabaseService.swift */,
 				1A0000001000000000000068 /* WeatherService.swift */,
+				1A000000100000000000006E /* NotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -197,7 +211,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					1A000000100000000000002C = {
 						CreatedOnToolsVersion = 15.0;
@@ -262,8 +276,13 @@
 				1A0000001000000000000065 /* BedsViewModel.swift in Sources */,
 				1A0000001000000000000067 /* SettingsView.swift in Sources */,
 				1A0000001000000000000069 /* WeatherService.swift in Sources */,
+				1A000000100000000000006F /* NotificationService.swift in Sources */,
 				1A000000100000000000006B /* SectionDetailView.swift in Sources */,
 				1A000000100000000000006C /* EmptyStateView.swift in Sources */,
+				1A0000001000000000000070 /* AuthRequiredView.swift in Sources */,
+				1A0000001000000000000072 /* PlantsViewModel.swift in Sources */,
+				1A0000001000000000000074 /* LoadingView.swift in Sources */,
+				1A0000001000000000000076 /* ErrorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +324,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3RP42MC533;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -368,6 +388,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3RP42MC533;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -398,7 +419,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PlantsDeLouton/Preview Content\"";
-				DEVELOPMENT_TEAM = 3RP42MC533;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PlantsDeLouton/Info.plist;
@@ -430,7 +450,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PlantsDeLouton/Preview Content\"";
-				DEVELOPMENT_TEAM = 3RP42MC533;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PlantsDeLouton/Info.plist;

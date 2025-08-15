@@ -97,7 +97,7 @@ struct BedsEmptyState: View {
         EmptyStateView(
             title: "No Garden Beds",
             subtitle: "Create garden beds to organize your plants by location. Perfect for tracking different areas of your garden!",
-            icon: "square.grid.2x2.circle",
+            icon: "square.grid.2x2",
             iconColor: .blue,
             actionTitle: "Create Your First Bed",
             action: onAddBed
@@ -150,15 +150,15 @@ struct SearchEmptyState: View {
 #Preview {
     VStack(spacing: 40) {
         PlantsEmptyState {
-            print("Add plant tapped")
+            // Add plant action
         }
         
         BedsEmptyState {
-            print("Add bed tapped")
+            // Add bed action
         }
         
         BedPlantsEmptyState(bedName: "Front Garden") {
-            print("Add plant to bed tapped")
+            // Add plant to bed action
         }
         
         SearchEmptyState(hasSearched: false)

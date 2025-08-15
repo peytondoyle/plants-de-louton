@@ -4,114 +4,42 @@ import AuthenticationServices
 struct SettingsView: View {
     @State private var showingAppleSignInError: String?
     @ObservedObject private var supabase = SupabaseService.shared
-    // @StateObject private var notificationService = NotificationService.shared
-    @StateObject private var weatherService = GardenWeatherService.shared
     
     var body: some View {
         List {
             Section("Account") {
                 if supabase.isSignedIn {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "person.crop.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.green)
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                if let user = supabase.currentUser, let fullName = user.fullName {
-                                    Text(fullName)
-                                        .font(.headline)
-                                } else {
-                                    Text("Signed in with Apple")
-                                        .font(.headline)
-                                }
-                                
-                                HStack(spacing: 4) {
-                                    Image(systemName: "applelogo")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Text("Apple ID")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            
-                            Spacer()
-                            
-                            Button("Sign Out") {
-                                Task { await supabase.signOut() }
-                            }
-                            .foregroundColor(.red)
-                        }
-                        
-                        if let user = supabase.currentUser, let email = user.email {
-                            HStack {
-                                Image(systemName: "envelope")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text(email)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Signed in as:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(supabase.currentUser?.email ?? "Unknown")
+                            .font(.body)
+                            .fontWeight(.medium)
+                    }
+                    
+                    Button("Sign Out") {
+                        Task {
+                            try? await supabase.signOut()
                         }
                     }
-                    .padding(.vertical, 4)
+                    .foregroundColor(.red)
                 } else {
                     SignInWithAppleButtonView { result in
-                        switch result {
-                        case .success(let token, let nonce):
-                            Task {
+                        Task {
+                            switch result {
+                            case .success(let token, let nonce):
                                 do {
-                                    try await supabase.signInWithApple(idToken: token, nonce: nonce)
+                                    try await supabase.signInWithApple(token: token, nonce: nonce)
                                 } catch {
                                     showingAppleSignInError = error.localizedDescription
                                 }
+                            case .failure(let error):
+                                showingAppleSignInError = error.localizedDescription
                             }
-                        case .failure(let error):
-                            showingAppleSignInError = error.localizedDescription
                         }
                     }
                 }
-            }
-            
-            Section("Notifications") {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Image(systemName: "bell.slash")
-                            .font(.title2)
-                            .foregroundColor(.red)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Push Notifications")
-                                .font(.headline)
-                            Text("Coming Soon")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Smart Care Reminders")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        
-                        Text("Get notified when your plants need care based on weather conditions and plant type.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Text("Weather Alerts")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        
-                        Text("Receive alerts for frost, heat, and drought conditions.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(.vertical, 4)
             }
         }
         .navigationTitle("Settings")

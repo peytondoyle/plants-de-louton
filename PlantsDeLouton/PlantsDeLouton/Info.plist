@@ -58,7 +58,11 @@
     </array>
     <!-- Location Permission for Weather -->
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We use your location to provide local weather information for better plant care recommendations.</string>
+    <string>Plants de Louton uses your location to provide accurate weather information for personalized plant care recommendations. This helps us give you the best advice for watering, protection, and maintenance based on your local conditions.</string>
+    
+    <!-- WeatherKit Configuration -->
+    <key>WeatherKitEntitlement</key>
+    <true/>
     
     <!-- Supabase Configuration -->
     <key>SupabaseURL</key>

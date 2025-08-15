@@ -1,48 +1,66 @@
 import Foundation
 
-actor DataService {
+class DataService {
     static let shared = DataService()
-    
-    private let supabaseService = SupabaseService.shared
     
     private init() {}
     
     func fetchPlants() async throws -> [Plant] {
-        return try await supabaseService.listPlants()
+        // Simple mock data
+        let mockBedId = UUID()
+        return [
+            Plant(name: "Rose", bedId: mockBedId, x: 0.5, y: 0.5, scientificName: "Rosa"),
+            Plant(name: "Tomato", bedId: mockBedId, x: 0.3, y: 0.7, scientificName: "Solanum lycopersicum"),
+            Plant(name: "Lavender", bedId: mockBedId, x: 0.7, y: 0.3, scientificName: "Lavandula")
+        ]
     }
     
     func fetchBeds() async throws -> [Bed] {
-        return try await supabaseService.listBeds()
+        // Simple mock data
+        return [
+            Bed(name: "North Bed", section: "Front Garden"),
+            Bed(name: "South Bed", section: "Front Garden")
+        ]
     }
     
-    func savePlant(_ plant: Plant) async throws {
-        let savedPlant = try await supabaseService.savePlant(plant)
-        print("Plant saved successfully: \(savedPlant.name)")
+    func savePlant(_ plant: Plant) async throws -> Plant {
+        // Mock save - just delay and return the plant
+        try await Task.sleep(nanoseconds: 100_000_000)
+        return plant
     }
     
-    func saveBed(_ bed: Bed) async throws {
-        _ = try await supabaseService.saveBed(bed)
+    func saveBed(_ bed: Bed) async throws -> Bed {
+        // Mock save - just delay and return the bed
+        try await Task.sleep(nanoseconds: 100_000_000)
+        return bed
     }
-
-    // MARK: - Bed ↔︎ Plant Assignment
-    func assignPlant(_ plantId: UUID, toBed bedId: UUID) async throws {
-        try await supabaseService.assignPlant(plantId: plantId, toBed: bedId)
+    
+    func deletePlant(_ id: UUID) async throws {
+        // Mock delete - just delay
+        try await Task.sleep(nanoseconds: 100_000_000)
     }
-
-    func removePlant(_ plantId: UUID, fromBed bedId: UUID) async throws {
-        try await supabaseService.removePlant(plantId: plantId, fromBed: bedId)
-    }
-
+    
     func plants(inBed bedId: UUID) async throws -> [Plant] {
-        try await supabaseService.listPlants(inBed: bedId)
+        // Mock plants in bed
+        return [
+            Plant(name: "Rose", bedId: bedId, x: 0.5, y: 0.5, scientificName: "Rosa"),
+            Plant(name: "Tomato", bedId: bedId, x: 0.3, y: 0.7, scientificName: "Solanum lycopersicum")
+        ]
     }
     
-    // MARK: - Section-based queries
     func beds(inSection section: String) async throws -> [Bed] {
-        try await supabaseService.listBeds(inSection: section)
-    }
-    
-    func plants(inSection section: String) async throws -> [Plant] {
-        try await supabaseService.listPlants(inSection: section)
+        // Mock beds for section
+        if section == "front-yard" {
+            return [
+                Bed(id: UUID(), name: "Rose Garden", section: section),
+                Bed(id: UUID(), name: "Herb Garden", section: section)
+            ]
+        } else if section == "back-yard" {
+            return [
+                Bed(id: UUID(), name: "Vegetable Patch", section: section),
+                Bed(id: UUID(), name: "Fruit Trees", section: section)
+            ]
+        }
+        return []
     }
 }

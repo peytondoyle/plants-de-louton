@@ -77,70 +77,31 @@ struct PlantsView: View {
         do {
             plants = try await DataService.shared.fetchPlants()
         } catch {
-            print("Error loading plants: \(error)")
+            // Handle error appropriately in production
+            plants = []
         }
     }
 }
-
-
 
 struct PlantListView: View {
     let plants: [Plant]
     
     var body: some View {
-        VStack {
-            if plants.isEmpty {
-                PlantsEmptyState {
-                    // This will be handled by the navigation link in the toolbar
-                }
-            } else {
-                List {
-                    ForEach(plants) { plant in
-                        NavigationLink(destination: PlantDetailsView()) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "leaf.fill")
-                                    .font(.title2)
-                                    .foregroundColor(.green)
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(plant.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    
-                                    if let scientificName = plant.scientificName, !scientificName.isEmpty {
-                                        Text(scientificName)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    } else {
-                                        HStack(spacing: 4) {
-                                            Image(systemName: "pencil")
-                                                .font(.caption2)
-                                                .foregroundColor(.secondary)
-                                            Text("Add details")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                                
-                                Spacer()
-                                
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.vertical, 4)
-                        }
+        List {
+            ForEach(plants) { plant in
+                NavigationLink(destination: PlantDetailsView()) {
+                    VStack(alignment: .leading) {
+                        Text(plant.name)
+                            .font(.headline)
+                        Text(plant.scientificName ?? "No scientific name")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
                 }
             }
         }
     }
 }
-
-
-
-// SettingsView is defined in Views/SettingsView.swift
 
 #Preview {
     ContentView()

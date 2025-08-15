@@ -1,549 +1,304 @@
 import Foundation
 import CoreLocation
-import WeatherKit
 
-// MARK: - Weather Models
-struct WeatherResponse: Codable {
-    let weather: [WeatherInfo]
-    let main: MainWeather
-    let name: String
-}
+// MARK: - Weather Service
+// Simplified version without WeatherKit for now
 
-struct WeatherInfo: Codable {
-    let main: String
-    let description: String
-    let icon: String
-}
-
-struct MainWeather: Codable {
-    let temp: Double
-    let humidity: Int
-    let temp_min: Double
-    let temp_max: Double
-}
-
-struct CachedWeatherData: Codable {
-    let weatherResponse: WeatherResponse
-    let timestamp: Date
-    let cacheExpiryMinutes: Int
+class GardenWeatherService: ObservableObject {
+    static let shared = GardenWeatherService()
     
-    init(weatherResponse: WeatherResponse, timestamp: Date) {
-        self.weatherResponse = weatherResponse
-        self.timestamp = timestamp
-        self.cacheExpiryMinutes = 30
-    }
+    @Published var currentWeather: WeatherData?
+    @Published var forecast: [WeatherData] = []
+    @Published var isLoading = false
+    @Published var error: String?
+    @Published var careRecommendations: [CareRecommendation] = []
     
-    var isExpired: Bool {
-        Date().timeIntervalSince(timestamp) > TimeInterval(cacheExpiryMinutes * 60)
-    }
-}
-
-// MARK: - Care Recommendation Models
-struct CareRecommendation: Identifiable, Codable {
-    let id: UUID
-    let plantId: UUID
-    let type: CareRecommendationType
-    let priority: CarePriority
-    let reason: String
-    let recommendedDate: Date
-    let weatherContext: WeatherContext
-    let isUrgent: Bool
+    private init() {}
     
-    init(
-        id: UUID = UUID(),
-        plantId: UUID,
-        type: CareRecommendationType,
-        priority: CarePriority,
-        reason: String,
-        recommendedDate: Date,
-        weatherContext: WeatherContext,
-        isUrgent: Bool = false
-    ) {
-        self.id = id
-        self.plantId = plantId
-        self.type = type
-        self.priority = priority
-        self.reason = reason
-        self.recommendedDate = recommendedDate
-        self.weatherContext = weatherContext
-        self.isUrgent = isUrgent
-    }
-}
-
-enum CareRecommendationType: String, CaseIterable, Codable {
-    case watering = "watering"
-    case fertilizing = "fertilizing"
-    case pruning = "pruning"
-    case frostProtection = "frost_protection"
-    case heatProtection = "heat_protection"
-    case transplanting = "transplanting"
-    case harvesting = "harvesting"
+    // MARK: - Weather Fetching
     
-    var displayName: String {
-        switch self {
-        case .watering: return "Watering"
-        case .fertilizing: return "Fertilizing"
-        case .pruning: return "Pruning"
-        case .frostProtection: return "Frost Protection"
-        case .heatProtection: return "Heat Protection"
-        case .transplanting: return "Transplanting"
-        case .harvesting: return "Harvesting"
+    func fetchWeather() async {
+        await MainActor.run {
+            isLoading = true
+            error = nil
+        }
+        
+        do {
+            // For now, use mock data until WeatherKit is properly configured
+            let mockWeather = createMockWeatherData()
+            
+            await MainActor.run {
+                self.currentWeather = mockWeather.current
+                self.forecast = mockWeather.forecast
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error.localizedDescription
+                self.isLoading = false
+            }
+            print("Weather fetch error: \(error)")
         }
     }
+    
+    func requestWeatherUpdate() {
+        Task {
+            await fetchWeather()
+        }
+    }
+    
+    private func createMockWeatherData() -> (current: WeatherData, forecast: [WeatherData]) {
+        let current = WeatherData(
+            temperature: Measurement(value: 72, unit: .fahrenheit),
+            condition: "Partly Cloudy",
+            humidity: 0.65,
+            windSpeed: Measurement(value: 10, unit: .milesPerHour),
+            precipitation: nil,
+            date: Date()
+        )
+        
+        let forecast = (0..<7).map { dayOffset in
+            WeatherData(
+                temperature: Measurement(value: Double.random(in: 65...80), unit: .fahrenheit),
+                condition: ["Sunny", "Partly Cloudy", "Cloudy", "Light Rain"].randomElement()!,
+                humidity: nil,
+                windSpeed: nil,
+                precipitation: nil,
+                date: Date().addingTimeInterval(Double(dayOffset) * 24 * 60 * 60)
+            )
+        }
+        
+        return (current: current, forecast: forecast)
+    }
+
+    
+    // MARK: - Care Recommendations
+    
+    func generateCareRecommendations(for plants: [Plant]) async throws -> [CareRecommendation] {
+        guard let currentWeather = currentWeather else {
+            throw WeatherError.noWeatherData
+        }
+        
+        var recommendations: [CareRecommendation] = []
+        
+        for plant in plants {
+            let recommendation = CareRecommendation(
+                plantId: plant.id,
+                plantName: plant.name,
+                recommendation: generateRecommendation(for: plant, weather: currentWeather),
+                priority: determinePriority(for: plant, weather: currentWeather),
+                date: Date()
+            )
+            recommendations.append(recommendation)
+        }
+        
+        return recommendations
+    }
+    
+    private func generateRecommendation(for plant: Plant, weather: WeatherData) -> String {
+        let temp = weather.temperature.value
+        let condition = weather.condition.lowercased()
+        
+        var recommendations: [String] = []
+        
+        // Temperature-based recommendations
+        if temp < 32 {
+            recommendations.append("Protect from frost")
+        } else if temp > 90 {
+            recommendations.append("Provide extra water and shade")
+        }
+        
+        // Weather condition-based recommendations
+        if condition.contains("rain") {
+            recommendations.append("Reduce watering - natural precipitation")
+        } else if condition.contains("sunny") && temp > 75 {
+            recommendations.append("Increase watering frequency")
+        }
+        
+        // Plant-specific recommendations
+        if let waterNeeds = plant.waterNeeds {
+            switch waterNeeds {
+            case "high":
+                if !condition.contains("rain") {
+                    recommendations.append("Water thoroughly - high water needs")
+                }
+            case "low":
+                if condition.contains("rain") {
+                    recommendations.append("Skip watering - low water needs")
+                }
+            default:
+                break
+            }
+        }
+        
+        return recommendations.isEmpty ? "No special care needed" : recommendations.joined(separator: ". ")
+    }
+    
+    private func determinePriority(for plant: Plant, weather: WeatherData) -> CarePriority {
+        let temp = weather.temperature.value
+        let condition = weather.condition.lowercased()
+        
+        // High priority for extreme conditions
+        if temp < 32 || temp > 95 {
+            return .high
+        }
+        
+        // Medium priority for moderate stress
+        if temp < 40 || temp > 85 {
+            return .medium
+        }
+        
+        // Low priority for normal conditions
+        return .low
+    }
+}
+
+// MARK: - Data Models
+
+struct WeatherData {
+    let temperature: Measurement<UnitTemperature>
+    let condition: String
+    let humidity: Double?
+    let windSpeed: Measurement<UnitSpeed>?
+    let precipitation: Measurement<UnitLength>?
+    let date: Date
+    
+    // Computed properties for compatibility
+    var temperatureString: String {
+        let formatter = MeasurementFormatter()
+        formatter.numberFormatter.maximumFractionDigits = 0
+        return formatter.string(from: temperature)
+    }
+    
+    var conditionDescription: String {
+        return condition
+    }
+    
+    var weatherEmoji: String {
+        switch condition.lowercased() {
+        case let c where c.contains("sunny") || c.contains("clear"):
+            return "☀️"
+        case let c where c.contains("cloudy") || c.contains("overcast"):
+            return "☁️"
+        case let c where c.contains("rain") || c.contains("drizzle"):
+            return "🌧️"
+        case let c where c.contains("snow"):
+            return "❄️"
+        case let c where c.contains("storm") || c.contains("thunder"):
+            return "⛈️"
+        case let c where c.contains("fog") || c.contains("mist"):
+            return "🌫️"
+        default:
+            return "🌤️"
+        }
+    }
+    
+    var isGoodForGardening: Bool {
+        let temp = temperature.value
+        return temp >= 50 && temp <= 85 && !condition.lowercased().contains("storm")
+    }
+    
+    var gardeningTip: String {
+        let temp = temperature.value
+        if temp < 32 {
+            return "Protect plants from frost"
+        } else if temp > 90 {
+            return "Provide extra water and shade"
+        } else if condition.lowercased().contains("rain") {
+            return "Reduce watering - natural precipitation"
+        } else {
+            return "Good conditions for gardening"
+        }
+    }
+}
+
+struct CareRecommendation: Identifiable {
+    let id = UUID()
+    let plantId: UUID
+    let plantName: String
+    let recommendation: String
+    let priority: CarePriority
+    let date: Date
+    let type: CareType
+    
+    init(plantId: UUID, plantName: String, recommendation: String, priority: CarePriority, date: Date, type: CareType = .watering) {
+        self.plantId = plantId
+        self.plantName = plantName
+        self.recommendation = recommendation
+        self.priority = priority
+        self.date = date
+        self.type = type
+    }
+}
+
+enum CareType {
+    case watering
+    case fertilizing
+    case pruning
+    case protection
     
     var icon: String {
         switch self {
         case .watering: return "drop.fill"
         case .fertilizing: return "leaf.fill"
         case .pruning: return "scissors"
-        case .frostProtection: return "thermometer.snowflake"
-        case .heatProtection: return "thermometer.sun"
-        case .transplanting: return "arrow.up.arrow.down"
-        case .harvesting: return "basket.fill"
+        case .protection: return "shield.fill"
+        }
+    }
+    
+    var displayName: String {
+        switch self {
+        case .watering: return "Watering"
+        case .fertilizing: return "Fertilizing"
+        case .pruning: return "Pruning"
+        case .protection: return "Protection"
         }
     }
 }
 
-enum CarePriority: String, CaseIterable, Codable {
+enum CarePriority: String, CaseIterable {
     case low = "low"
     case medium = "medium"
     case high = "high"
     case critical = "critical"
     
+    var displayName: String {
+        switch self {
+        case .low: return "Low"
+        case .medium: return "Medium"
+        case .high: return "High"
+        case .critical: return "Critical"
+        }
+    }
+    
     var color: String {
         switch self {
         case .low: return "green"
-        case .medium: return "yellow"
-        case .high: return "orange"
+        case .medium: return "orange"
+        case .high: return "red"
         case .critical: return "red"
         }
     }
 }
 
-struct WeatherContext: Codable {
-    let temperature: Double
-    let humidity: Int
-    let precipitation: Double
-    let forecast: [WeatherForecast]
-    let lastWatering: Date?
-    let soilMoisture: SoilMoistureLevel
-    
-    enum SoilMoistureLevel: String, Codable {
-        case dry = "dry"
-        case moist = "moist"
-        case wet = "wet"
-    }
-}
+// MARK: - Error Types
 
-struct WeatherForecast: Codable {
-    let date: Date
-    let temperature: Double
-    let precipitation: Double
-    let humidity: Int
-    let condition: String
-}
-
-// MARK: - Garden Weather Service  
-@MainActor
-class GardenWeatherService: NSObject, ObservableObject {
-    static let shared = GardenWeatherService()
+enum WeatherError: LocalizedError {
+    case noWeatherData
+    case locationError
+    case weatherKitError
+    case locationManagerNotConfigured
     
-    @Published var currentWeather: WeatherResponse?
-    @Published var isLoading = false
-    @Published var error: String?
-    @Published var careRecommendations: [CareRecommendation] = []
-    
-    private let locationManager = CLLocationManager()
-    private let cacheKey = "cached_weather_data"
-    
-    // Default location (San Francisco) if location access is denied
-    private let defaultLatitude: Double = 37.7749
-    private let defaultLongitude: Double = -122.4194
-    
-    override init() {
-        super.init()
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-    }
-    
-    func requestWeatherUpdate() {
-        // Check cache first
-        if let cachedData = getCachedWeather(), !cachedData.isExpired {
-            print("Using cached weather data")
-            self.currentWeather = cachedData.weatherResponse
-            return
-        }
-        
-        // Request location permission and fetch weather
-        switch locationManager.authorizationStatus {
-        case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.requestLocation()
-        case .denied, .restricted:
-            // Use default location
-            fetchWeather(latitude: defaultLatitude, longitude: defaultLongitude)
-        @unknown default:
-            fetchWeather(latitude: defaultLatitude, longitude: defaultLongitude)
-        }
-    }
-    
-    private func fetchWeather(latitude: Double, longitude: Double) {
-        guard !isLoading else { return }
-        
-        isLoading = true
-        error = nil
-        
-        // Use Apple's WeatherKit API
-        fetchAppleWeather(latitude: latitude, longitude: longitude)
-    }
-    
-    private func fetchAppleWeather(latitude: Double, longitude: Double) {
-        Task {
-            do {
-                let location = CLLocation(latitude: latitude, longitude: longitude)
-                let weather = try await WeatherKit.WeatherService.shared.weather(for: location)
-                
-                // Convert Apple's weather data to our format
-                let weatherResponse = convertAppleWeather(weather, locationName: "Current Location")
-                
-                // Cache the weather data
-                let cachedData = CachedWeatherData(weatherResponse: weatherResponse, timestamp: Date())
-                cacheWeatherData(cachedData)
-                
-                self.currentWeather = weatherResponse
-                self.isLoading = false
-                
-                // Generate care recommendations based on new weather data
-                await generateCareRecommendations()
-                
-            } catch {
-                print("Weather fetch error: \(error)")
-                self.error = "Failed to fetch weather: \(error.localizedDescription)"
-                self.isLoading = false
-                
-                // Fallback to simulation for development
-                if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-                    self.currentWeather = createSimulatedWeather()
-                }
-            }
-        }
-    }
-    
-    // MARK: - Smart Care Scheduling
-    
-    /// Generate care recommendations based on current weather and plant data
-    func generateCareRecommendations() async {
-        guard let weather = currentWeather else { return }
-        
-        // Get plants from Supabase
-        let supabaseService = SupabaseService.shared
-        do {
-            let plants = try await supabaseService.listPlants()
-            var recommendations: [CareRecommendation] = []
-            
-            for plant in plants {
-                let plantRecommendations = await generateRecommendationsForPlant(plant, weather: weather)
-                recommendations.append(contentsOf: plantRecommendations)
-            }
-            
-            // Sort by priority and urgency
-            recommendations.sort { first, second in
-                if first.isUrgent != second.isUrgent {
-                    return first.isUrgent
-                }
-                return first.priority.rawValue > second.priority.rawValue
-            }
-            
-            self.careRecommendations = recommendations
-            
-        } catch {
-            print("Failed to generate care recommendations: \(error)")
-        }
-    }
-    
-    /// Generate care recommendations for a specific plant
-    private func generateRecommendationsForPlant(_ plant: Plant, weather: WeatherResponse) async -> [CareRecommendation] {
-        var recommendations: [CareRecommendation] = []
-        
-        // Get plant care history
-        let supabaseService = SupabaseService.shared
-        let careEvents = try? await supabaseService.fetchCareEvents()
-        let plantCareEvents = careEvents?.filter { $0.plantId == plant.id } ?? []
-        
-        // Analyze weather conditions
-        let temp = weather.main.temp
-        let humidity = weather.main.humidity
-        let isHot = temp > 85
-        let isCold = temp < 32
-        let isDry = humidity < 30
-        
-        // Watering recommendations
-        let lastWatering = plantCareEvents
-            .filter { $0.type == .watering }
-            .max { $0.date < $1.date }?.date
-        
-        let daysSinceWatering = lastWatering.map { Calendar.current.dateComponents([.day], from: $0, to: Date()).day ?? 0 } ?? 7
-        
-        // Determine if watering is needed
-        let needsWatering = shouldWaterPlant(plant, daysSinceWatering: daysSinceWatering, weather: weather)
-        if needsWatering {
-            let priority: CarePriority = daysSinceWatering > 5 ? .high : .medium
-            let reason = generateWateringReason(plant, daysSinceWatering: daysSinceWatering, weather: weather)
-            
-            recommendations.append(CareRecommendation(
-                plantId: plant.id,
-                type: .watering,
-                priority: priority,
-                reason: reason,
-                recommendedDate: Date(),
-                weatherContext: createWeatherContext(weather),
-                isUrgent: priority == .high
-            ))
-        }
-        
-        // Frost protection
-        if isCold {
-            recommendations.append(CareRecommendation(
-                plantId: plant.id,
-                type: .frostProtection,
-                priority: .critical,
-                reason: "Temperature is \(Int(temp))°F - protect from frost",
-                recommendedDate: Date(),
-                weatherContext: createWeatherContext(weather),
-                isUrgent: true
-            ))
-        }
-        
-        // Heat protection
-        if isHot {
-            recommendations.append(CareRecommendation(
-                plantId: plant.id,
-                type: .heatProtection,
-                priority: .high,
-                reason: "Temperature is \(Int(temp))°F - provide shade and extra water",
-                recommendedDate: Date(),
-                weatherContext: createWeatherContext(weather),
-                isUrgent: false
-            ))
-        }
-        
-        return recommendations
-    }
-    
-    /// Determine if a plant needs watering based on weather and plant type
-    private func shouldWaterPlant(_ plant: Plant, daysSinceWatering: Int, weather: WeatherResponse) -> Bool {
-        let temp = weather.main.temp
-        let humidity = weather.main.humidity
-        
-        // Base watering frequency by plant type
-        let baseWateringDays: Int
-        switch plant.waterNeeds?.lowercased() {
-        case "low": baseWateringDays = 7
-        case "high": baseWateringDays = 2
-        default: baseWateringDays = 4
-        }
-        
-        // Adjust for weather conditions
-        var adjustedDays = baseWateringDays
-        
-        // Hot weather increases water needs
-        if temp > 80 { adjustedDays -= 1 }
-        if temp > 90 { adjustedDays -= 1 }
-        
-        // Low humidity increases water needs
-        if humidity < 30 { adjustedDays -= 1 }
-        if humidity < 20 { adjustedDays -= 1 }
-        
-        // Rain reduces water needs
-        if weather.weather.contains(where: { $0.main.lowercased().contains("rain") }) {
-            adjustedDays += 2
-        }
-        
-        return daysSinceWatering >= adjustedDays
-    }
-    
-    /// Generate a human-readable reason for watering recommendation
-    private func generateWateringReason(_ plant: Plant, daysSinceWatering: Int, weather: WeatherResponse) -> String {
-        let temp = weather.main.temp
-        let humidity = weather.main.humidity
-        
-        var reasons: [String] = []
-        
-        if daysSinceWatering > 5 {
-            reasons.append("Hasn't been watered in \(daysSinceWatering) days")
-        }
-        
-        if temp > 80 {
-            reasons.append("High temperature (\(Int(temp))°F)")
-        }
-        
-        if humidity < 30 {
-            reasons.append("Low humidity (\(humidity)%)")
-        }
-        
-        if reasons.isEmpty {
-            reasons.append("Regular watering schedule")
-        }
-        
-        return reasons.joined(separator: ", ")
-    }
-    
-    /// Create weather context for recommendations
-    private func createWeatherContext(_ weather: WeatherResponse) -> WeatherContext {
-        return WeatherContext(
-            temperature: weather.main.temp,
-            humidity: weather.main.humidity,
-            precipitation: 0, // Would need to extract from weather data
-            forecast: [], // Would need to fetch forecast data
-            lastWatering: nil, // Would need to get from care events
-            soilMoisture: .moist // Would need soil moisture sensors or estimation
-        )
-    }
-    
-    // MARK: - Weather Data Conversion
-    
-    private func convertAppleWeather(_ weather: Weather, locationName: String) -> WeatherResponse {
-        let current = weather.currentWeather
-        
-        let weatherInfo = WeatherInfo(
-            main: current.condition.description,
-            description: current.condition.description,
-            icon: "sun.max.fill" // Simplified for now
-        )
-        
-        let mainWeather = MainWeather(
-            temp: current.temperature.value,
-            humidity: Int(current.humidity * 100),
-            temp_min: current.temperature.value,
-            temp_max: current.temperature.value
-        )
-        
-        return WeatherResponse(
-            weather: [weatherInfo],
-            main: mainWeather,
-            name: locationName
-        )
-    }
-    
-    private func createSimulatedWeather() -> WeatherResponse {
-        let weatherInfo = WeatherInfo(
-            main: "Clear",
-            description: "Clear sky",
-            icon: "sun.max.fill"
-        )
-        
-        let mainWeather = MainWeather(
-            temp: 72.0,
-            humidity: 45,
-            temp_min: 65.0,
-            temp_max: 78.0
-        )
-        
-        return WeatherResponse(
-            weather: [weatherInfo],
-            main: mainWeather,
-            name: "Simulated Location"
-        )
-    }
-    
-    // MARK: - Caching
-    
-    private func getCachedWeather() -> CachedWeatherData? {
-        guard let data = UserDefaults.standard.data(forKey: cacheKey),
-              let cachedData = try? JSONDecoder().decode(CachedWeatherData.self, from: data) else {
-            return nil
-        }
-        return cachedData
-    }
-    
-    private func cacheWeatherData(_ data: CachedWeatherData) {
-        if let encoded = try? JSONEncoder().encode(data) {
-            UserDefaults.standard.set(encoded, forKey: cacheKey)
-        }
-    }
-}
-
-// MARK: - Weather Helper Extensions
-extension WeatherResponse {
-    var temperatureString: String {
-        return "\(Int(main.temp))°F"
-    }
-    
-    var conditionDescription: String {
-        return weather.first?.description.capitalized ?? "Unknown"
-    }
-    
-    var weatherEmoji: String {
-        guard let condition = weather.first?.main.lowercased() else { return "☀️" }
-        
-        switch condition {
-        case let c where c.contains("clear"): return "☀️"
-        case let c where c.contains("cloud"): return "⛅"
-        case let c where c.contains("rain"): return "🌧️"
-        case let c where c.contains("storm"): return "⛈️"
-        case let c where c.contains("snow"): return "🌨️"
-        case let c where c.contains("mist"), let c where c.contains("fog"): return "🌫️"
-        default: return "🌤️"
-        }
-    }
-    
-    var isGoodForGardening: Bool {
-        guard let condition = weather.first?.main.lowercased() else { return true }
-        
-        // Good gardening weather
-        let goodConditions = ["clear", "clouds"]
-        let badConditions = ["rain", "storm", "snow"]
-        
-        return goodConditions.contains { condition.contains($0) } && 
-               !badConditions.contains { condition.contains($0) }
-    }
-    
-    var gardeningTip: String {
-        if isGoodForGardening {
-            if main.humidity > 70 {
-                return "Great humidity for your plants!"
-            } else if main.temp > 80 {
-                return "Perfect weather, but provide shade"
-            } else {
-                return "Perfect day for gardening!"
-            }
-        } else {
-            return "Indoor plant care day"
-        }
-    }
-}
-
-// MARK: - Location Manager Delegate
-extension GardenWeatherService: CLLocationManagerDelegate {
-    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        
-        Task { @MainActor in
-            fetchWeather(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-        }
-    }
-    
-    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location error: \(error.localizedDescription)")
-        // Fall back to default location
-        Task { @MainActor in
-            fetchWeather(latitude: defaultLatitude, longitude: defaultLongitude)
-        }
-    }
-    
-    nonisolated func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .authorizedWhenInUse, .authorizedAlways:
-            Task { @MainActor in
-                locationManager.requestLocation()
-            }
-        case .denied, .restricted:
-            Task { @MainActor in
-                fetchWeather(latitude: defaultLatitude, longitude: defaultLongitude)
-            }
-        default:
-            break
+    var errorDescription: String? {
+        switch self {
+        case .noWeatherData:
+            return "No weather data available"
+        case .locationError:
+            return "Unable to determine location"
+        case .weatherKitError:
+            return "Weather service unavailable"
+        case .locationManagerNotConfigured:
+            return "Location manager not configured"
         }
     }
 }

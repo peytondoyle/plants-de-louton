@@ -3,33 +3,38 @@ import Foundation
 class BedsViewModel: ObservableObject {
     @Published var beds: [Bed] = []
     @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var error: String?
     
-    private let dataService = DataService.shared
-    
-    @MainActor
     func loadBeds() async {
-        isLoading = true
-        errorMessage = nil
+        await MainActor.run {
+            isLoading = true
+            error = nil
+        }
+        
         do {
-            var fetchedBeds = try await dataService.fetchBeds()
+            var fetchedBeds = try await DataService.shared.fetchBeds()
             
-            // Load plants for each bed to get accurate counts
+            // Load plants for each bed
             for i in 0..<fetchedBeds.count {
                 do {
-                    let plantsInBed = try await dataService.plants(inBed: fetchedBeds[i].id)
-                    fetchedBeds[i].plants = plantsInBed
+                    let plants = try await DataService.shared.plants(inBed: fetchedBeds[i].id)
+                    fetchedBeds[i].plants = plants
                 } catch {
-                    print("Failed to load plants for bed \(fetchedBeds[i].name): \(error)")
+                    // Handle error appropriately in production
                     fetchedBeds[i].plants = []
                 }
             }
             
-            self.beds = fetchedBeds
+            await MainActor.run {
+                self.beds = fetchedBeds
+                self.isLoading = false
+            }
         } catch {
-            self.errorMessage = error.localizedDescription
+            await MainActor.run {
+                self.error = error.localizedDescription
+                self.isLoading = false
+            }
         }
-        isLoading = false
     }
 }
 

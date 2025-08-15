@@ -1,22 +1,48 @@
 import Foundation
+import SwiftUI
 
+@MainActor
 class PlantsViewModel: ObservableObject {
     @Published var plants: [Plant] = []
     @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var error: String?
+    @Published var searchText = ""
     
     private let dataService = DataService.shared
     
-    @MainActor
+    var filteredPlants: [Plant] {
+        if searchText.isEmpty {
+            return plants
+        }
+        return plants.filter { plant in
+            plant.name.localizedCaseInsensitiveContains(searchText) ||
+            plant.scientificName?.localizedCaseInsensitiveContains(searchText) ?? false
+        }
+    }
+    
     func loadPlants() async {
         isLoading = true
-        errorMessage = nil
+        error = nil
+        
         do {
-            let fetched = try await dataService.fetchPlants()
-            self.plants = fetched
+            plants = try await dataService.fetchPlants()
         } catch {
-            self.errorMessage = error.localizedDescription
+            self.error = error.localizedDescription
         }
+        
         isLoading = false
+    }
+    
+    func deletePlant(_ plant: Plant) async {
+        do {
+            try await dataService.deletePlant(plant.id)
+            plants.removeAll { $0.id == plant.id }
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+    
+    func refreshPlants() async {
+        await loadPlants()
     }
 }

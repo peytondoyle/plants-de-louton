@@ -1,85 +1,65 @@
 import Foundation
-import SwiftUI
 
-@MainActor
 class PlantDetailsViewModel: ObservableObject {
-    @Published var plant: Plant = Plant(name: "", bedId: UUID(), x: 0.5, y: 0.5)
+    @Published var plant: Plant
     @Published var selectedPlantData: AIPlantSearchResult?
     @Published var isLoading = false
-    @Published var errorMessage: String?
+    @Published var error: String?
     
-    init() {}
-    
-    init(plant: Plant) {
+    init(plant: Plant = Plant(name: "New Plant", bedId: UUID(), x: 0.5, y: 0.5)) {
         self.plant = plant
     }
     
-    // Check if we have comprehensive plant data from AI search
-    var hasPlantData: Bool {
-        selectedPlantData != nil
-    }
-    
-    // Apply AI search data to the plant
     func applyAISearchData(_ searchResult: AIPlantSearchResult) {
         selectedPlantData = searchResult
         
-        // Update basic plant information
-        if plant.name.isEmpty {
-            plant.name = searchResult.name
+        // Update plant with AI data
+        plant.name = searchResult.name
+        
+        if let scientificName = searchResult.scientificName {
+            plant.scientificName = scientificName
         }
         
-        // Update other plant properties from AI data
-        plant.scientificName = searchResult.scientificName
+        // Update plant properties based on AI data
         plant.growthHabit = searchResult.growthHabit.rawValue
         plant.sunExposure = searchResult.sunExposure.rawValue
         plant.waterNeeds = searchResult.waterNeeds.rawValue
     }
     
-    // Save plant data
-    func savePlant() async {
+    func savePlant() async throws {
         isLoading = true
-        errorMessage = nil
+        error = nil
         
         do {
-            // TODO: Connect to your actual save service
-            try await DataService.shared.savePlant(plant)
+            let savedPlant = try await DataService.shared.savePlant(plant)
+            await MainActor.run {
+                self.plant = savedPlant
+                self.isLoading = false
+            }
         } catch {
-            errorMessage = "Failed to save plant: \(error.localizedDescription)"
+            await MainActor.run {
+                self.error = error.localizedDescription
+                self.isLoading = false
+            }
+            throw error
         }
+    }
+    
+    func deletePlant() async throws {
+        isLoading = true
+        error = nil
         
-        isLoading = false
-    }
-    
-    // Reset to empty state
-    func reset() {
-        plant = Plant(name: "", bedId: UUID(), x: 0.5, y: 0.5)
-        selectedPlantData = nil
-        errorMessage = nil
-    }
-    
-    // Validation
-    var isValid: Bool {
-        !plant.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-    
-    var validationMessage: String? {
-        if plant.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return "Plant name is required"
+        do {
+            try await DataService.shared.deletePlant(plant.id)
+            await MainActor.run {
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.error = error.localizedDescription
+                self.isLoading = false
+            }
+            throw error
         }
-        return nil
-    }
-}
-
-// MARK: - Preview Helpers
-extension PlantDetailsViewModel {
-    static func withMockData() -> PlantDetailsViewModel {
-        let viewModel = PlantDetailsViewModel()
-        viewModel.plant = Plant(
-            name: "",
-            bedId: UUID(),
-            x: 0.5,
-            y: 0.5
-        )
-        return viewModel
     }
 }
