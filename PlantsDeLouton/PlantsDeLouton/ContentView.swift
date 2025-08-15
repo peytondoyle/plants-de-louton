@@ -96,7 +96,7 @@ struct PlantListView: View {
             } else {
                 List {
                     ForEach(plants) { plant in
-                        NavigationLink(destination: PlantDetailsView()) {
+                        NavigationLink(destination: PlantDetailView(plant: plant)) {
                             HStack(spacing: 12) {
                                 Image(systemName: "leaf.fill")
                                     .font(.title2)

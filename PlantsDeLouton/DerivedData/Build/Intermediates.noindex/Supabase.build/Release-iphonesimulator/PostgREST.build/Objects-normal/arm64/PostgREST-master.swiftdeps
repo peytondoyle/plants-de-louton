@@ -1,0 +1,25 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "c126b1c397c8be9f24d537d5a7fd733f8649d3e6e5b9da7e3bf0cdac4a6297ce"
+build_start_time: [1755273953, 194816000]
+build_end_time: [1755273955, 252108000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/Defaults.swift"
+  : [1755273935, 565781321]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/Deprecated.swift"
+  : [1755273935, 565874030]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/Exports.swift"
+  : [1755273935, 565960072]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/PostgrestBuilder.swift"
+  : [1755273935, 566059448]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/PostgrestClient.swift"
+  : [1755273935, 566159490]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/PostgrestFilterBuilder.swift"
+  : [1755273935, 566270116]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/PostgrestFilterValue.swift"
+  : [1755273935, 566372825]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/PostgrestQueryBuilder.swift"
+  : [1755273935, 566540618]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/PostgrestTransformBuilder.swift"
+  : [1755273935, 566694994]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/PostgREST/Types.swift"
+  : [1755273935, 566824036]

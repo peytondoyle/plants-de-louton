@@ -1,0 +1,200 @@
+{
+  "source": "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/PlantsDeLouton/Views/PlantDetailView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Edit",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 48
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Plant",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Care Event",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Care Events",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 276
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Event",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 280
+        }
+      },
+      {
+        "comment": "",
+        "key": "No care events yet",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 310
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add your first care event to start tracking plant health",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 314
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cost: $%.2f",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 356
+        }
+      },
+      {
+        "comment": "",
+        "key": "No photos yet",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 392
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add photos to track your plant's growth",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 396
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 422
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Care Event",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 494
+        }
+      },
+      {
+        "comment": "",
+        "key": "Event Details",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 467
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cost (Optional)",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 482
+        }
+      },
+      {
+        "comment": "",
+        "key": "Event Type",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 468
+        }
+      },
+      {
+        "comment": "",
+        "key": "Date",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 474
+        }
+      },
+      {
+        "comment": "",
+        "key": "Description",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 476
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 478
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Cost",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 483
+        }
+      },
+      {
+        "comment": "",
+        "key": "$",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 487
+        }
+      },
+      {
+        "comment": "",
+        "key": "0.00",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 488
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 498
+        }
+      }
+    ]
+  },
+  "version": 1
+}

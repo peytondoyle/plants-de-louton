@@ -1,120 +1,25 @@
 import Foundation
 import UIKit
 
-// MARK: - Models matching the TypeScript interface
-struct AIPlantSearchResult: Codable, Identifiable {
-    let id = UUID()
+// MARK: - Plant Information Models
+struct PlantInfo: Codable {
     let name: String
     let scientificName: String
-    let commonNames: [String]
-    let family: String
-    let genus: String
-    let species: String
-    let growthHabit: GrowthHabit
-    let hardinessZones: [Int]
-    let sunExposure: SunExposure
-    let waterNeeds: WaterNeeds
-    let matureHeight: Double
-    let matureWidth: Double
-    let bloomTime: BloomTime
-    let bloomDuration: Double
-    let flowerColor: [String]
-    let foliageColor: [String]
-    let soilType: SoilType
-    let soilPH: SoilPH
-    let fertilizerNeeds: FertilizerNeeds
-    let pruningNeeds: PruningNeeds
-    let plantingSeason: PlantingSeason
-    let plantingDepth: Double
-    let spacing: Double
-    
-    enum CodingKeys: String, CodingKey {
-        case name
-        case scientificName = "scientific_name"
-        case commonNames = "common_names"
-        case family, genus, species
-        case growthHabit = "growth_habit"
-        case hardinessZones = "hardiness_zones"
-        case sunExposure = "sun_exposure"
-        case waterNeeds = "water_needs"
-        case matureHeight = "mature_height"
-        case matureWidth = "mature_width"
-        case bloomTime = "bloom_time"
-        case bloomDuration = "bloom_duration"
-        case flowerColor = "flower_color"
-        case foliageColor = "foliage_color"
-        case soilType = "soil_type"
-        case soilPH = "soil_ph"
-        case fertilizerNeeds = "fertilizer_needs"
-        case pruningNeeds = "pruning_needs"
-        case plantingSeason = "planting_season"
-        case plantingDepth = "planting_depth"
-        case spacing
-    }
-}
-
-// MARK: - Enums
-enum GrowthHabit: String, Codable, CaseIterable {
-    case annual = "annual"
-    case perennial = "perennial"
-    case biennial = "biennial"
-    case shrub = "shrub"
-    case tree = "tree"
-    case vine = "vine"
-    case groundcover = "groundcover"
-}
-
-enum SunExposure: String, Codable, CaseIterable {
-    case fullSun = "full_sun"
-    case partialSun = "partial_sun"
-    case partialShade = "partial_shade"
-    case fullShade = "full_shade"
-}
-
-enum WaterNeeds: String, Codable, CaseIterable {
-    case low = "low"
-    case moderate = "moderate"
-    case high = "high"
-}
-
-enum BloomTime: String, Codable, CaseIterable {
-    case spring = "spring"
-    case summer = "summer"
-    case fall = "fall"
-    case winter = "winter"
-    case yearRound = "year_round"
-}
-
-enum SoilType: String, Codable, CaseIterable {
-    case clay = "clay"
-    case loam = "loam"
-    case sandy = "sandy"
-    case wellDraining = "well_draining"
-}
-
-enum SoilPH: String, Codable, CaseIterable {
-    case acidic = "acidic"
-    case neutral = "neutral"
-    case alkaline = "alkaline"
-}
-
-enum FertilizerNeeds: String, Codable, CaseIterable {
-    case low = "low"
-    case moderate = "moderate"
-    case high = "high"
-}
-
-enum PruningNeeds: String, Codable, CaseIterable {
-    case minimal = "minimal"
-    case moderate = "moderate"
-    case heavy = "heavy"
-}
-
-enum PlantingSeason: String, Codable, CaseIterable {
-    case spring = "spring"
-    case summer = "summer"
-    case fall = "fall"
-    case winter = "winter"
+    let family: String?
+    let growthHabit: String?
+    let sunExposure: String?
+    let waterNeeds: String?
+    let matureHeight: String?
+    let matureWidth: String?
+    let bloomTime: String?
+    let flowerColor: String?
+    let foliageColor: String?
+    let soilType: String?
+    let soilPH: String?
+    let hardinessZones: String?
+    let careInstructions: String?
+    let commonNames: [String]?
+    let description: String?
 }
 
 // MARK: - AI Plant Search Service
@@ -122,261 +27,213 @@ enum PlantingSeason: String, Codable, CaseIterable {
 class AIPlantSearchService: ObservableObject {
     static let shared = AIPlantSearchService()
     
-    @Published var searchResults: [AIPlantSearchResult] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    // TODO: Add OpenAI integration when API key is available
-    // private let openAI = OpenAI(apiToken: "your-openai-api-key")
-    
     private init() {}
     
-    // MARK: - Text-Based Plant Search
+    // MARK: - Get Plant Information from ChatGPT
     
-    /// Search for plants using text query
-    func searchPlants(query: String) async throws -> [AIPlantSearchResult] {
+    /// Get detailed plant information using ChatGPT API
+    func getPlantInfo(for plantName: String) async throws -> PlantInfo {
+        isLoading = true
+        errorMessage = nil
+        
+        // TODO: Replace with actual OpenAI API key
+        // For now, return mock data to demonstrate the flow
+        // In production, this would make a real API call to ChatGPT
+        
+        // Simulate API delay
+        try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+        
+        // Mock response - in real implementation, this would come from ChatGPT
+        let mockPlantInfo = PlantInfo(
+            name: plantName,
+            scientificName: getScientificName(for: plantName),
+            family: getFamily(for: plantName),
+            growthHabit: "Perennial",
+            sunExposure: "Full sun to partial shade",
+            waterNeeds: "Moderate",
+            matureHeight: "12-24 inches",
+            matureWidth: "12-18 inches",
+            bloomTime: "Spring to fall",
+            flowerColor: "Various",
+            foliageColor: "Green",
+            soilType: "Well-draining, fertile",
+            soilPH: "6.0-7.0",
+            hardinessZones: "3-9",
+            careInstructions: "Water regularly, deadhead spent flowers, fertilize monthly during growing season",
+            commonNames: getCommonNames(for: plantName),
+            description: "A beautiful flowering plant that adds color and interest to any garden."
+        )
+        
+        isLoading = false
+        return mockPlantInfo
+    }
+    
+    // MARK: - Plant Name Suggestions
+    
+    /// Get plant name suggestions based on partial input
+    func getPlantSuggestions(for query: String) async throws -> [String] {
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return []
         }
         
-        isLoading = true
-        errorMessage = nil
+        // Common garden plants for suggestions
+        let commonPlants = [
+            "Tomato", "Basil", "Lavender", "Sunflower", "Marigold", "Zinnia",
+            "Pepper", "Cucumber", "Carrot", "Lettuce", "Spinach", "Kale",
+            "Broccoli", "Cauliflower", "Onion", "Garlic", "Potato", "Beet",
+            "Radish", "Mint", "Rosemary", "Thyme", "Sage", "Oregano",
+            "Parsley", "Cilantro", "Dill", "Chives", "Strawberry", "Blueberry",
+            "Raspberry", "Blackberry", "Grape", "Lemon Tree", "Apple Tree",
+            "Peach Tree", "Cherry Tree", "Calendula", "Nasturtium", "Alyssum",
+            "Petunia", "Geranium", "Cosmos", "Snapdragon", "Pansy", "Viola"
+        ]
         
-        // TODO: Implement ChatGPT search when OpenAI is integrated
-        // For now, return empty results
-        isLoading = false
-        return []
-    }
-    
-    // MARK: - Image-Based Plant Identification
-    
-    /// Identify plant from photo using ChatGPT Vision
-    func identifyPlantFromImage(_ image: UIImage) async throws -> AIPlantSearchResult {
-        isLoading = true
-        errorMessage = nil
-        
-        // TODO: Implement ChatGPT Vision when OpenAI is integrated
-        // For now, return a mock result
-        isLoading = false
-        
-        // Return a mock plant for demonstration
-        return AIPlantSearchResult(
-            name: "Unknown Plant",
-            scientificName: "Species unknown",
-            commonNames: ["Unknown"],
-            family: "Unknown",
-            genus: "Unknown",
-            species: "unknown",
-            growthHabit: .annual,
-            hardinessZones: [5, 6, 7, 8],
-            sunExposure: .fullSun,
-            waterNeeds: .moderate,
-            matureHeight: 24.0,
-            matureWidth: 18.0,
-            bloomTime: .summer,
-            bloomDuration: 4,
-            flowerColor: ["Unknown"],
-            foliageColor: ["Green"],
-            soilType: .wellDraining,
-            soilPH: .neutral,
-            fertilizerNeeds: .moderate,
-            pruningNeeds: .moderate,
-            plantingSeason: .spring,
-            plantingDepth: 1.0,
-            spacing: 12.0
-        )
-    }
-    
-    // MARK: - ChatGPT Text Search
-    
-    /// Search for plants using ChatGPT
-    private func searchWithChatGPT(query: String) async throws -> [AIPlantSearchResult] {
-        // TODO: Implement ChatGPT search when OpenAI is integrated
-        // For now, return empty results
-        return []
-    }
-    
-    // MARK: - Health Analysis
-    
-    /// Analyze plant health from photo
-    func analyzePlantHealth(_ image: UIImage) async throws -> PlantHealthAnalysis {
-        isLoading = true
-        errorMessage = nil
-        
-        // TODO: Implement ChatGPT Vision health analysis when OpenAI is integrated
-        // For now, return a mock health analysis
-        isLoading = false
-        
-        return PlantHealthAnalysis(
-            overallHealth: .good,
-            healthScore: 85,
-            issues: ["Slight yellowing on lower leaves"],
-            recommendations: ["Ensure proper watering", "Check for pests", "Consider fertilizing"],
-            diseases: [],
-            pests: [],
-            nutrientDeficiencies: ["Possible nitrogen deficiency"],
-            confidence: 75
-        )
-    }
-    
-    // Real API implementation - replace with actual plant database
-    private func searchMockAPI(query: String) async throws -> [AIPlantSearchResult] {
-        // This will be replaced with real plant database integration
-        // For now, return empty array - implement when external API is ready
-        return []
-    }
-}
-
-// MARK: - Response Models
-
-struct ChatGPTPlantResponse: Codable {
-    let name: String
-    let scientificName: String
-    let commonNames: [String]
-    let family: String
-    let genus: String
-    let species: String
-    let growthHabit: String
-    let hardinessZones: [Int]
-    let sunExposure: String
-    let waterNeeds: String
-    let matureHeight: Double
-    let matureWidth: Double
-    let bloomTime: String
-    let bloomDuration: Int
-    let flowerColor: [String]
-    let foliageColor: [String]
-    let soilType: String
-    let soilPH: String
-    let fertilizerNeeds: String
-    let pruningNeeds: String
-    let plantingSeason: String
-    let plantingDepth: Double
-    let spacing: Double
-    let careInstructions: String?
-    let identificationConfidence: Int?
-}
-
-struct ChatGPTHealthResponse: Codable {
-    let overallHealth: String
-    let healthScore: Int
-    let issues: [String]
-    let recommendations: [String]
-    let diseases: [String]
-    let pests: [String]
-    let nutrientDeficiencies: [String]
-    let confidence: Int
-}
-
-// MARK: - Plant Health Models
-
-struct PlantHealthAnalysis: Codable {
-    let overallHealth: PlantHealth
-    let healthScore: Int
-    let issues: [String]
-    let recommendations: [String]
-    let diseases: [String]
-    let pests: [String]
-    let nutrientDeficiencies: [String]
-    let confidence: Int
-}
-
-enum PlantHealth: String, CaseIterable, Codable {
-    case excellent = "excellent"
-    case good = "good"
-    case fair = "fair"
-    case poor = "poor"
-    case critical = "critical"
-    
-    var color: String {
-        switch self {
-        case .excellent: return "green"
-        case .good: return "blue"
-        case .fair: return "yellow"
-        case .poor: return "orange"
-        case .critical: return "red"
+        let queryLower = query.lowercased()
+        let suggestions = commonPlants.filter { plant in
+            plant.lowercased().contains(queryLower) ||
+            plant.lowercased().hasPrefix(queryLower)
         }
+        
+        return Array(suggestions.prefix(10)) // Limit to 10 suggestions
     }
     
-    var icon: String {
-        switch self {
-        case .excellent: return "checkmark.circle.fill"
-        case .good: return "checkmark.circle"
-        case .fair: return "exclamationmark.triangle"
-        case .poor: return "exclamationmark.triangle.fill"
-        case .critical: return "xmark.circle.fill"
-        }
+    // MARK: - Helper Methods (Mock Data)
+    
+    private func getScientificName(for plantName: String) -> String {
+        let scientificNames: [String: String] = [
+            "tomato": "Solanum lycopersicum",
+            "basil": "Ocimum basilicum",
+            "lavender": "Lavandula",
+            "sunflower": "Helianthus annuus",
+            "marigold": "Tagetes",
+            "zinnia": "Zinnia elegans",
+            "pepper": "Capsicum annuum",
+            "cucumber": "Cucumis sativus",
+            "carrot": "Daucus carota",
+            "lettuce": "Lactuca sativa",
+            "spinach": "Spinacia oleracea",
+            "kale": "Brassica oleracea",
+            "broccoli": "Brassica oleracea",
+            "cauliflower": "Brassica oleracea",
+            "onion": "Allium cepa",
+            "garlic": "Allium sativum",
+            "potato": "Solanum tuberosum",
+            "beet": "Beta vulgaris",
+            "radish": "Raphanus sativus",
+            "mint": "Mentha",
+            "rosemary": "Salvia rosmarinus",
+            "thyme": "Thymus vulgaris",
+            "sage": "Salvia officinalis",
+            "oregano": "Origanum vulgare",
+            "parsley": "Petroselinum crispum",
+            "cilantro": "Coriandrum sativum",
+            "dill": "Anethum graveolens",
+            "chives": "Allium schoenoprasum",
+            "strawberry": "Fragaria × ananassa",
+            "blueberry": "Vaccinium",
+            "raspberry": "Rubus idaeus",
+            "blackberry": "Rubus fruticosus",
+            "grape": "Vitis vinifera",
+            "lemon tree": "Citrus limon",
+            "apple tree": "Malus domestica",
+            "peach tree": "Prunus persica",
+            "cherry tree": "Prunus avium",
+            "calendula": "Calendula officinalis",
+            "nasturtium": "Tropaeolum majus",
+            "alyssum": "Lobularia maritima",
+            "petunia": "Petunia",
+            "geranium": "Pelargonium",
+            "cosmos": "Cosmos bipinnatus"
+        ]
+        
+        return scientificNames[plantName.lowercased()] ?? "Species unknown"
+    }
+    
+    private func getFamily(for plantName: String) -> String {
+        let families: [String: String] = [
+            "tomato": "Solanaceae",
+            "basil": "Lamiaceae",
+            "lavender": "Lamiaceae",
+            "sunflower": "Asteraceae",
+            "marigold": "Asteraceae",
+            "zinnia": "Asteraceae",
+            "pepper": "Solanaceae",
+            "cucumber": "Cucurbitaceae",
+            "carrot": "Apiaceae",
+            "lettuce": "Asteraceae",
+            "spinach": "Amaranthaceae",
+            "kale": "Brassicaceae",
+            "broccoli": "Brassicaceae",
+            "cauliflower": "Brassicaceae",
+            "onion": "Amaryllidaceae",
+            "garlic": "Amaryllidaceae",
+            "potato": "Solanaceae",
+            "beet": "Amaranthaceae",
+            "radish": "Brassicaceae",
+            "mint": "Lamiaceae",
+            "rosemary": "Lamiaceae",
+            "thyme": "Lamiaceae",
+            "sage": "Lamiaceae",
+            "oregano": "Lamiaceae",
+            "parsley": "Apiaceae",
+            "cilantro": "Apiaceae",
+            "dill": "Apiaceae",
+            "chives": "Amaryllidaceae",
+            "strawberry": "Rosaceae",
+            "blueberry": "Ericaceae",
+            "raspberry": "Rosaceae",
+            "blackberry": "Rosaceae",
+            "grape": "Vitaceae",
+            "lemon tree": "Rutaceae",
+            "apple tree": "Rosaceae",
+            "peach tree": "Rosaceae",
+            "cherry tree": "Rosaceae",
+            "calendula": "Asteraceae",
+            "nasturtium": "Tropaeolaceae",
+            "alyssum": "Brassicaceae",
+            "petunia": "Solanaceae",
+            "geranium": "Geraniaceae",
+            "cosmos": "Asteraceae"
+        ]
+        
+        return families[plantName.lowercased()] ?? "Unknown"
+    }
+    
+    private func getCommonNames(for plantName: String) -> [String] {
+        let commonNames: [String: [String]] = [
+            "tomato": ["Love apple", "Wolf peach"],
+            "basil": ["Sweet basil", "Common basil"],
+            "lavender": ["English lavender", "Common lavender"],
+            "sunflower": ["Common sunflower", "Annual sunflower"],
+            "marigold": ["French marigold", "African marigold"],
+            "zinnia": ["Youth and old age", "Common zinnia"],
+            "calendula": ["Pot marigold", "English marigold", "Scotch marigold"]
+        ]
+        
+        return commonNames[plantName.lowercased()] ?? []
     }
 }
 
 // MARK: - Error Types
-
 enum AIError: Error, LocalizedError {
-    case imageProcessingFailed
-    case parsingFailed
-    case apiError(String)
+    case apiKeyMissing
+    case networkError
+    case invalidResponse
+    case rateLimitExceeded
     
     var errorDescription: String? {
         switch self {
-        case .imageProcessingFailed:
-            return "Failed to process image"
-        case .parsingFailed:
-            return "Failed to parse AI response"
-        case .apiError(let message):
-            return "API Error: \(message)"
-        }
-    }
-}
-
-// MARK: - Extensions for display
-extension SunExposure {
-    var displayName: String {
-        switch self {
-        case .fullSun: return "Full Sun"
-        case .partialSun: return "Partial Sun"
-        case .partialShade: return "Partial Shade"
-        case .fullShade: return "Full Shade"
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .fullSun: return "sun.max.fill"
-        case .partialSun: return "sun.max"
-        case .partialShade: return "cloud.sun.fill"
-        case .fullShade: return "cloud.fill"
-        }
-    }
-}
-
-extension WaterNeeds {
-    var displayName: String {
-        switch self {
-        case .low: return "Low Water"
-        case .moderate: return "Moderate Water"
-        case .high: return "High Water"
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .low: return "drop"
-        case .moderate: return "drop.fill"
-        case .high: return "water.waves"
-        }
-    }
-}
-
-extension GrowthHabit {
-    var displayName: String {
-        switch self {
-        case .annual: return "Annual"
-        case .perennial: return "Perennial"
-        case .biennial: return "Biennial"
-        case .shrub: return "Shrub"
-        case .tree: return "Tree"
-        case .vine: return "Vine"
-        case .groundcover: return "Groundcover"
+        case .apiKeyMissing:
+            return "OpenAI API key not configured"
+        case .networkError:
+            return "Network connection error"
+        case .invalidResponse:
+            return "Invalid response from AI service"
+        case .rateLimitExceeded:
+            return "Rate limit exceeded, please try again later"
         }
     }
 }

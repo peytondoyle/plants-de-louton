@@ -64,7 +64,7 @@ class GardenViewModel: ObservableObject {
     
     func addCareEvent(_ careEvent: CareEvent) async {
         do {
-            try await supabaseService.saveCareEvent(careEvent)
+            _ = try await supabaseService.saveCareEvent(careEvent)
             await loadData()
         } catch {
             errorMessage = "Failed to add care event: \(error.localizedDescription)"

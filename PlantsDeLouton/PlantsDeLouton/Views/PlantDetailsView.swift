@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PlantDetailsView: View {
     @StateObject private var viewModel = PlantDetailsViewModel()
-    @State private var showingAISearch = false
     @State private var showingSaveSuccess = false
     
     var body: some View {
@@ -10,13 +9,13 @@ struct PlantDetailsView: View {
             VStack(spacing: 24) {
                 // AI Hero Card (shown when no plant data)
                 if !viewModel.hasPlantData {
-                    AIHeroCardView(showingSearch: $showingAISearch)
+                    AIHeroCardView()
                 }
                 
                 // Plant Details Form
                 PlantDetailsFormView(
                     plant: $viewModel.plant,
-                    plantSearchData: viewModel.selectedPlantData
+                    plantInfo: viewModel.plantInfo
                 )
                 
                 // Save Button
@@ -41,71 +40,24 @@ struct PlantDetailsView: View {
                         )
                     }
                     .disabled(!viewModel.isValid || viewModel.isLoading)
-
-                    // Assign to Bed
-                    NavigationLink {
-                        BedsListView()
-                    } label: {
-                        HStack {
-                            Image(systemName: "square.grid.2x2")
-                            Text("Assign to Bed")
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
                     
-                    // Validation Message
-                    if let validationMessage = viewModel.validationMessage {
-                        Text(validationMessage)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                    
-                    // Error Message
                     if let errorMessage = viewModel.errorMessage {
-                        HStack {
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundColor(.orange)
-                            Text(errorMessage)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.orange.opacity(0.1))
-                        )
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .font(.caption)
                     }
                 }
-                .padding(.horizontal)
             }
             .padding()
         }
-        .navigationTitle("Plant Details")
+        .navigationTitle("Add New Plant")
         .navigationBarTitleDisplayMode(.large)
-        .sheet(isPresented: $showingAISearch) {
-            PlantSearchSheet()
-        }
         .alert("Plant Saved!", isPresented: $showingSaveSuccess) {
             Button("OK") {
-                // Could navigate back or reset form
+                viewModel.reset()
             }
         } message: {
-            Text("Your plant has been saved successfully!")
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button(action: { showingAISearch = true }) {
-                        Label("Search with AI", systemImage: "magnifyingglass")
-                    }
-                    
-                    Button(action: { viewModel.reset() }) {
-                        Label("Reset Form", systemImage: "arrow.clockwise")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-            }
+            Text("Your plant has been saved successfully.")
         }
     }
     
@@ -119,17 +71,102 @@ struct PlantDetailsView: View {
     }
 }
 
-#Preview("Empty State") {
-    NavigationView {
-        PlantDetailsView()
+// MARK: - AI Hero Card View
+struct AIHeroCardView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            // Hero Background
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            colors: [.green.opacity(0.1), .mint.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                
+                // Pattern overlay
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            colors: [.green.opacity(0.05), .clear],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                
+                VStack(spacing: 16) {
+                    // Icon
+                    Image(systemName: "leaf.fill")
+                        .font(.system(size: 32))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.green, .mint],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    
+                    // Title
+                    Text("AI-Powered Plant Discovery")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                    
+                    // Subtitle
+                    Text("Let our intelligent system automatically fill in comprehensive plant details for you")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    // Feature Grid
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 12) {
+                        FeatureCard(icon: "🌱", title: "Growth Details", subtitle: "Height, width, growth habit")
+                        FeatureCard(icon: "☀️", title: "Care Requirements", subtitle: "Sun, water, soil preferences")
+                        FeatureCard(icon: "🌸", title: "Blooming Info", subtitle: "Bloom time & characteristics")
+                        FeatureCard(icon: "📅", title: "Care Schedule", subtitle: "Planting & maintenance tips")
+                    }
+                }
+                .padding(24)
+            }
+        }
     }
 }
 
-#Preview("With Data") {
+// MARK: - Feature Card
+struct FeatureCard: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Text(icon)
+                .font(.title2)
+            
+            Text(title)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .multilineTextAlignment(.center)
+            
+            Text(subtitle)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(Color(.systemBackground))
+        .cornerRadius(8)
+    }
+}
+
+#Preview {
     NavigationView {
         PlantDetailsView()
-    }
-    .onAppear {
-        // This won't work in preview, but shows the structure
     }
 }

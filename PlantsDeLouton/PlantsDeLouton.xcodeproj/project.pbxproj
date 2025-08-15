@@ -17,12 +17,12 @@
 		1A000000100000000000000F /* GardenOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000010 /* GardenOverviewView.swift */; };
 		1A0000001000000000000011 /* GardenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000012 /* GardenViewModel.swift */; };
 		1A0000001000000000000013 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000014 /* DataService.swift */; };
-		1A0000001000000000000015 /* AIHeroCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000016 /* AIHeroCardView.swift */; };
 		1A0000001000000000000017 /* AIPlantSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000018 /* AIPlantSearchService.swift */; };
-		1A0000001000000000000019 /* PlantSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000001A /* PlantSearchSheet.swift */; };
 		1A000000100000000000001B /* PlantDetailsFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000001C /* PlantDetailsFormView.swift */; };
 		1A000000100000000000001D /* PlantDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000001E /* PlantDetailsViewModel.swift */; };
+					1A0000001000000000000083 /* PlantDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000082 /* PlantDetailViewModel.swift */; };
 		1A000000100000000000001F /* PlantDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000020 /* PlantDetailsView.swift */; };
+					1A0000001000000000000081 /* PlantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000080 /* PlantDetailView.swift */; };
 		1A0000001000000000000052 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000053 /* SupabaseService.swift */; };
 		1A0000001000000000000061 /* BedsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000060 /* BedsListView.swift */; };
 		1A0000001000000000000063 /* BedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000062 /* BedDetailView.swift */; };
@@ -31,6 +31,8 @@
 		1A0000001000000000000069 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000068 /* WeatherService.swift */; };
 		1A000000100000000000006B /* SectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006A /* SectionDetailView.swift */; };
 		1A000000100000000000006C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006D /* EmptyStateView.swift */; };
+		1A000000100000000000006E /* BedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006F /* BedImageView.swift */; };
+		1A0000001000000000000070 /* BedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000071 /* BedImageViewModel.swift */; };
 		9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000001000000000000051 /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -45,12 +47,12 @@
 		1A0000001000000000000010 /* GardenOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenOverviewView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000012 /* GardenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewModel.swift; sourceTree = "<group>"; };
 		1A0000001000000000000014 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
-		1A0000001000000000000016 /* AIHeroCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHeroCardView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000018 /* AIPlantSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIPlantSearchService.swift; sourceTree = "<group>"; };
-		1A000000100000000000001A /* PlantSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantSearchSheet.swift; sourceTree = "<group>"; };
 		1A000000100000000000001C /* PlantDetailsFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsFormView.swift; sourceTree = "<group>"; };
 		1A000000100000000000001E /* PlantDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsViewModel.swift; sourceTree = "<group>"; };
+					1A0000001000000000000082 /* PlantDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailViewModel.swift; sourceTree = "<group>"; };
 		1A0000001000000000000020 /* PlantDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsView.swift; sourceTree = "<group>"; };
+					1A0000001000000000000080 /* PlantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000021 /* PlantsDeLouton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlantsDeLouton.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A0000001000000000000022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A0000001000000000000053 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
@@ -61,6 +63,8 @@
 		1A0000001000000000000068 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		1A000000100000000000006A /* SectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionDetailView.swift; sourceTree = "<group>"; };
 		1A000000100000000000006D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		1A000000100000000000006F /* BedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedImageView.swift; sourceTree = "<group>"; };
+		1A0000001000000000000071 /* BedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedImageViewModel.swift; sourceTree = "<group>"; };
 		9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlantsDeLouton.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -123,12 +127,12 @@
 			isa = PBXGroup;
 			children = (
 				1A0000001000000000000010 /* GardenOverviewView.swift */,
-				1A0000001000000000000016 /* AIHeroCardView.swift */,
-				1A000000100000000000001A /* PlantSearchSheet.swift */,
 				1A000000100000000000001C /* PlantDetailsFormView.swift */,
 				1A0000001000000000000020 /* PlantDetailsView.swift */,
+					1A0000001000000000000080 /* PlantDetailView.swift */,
 				1A0000001000000000000060 /* BedsListView.swift */,
 				1A0000001000000000000062 /* BedDetailView.swift */,
+				1A000000100000000000006F /* BedImageView.swift */,
 				1A0000001000000000000066 /* SettingsView.swift */,
 				1A000000100000000000006A /* SectionDetailView.swift */,
 				1A000000100000000000006D /* EmptyStateView.swift */,
@@ -141,7 +145,9 @@
 			children = (
 				1A0000001000000000000012 /* GardenViewModel.swift */,
 				1A000000100000000000001E /* PlantDetailsViewModel.swift */,
+					1A0000001000000000000082 /* PlantDetailViewModel.swift */,
 				1A0000001000000000000064 /* BedsViewModel.swift */,
+				1A0000001000000000000071 /* BedImageViewModel.swift */,
 				1A0000001000000000000068 /* PlantsViewModel.swift */,
 			);
 			path = ViewModels;
@@ -250,12 +256,12 @@
 				1A000000100000000000000F /* GardenOverviewView.swift in Sources */,
 				1A0000001000000000000011 /* GardenViewModel.swift in Sources */,
 				1A0000001000000000000013 /* DataService.swift in Sources */,
-				1A0000001000000000000015 /* AIHeroCardView.swift in Sources */,
 				1A0000001000000000000017 /* AIPlantSearchService.swift in Sources */,
-				1A0000001000000000000019 /* PlantSearchSheet.swift in Sources */,
 				1A000000100000000000001B /* PlantDetailsFormView.swift in Sources */,
 				1A000000100000000000001D /* PlantDetailsViewModel.swift in Sources */,
+					1A0000001000000000000083 /* PlantDetailViewModel.swift in Sources */,
 				1A000000100000000000001F /* PlantDetailsView.swift in Sources */,
+					1A0000001000000000000081 /* PlantDetailView.swift in Sources */,
 				1A0000001000000000000052 /* SupabaseService.swift in Sources */,
 				1A0000001000000000000061 /* BedsListView.swift in Sources */,
 				1A0000001000000000000063 /* BedDetailView.swift in Sources */,
@@ -264,6 +270,8 @@
 				1A0000001000000000000069 /* WeatherService.swift in Sources */,
 				1A000000100000000000006B /* SectionDetailView.swift in Sources */,
 				1A000000100000000000006C /* EmptyStateView.swift in Sources */,
+				1A000000100000000000006E /* BedImageView.swift in Sources */,
+				1A0000001000000000000070 /* BedImageViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

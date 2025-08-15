@@ -1,0 +1,15 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "cc70f1e64f480949224cd416a3700235392a3c4d86fd321ee106f34ae07d5884"
+build_start_time: [1755273959, 193712000]
+build_end_time: [1755273960, 103366000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Supabase/Constants.swift"
+  : [1755273935, 571876860]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Supabase/Deprecated.swift"
+  : [1755273935, 571959486]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Supabase/Exports.swift"
+  : [1755273935, 572035778]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Supabase/SupabaseClient.swift"
+  : [1755273935, 572151820]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Supabase/Types.swift"
+  : [1755273935, 572231821]

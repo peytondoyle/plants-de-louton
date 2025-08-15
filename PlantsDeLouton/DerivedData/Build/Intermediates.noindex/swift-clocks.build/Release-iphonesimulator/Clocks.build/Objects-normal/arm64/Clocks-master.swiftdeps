@@ -1,0 +1,21 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "e1963314e4b50929d6ff0e304ba9fe271b708eed77d285d6b688575e66ca5b14"
+build_start_time: [1755273946, 332545000]
+build_end_time: [1755273949, 33486000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/AnyClock.swift"
+  : [1755273935, 737703876]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/ImmediateClock.swift"
+  : [1755273935, 738236921]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/Internal/Lock.swift"
+  : [1755273935, 738394547]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/Internal/_AsyncTimerSequence.swift"
+  : [1755273935, 738489589]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/SwiftUI.swift"
+  : [1755273935, 738581965]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/TestClock.swift"
+  : [1755273935, 738718424]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/Timer.swift"
+  : [1755273935, 738817675]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/swift-clocks/Sources/Clocks/UnimplementedClock.swift"
+  : [1755273935, 738930259]

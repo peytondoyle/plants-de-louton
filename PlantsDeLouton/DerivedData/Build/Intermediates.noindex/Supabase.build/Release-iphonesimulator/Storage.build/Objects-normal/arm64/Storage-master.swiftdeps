@@ -1,0 +1,33 @@
+version: "Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)"
+options: "ed25ef966be5e27d69b56f3a00670703f23c0790c7e5fed0c9539051fac4e9ff"
+build_start_time: [1755273953, 199785000]
+build_end_time: [1755273955, 591466000]
+inputs:
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/BucketOptions.swift"
+  : [1755273935, 570522268]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/Codable.swift"
+  : [1755273935, 570616769]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/Deprecated.swift"
+  : [1755273935, 570734103]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/Exports.swift"
+  : [1755273935, 570807478]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/Helpers.swift"
+  : [1755273935, 570884895]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/MultipartFormData.swift"
+  : [1755273935, 571003271]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/StorageApi.swift"
+  : [1755273935, 571108022]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/StorageBucketApi.swift"
+  : [1755273935, 571193272]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/StorageError.swift"
+  : [1755273935, 571268440]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/StorageFileApi.swift"
+  : [1755273935, 571370315]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/StorageHTTPClient.swift"
+  : [1755273935, 571465607]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/SupabaseStorage.swift"
+  : [1755273935, 571552067]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/TransformOptions.swift"
+  : [1755273935, 571652900]
+  ? "/Users/peyton/Documents/Development/plants-de-louton/PlantsDeLouton/DerivedData/SourcePackages/checkouts/supabase-swift/Sources/Storage/Types.swift"
+  : [1755273935, 571743109]
