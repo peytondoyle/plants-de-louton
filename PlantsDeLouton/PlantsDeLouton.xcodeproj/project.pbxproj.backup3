@@ -31,7 +31,7 @@
 		1A0000001000000000000069 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000068 /* WeatherService.swift */; };
 		1A000000100000000000006B /* SectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006A /* SectionDetailView.swift */; };
 		1A000000100000000000006C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006D /* EmptyStateView.swift */; };
-
+		1A000000100000000000006E /* BedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006F /* BedImageView.swift */; };
 		1A0000001000000000000070 /* BedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000071 /* BedImageViewModel.swift */; };
 		9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000001000000000000051 /* Supabase */; };
 /* End PBXBuildFile section */
@@ -63,7 +63,7 @@
 		1A0000001000000000000068 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		1A000000100000000000006A /* SectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionDetailView.swift; sourceTree = "<group>"; };
 		1A000000100000000000006D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
-
+		1A000000100000000000006F /* BedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedImageView.swift; sourceTree = "<group>"; };
 		1A0000001000000000000071 /* BedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedImageViewModel.swift; sourceTree = "<group>"; };
 		9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlantsDeLouton.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -132,7 +132,7 @@
 					1A0000001000000000000080 /* PlantDetailView.swift */,
 				1A0000001000000000000060 /* BedsListView.swift */,
 				1A0000001000000000000062 /* BedDetailView.swift */,
-
+				1A000000100000000000006F /* BedImageView.swift */,
 				1A0000001000000000000066 /* SettingsView.swift */,
 				1A000000100000000000006A /* SectionDetailView.swift */,
 				1A000000100000000000006D /* EmptyStateView.swift */,
@@ -270,7 +270,7 @@
 				1A0000001000000000000069 /* WeatherService.swift in Sources */,
 				1A000000100000000000006B /* SectionDetailView.swift in Sources */,
 				1A000000100000000000006C /* EmptyStateView.swift in Sources */,
-
+				1A000000100000000000006E /* BedImageView.swift in Sources */,
 				1A0000001000000000000070 /* BedImageViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
