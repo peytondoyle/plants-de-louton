@@ -39,10 +39,12 @@ struct BedDetailView: View {
                                     .overlay(
                                         // Pins overlay
                                         ForEach(viewModel.plants) { plant in
-                                            PinView(plant: plant) {
-                                                selectedPin = plant
-                                                showingPinEditor = true
+                                            NavigationLink(destination: PlantDetailView(plant: plant)) {
+                                                PinView(plant: plant) {
+                                                    // This will be handled by NavigationLink
+                                                }
                                             }
+                                            .buttonStyle(PlainButtonStyle())
                                             .position(
                                                 x: plant.x * geometry.size.width,
                                                 y: plant.y * geometry.size.height
@@ -204,8 +206,7 @@ struct BedDetailView: View {
             let distance = sqrt(pow(location.x - pinX, 2) + pow(location.y - pinY, 2))
             
             if distance < 30 { // 30pt touch radius
-                selectedPin = plant
-                showingPinEditor = true
+                // Pin is now handled by NavigationLink, so we don't need to do anything here
                 return
             }
         }
@@ -220,6 +221,8 @@ struct BedDetailView: View {
 struct PinView: View {
     let plant: Plant
     let onTap: () -> Void
+    @State private var isPressed = false
+    @State private var showTooltip = false
     
     private var pinColor: Color {
         let colors: [Color] = [
@@ -233,17 +236,72 @@ struct PinView: View {
     var body: some View {
         Button(action: onTap) {
             ZStack {
+                // Outer glow when pressed
+                Circle()
+                    .fill(pinColor.opacity(0.3))
+                    .frame(width: isPressed ? 32 : 24, height: isPressed ? 32 : 24)
+                    .scaleEffect(isPressed ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 0.1), value: isPressed)
+                
+                // Main pin circle
                 Circle()
                     .fill(pinColor)
                     .frame(width: 20, height: 20)
                     .shadow(color: .black.opacity(0.2), radius: 3, x: 0, y: 2)
                 
+                // White border
                 Circle()
                     .stroke(Color.white, lineWidth: 3)
                     .frame(width: 20, height: 20)
+                
+                // Plant icon
+                Image(systemName: "leaf.fill")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.white)
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }, perform: {})
+        .overlay(
+            // Tooltip showing plant name
+            Group {
+                if showTooltip {
+                    VStack(spacing: 4) {
+                        Text(plant.name)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.8))
+                            .cornerRadius(6)
+                        
+                        // Arrow pointing to pin
+                        Triangle()
+                            .fill(Color.black.opacity(0.8))
+                            .frame(width: 8, height: 4)
+                    }
+                    .offset(y: -40)
+                    .transition(.opacity.combined(with: .scale))
+                }
+            }
+        )
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showTooltip = true
+            }
+            
+            // Hide tooltip after 2 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showTooltip = false
+                }
+            }
+        }
     }
 }
 
@@ -439,6 +497,18 @@ struct ImagePicker: UIViewControllerRepresentable {
                 }
             }
         }
+    }
+}
+
+// MARK: - Triangle Shape for Tooltip
+struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
     }
 }
 
