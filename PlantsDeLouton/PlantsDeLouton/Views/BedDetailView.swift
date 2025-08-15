@@ -124,10 +124,12 @@ struct BedDetailView: View {
                             ScrollView {
                                 LazyVStack(spacing: 0) {
                                     ForEach(viewModel.plants) { plant in
-                                        PinListItem(plant: plant) {
-                                            selectedPin = plant
-                                            showingPinEditor = true
+                                        NavigationLink(destination: PlantDetailView(plant: plant)) {
+                                            PinListItem(plant: plant) {
+                                                // This will be handled by NavigationLink
+                                            }
                                         }
+                                        .buttonStyle(PlainButtonStyle())
                                     }
                                 }
                             }
@@ -282,10 +284,6 @@ struct PinListItem: View {
                 }
                 
                 Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -359,6 +357,12 @@ struct PinEditorView: View {
                     TextField("Plant name", text: $plantName)
                     TextField("Notes (optional)", text: $plantNotes, axis: .vertical)
                         .lineLimit(3...6)
+                }
+                
+                Section {
+                    NavigationLink("View Full Plant Details") {
+                        PlantDetailView(plant: plant)
+                    }
                 }
                 
                 Section {
