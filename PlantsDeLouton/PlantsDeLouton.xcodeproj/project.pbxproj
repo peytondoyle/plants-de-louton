@@ -7,210 +7,133 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A0000001000000000000001 /* PlantsDeLoutonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000002 /* PlantsDeLoutonApp.swift */; };
-		1A0000001000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000004 /* ContentView.swift */; };
-		1A0000001000000000000005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000006 /* Assets.xcassets */; };
-		1A0000001000000000000007 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000008 /* Preview Assets.xcassets */; };
-		1A0000001000000000000009 /* Plant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000000A /* Plant.swift */; };
-		1A000000100000000000000B /* Bed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000000C /* Bed.swift */; };
-		1A000000100000000000000D /* CareEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000000E /* CareEvent.swift */; };
-		1A000000100000000000000F /* GardenOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000010 /* GardenOverviewView.swift */; };
-		1A0000001000000000000011 /* GardenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000012 /* GardenViewModel.swift */; };
-		1A0000001000000000000013 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000014 /* DataService.swift */; };
-		1A0000001000000000000017 /* AIPlantSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000018 /* AIPlantSearchService.swift */; };
-		1A000000100000000000001B /* PlantDetailsFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000001C /* PlantDetailsFormView.swift */; };
-		1A000000100000000000001D /* PlantDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000001E /* PlantDetailsViewModel.swift */; };
-					1A0000001000000000000083 /* PlantDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000082 /* PlantDetailViewModel.swift */; };
-		1A000000100000000000001F /* PlantDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000020 /* PlantDetailsView.swift */; };
-					1A0000001000000000000081 /* PlantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000080 /* PlantDetailView.swift */; };
-		1A0000001000000000000052 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000053 /* SupabaseService.swift */; };
-		1A0000001000000000000061 /* BedsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000060 /* BedsListView.swift */; };
-		1A0000001000000000000063 /* BedDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000062 /* BedDetailView.swift */; };
-		1A0000001000000000000065 /* BedsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000064 /* BedsViewModel.swift */; };
-		1A0000001000000000000067 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000066 /* SettingsView.swift */; };
-		1A0000001000000000000069 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000068 /* WeatherService.swift */; };
-		1A000000100000000000006B /* SectionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006A /* SectionDetailView.swift */; };
-		1A000000100000000000006C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000100000000000006D /* EmptyStateView.swift */; };
-
-		1A0000001000000000000070 /* BedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000001000000000000071 /* BedImageViewModel.swift */; };
-		9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000001000000000000051 /* Supabase */; };
+		9C5A3FE42E4FF9C3006E75A5 /* SpacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5A3FE32E4FF9C3006E75A5 /* SpacesView.swift */; };
+		A1234567890123456789012A /* PlantsDeLoutonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789012B /* PlantsDeLoutonApp.swift */; };
+		A1234567890123456789012C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789012D /* ContentView.swift */; };
+		A1234567890123456789012E /* SimpleModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789012F /* SimpleModels.swift */; };
+		A1234567890123456789013A /* GardenAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789013B /* GardenAPI.swift */; };
+		A1234567890123456789016C /* GardenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789016D /* GardenView.swift */; };
+		A1234567890123456789016E /* PlantsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789016F /* PlantsView.swift */; };
+		A1234567890123456789017A /* CareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789017B /* CareView.swift */; };
+		A1234567890123456789017C /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890123456789017D /* MoreView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1A0000001000000000000002 /* PlantsDeLoutonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantsDeLoutonApp.swift; sourceTree = "<group>"; };
-		1A0000001000000000000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		1A0000001000000000000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1A0000001000000000000008 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		1A000000100000000000000A /* Plant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plant.swift; sourceTree = "<group>"; };
-		1A000000100000000000000C /* Bed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bed.swift; sourceTree = "<group>"; };
-		1A000000100000000000000E /* CareEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareEvent.swift; sourceTree = "<group>"; };
-		1A0000001000000000000010 /* GardenOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenOverviewView.swift; sourceTree = "<group>"; };
-		1A0000001000000000000012 /* GardenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewModel.swift; sourceTree = "<group>"; };
-		1A0000001000000000000014 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
-		1A0000001000000000000018 /* AIPlantSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIPlantSearchService.swift; sourceTree = "<group>"; };
-		1A000000100000000000001C /* PlantDetailsFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsFormView.swift; sourceTree = "<group>"; };
-		1A000000100000000000001E /* PlantDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsViewModel.swift; sourceTree = "<group>"; };
-					1A0000001000000000000082 /* PlantDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailViewModel.swift; sourceTree = "<group>"; };
-		1A0000001000000000000020 /* PlantDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailsView.swift; sourceTree = "<group>"; };
-					1A0000001000000000000080 /* PlantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailView.swift; sourceTree = "<group>"; };
-		1A0000001000000000000021 /* PlantsDeLouton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlantsDeLouton.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A0000001000000000000022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1A0000001000000000000053 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
-		1A0000001000000000000060 /* BedsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedsListView.swift; sourceTree = "<group>"; };
-		1A0000001000000000000062 /* BedDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedDetailView.swift; sourceTree = "<group>"; };
-		1A0000001000000000000064 /* BedsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedsViewModel.swift; sourceTree = "<group>"; };
-		1A0000001000000000000066 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		1A0000001000000000000068 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
-		1A000000100000000000006A /* SectionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionDetailView.swift; sourceTree = "<group>"; };
-		1A000000100000000000006D /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
-
-		1A0000001000000000000071 /* BedImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BedImageViewModel.swift; sourceTree = "<group>"; };
-		9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlantsDeLouton.entitlements; sourceTree = "<group>"; };
+		9C5A3FE32E4FF9C3006E75A5 /* SpacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacesView.swift; sourceTree = "<group>"; };
+		A1234567890123456789012B /* PlantsDeLoutonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantsDeLoutonApp.swift; sourceTree = "<group>"; };
+		A1234567890123456789012D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A1234567890123456789012F /* SimpleModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleModels.swift; sourceTree = "<group>"; };
+		A1234567890123456789013B /* GardenAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenAPI.swift; sourceTree = "<group>"; };
+		A1234567890123456789016D /* GardenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenView.swift; sourceTree = "<group>"; };
+		A1234567890123456789016F /* PlantsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantsView.swift; sourceTree = "<group>"; };
+		A1234567890123456789017B /* CareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareView.swift; sourceTree = "<group>"; };
+		A1234567890123456789017D /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+		A1234567890123456789018A /* PlantsDeLouton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlantsDeLouton.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1A0000001000000000000023 /* Frameworks */ = {
+		A1234567890123456789019A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C2C6BC12E4CD8960047FD06 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1A0000001000000000000024 = {
+		A123456789012345678901A0 /* PlantsDeLouton */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000001000000000000025 /* PlantsDeLouton */,
-				1A0000001000000000000026 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		1A0000001000000000000025 /* PlantsDeLouton */ = {
-			isa = PBXGroup;
-			children = (
-				9C2C6BC22E4CD90A0047FD06 /* PlantsDeLouton.entitlements */,
-				1A0000001000000000000002 /* PlantsDeLoutonApp.swift */,
-				1A0000001000000000000004 /* ContentView.swift */,
-				1A0000001000000000000027 /* Models */,
-				1A0000001000000000000028 /* Views */,
-				1A0000001000000000000029 /* ViewModels */,
-				1A000000100000000000002A /* Services */,
-				1A0000001000000000000006 /* Assets.xcassets */,
-				1A0000001000000000000022 /* Info.plist */,
-				1A000000100000000000002B /* Preview Content */,
+				A123456789012345678901A1 /* Models */,
+				A123456789012345678901A2 /* Services */,
+				A123456789012345678901A3 /* Views */,
+				A1234567890123456789012B /* PlantsDeLoutonApp.swift */,
+				A1234567890123456789012D /* ContentView.swift */,
 			);
 			path = PlantsDeLouton;
 			sourceTree = "<group>";
 		};
-		1A0000001000000000000026 /* Products */ = {
+		A123456789012345678901A1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000001000000000000021 /* PlantsDeLouton.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		1A0000001000000000000027 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				1A000000100000000000000A /* Plant.swift */,
-				1A000000100000000000000C /* Bed.swift */,
-				1A000000100000000000000E /* CareEvent.swift */,
+				A1234567890123456789012F /* SimpleModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		1A0000001000000000000028 /* Views */ = {
+		A123456789012345678901A2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000001000000000000010 /* GardenOverviewView.swift */,
-				1A000000100000000000001C /* PlantDetailsFormView.swift */,
-				1A0000001000000000000020 /* PlantDetailsView.swift */,
-					1A0000001000000000000080 /* PlantDetailView.swift */,
-				1A0000001000000000000060 /* BedsListView.swift */,
-				1A0000001000000000000062 /* BedDetailView.swift */,
-
-				1A0000001000000000000066 /* SettingsView.swift */,
-				1A000000100000000000006A /* SectionDetailView.swift */,
-				1A000000100000000000006D /* EmptyStateView.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		1A0000001000000000000029 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				1A0000001000000000000012 /* GardenViewModel.swift */,
-				1A000000100000000000001E /* PlantDetailsViewModel.swift */,
-					1A0000001000000000000082 /* PlantDetailViewModel.swift */,
-				1A0000001000000000000064 /* BedsViewModel.swift */,
-				1A0000001000000000000071 /* BedImageViewModel.swift */,
-				1A0000001000000000000068 /* PlantsViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		1A000000100000000000002A /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				1A0000001000000000000014 /* DataService.swift */,
-				1A0000001000000000000018 /* AIPlantSearchService.swift */,
-				1A0000001000000000000053 /* SupabaseService.swift */,
-				1A0000001000000000000068 /* WeatherService.swift */,
+				A1234567890123456789013B /* GardenAPI.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		1A000000100000000000002B /* Preview Content */ = {
+		A123456789012345678901A3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1A0000001000000000000008 /* Preview Assets.xcassets */,
+				9C5A3FE32E4FF9C3006E75A5 /* SpacesView.swift */,
+				A1234567890123456789016D /* GardenView.swift */,
+				A1234567890123456789016F /* PlantsView.swift */,
+				A1234567890123456789017B /* CareView.swift */,
+				A1234567890123456789017D /* MoreView.swift */,
 			);
-			path = "Preview Content";
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A123456789012345678901A5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1234567890123456789018A /* PlantsDeLouton.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A123456789012345678901A6 = {
+			isa = PBXGroup;
+			children = (
+				A123456789012345678901A0 /* PlantsDeLouton */,
+				A123456789012345678901A5 /* Products */,
+			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1A000000100000000000002C /* PlantsDeLouton */ = {
+		A123456789012345678901B0 /* PlantsDeLouton */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1A000000100000000000002D /* Build configuration list for PBXNativeTarget "PlantsDeLouton" */;
+			buildConfigurationList = A123456789012345678901B1 /* Build configuration list for PBXNativeTarget "PlantsDeLouton" */;
 			buildPhases = (
-				1A000000100000000000002E /* Sources */,
-				1A0000001000000000000023 /* Frameworks */,
-				1A000000100000000000002F /* Resources */,
+				A123456789012345678901B2 /* Sources */,
+				A1234567890123456789019A /* Frameworks */,
+				A123456789012345678901B3 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = PlantsDeLouton;
-			packageProductDependencies = (
-				1A0000001000000000000051 /* Supabase */,
-			);
 			productName = PlantsDeLouton;
-			productReference = 1A0000001000000000000021 /* PlantsDeLouton.app */;
+			productReference = A1234567890123456789018A /* PlantsDeLouton.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		1A0000001000000000000030 /* Project object */ = {
+		A123456789012345678901C0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					1A000000100000000000002C = {
+					A123456789012345678901B0 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = 1A0000001000000000000031 /* Build configuration list for PBXProject "PlantsDeLouton" */;
+			buildConfigurationList = A123456789012345678901C1 /* Build configuration list for PBXProject "PlantsDeLouton" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -218,67 +141,47 @@
 				en,
 				Base,
 			);
-			mainGroup = 1A0000001000000000000024;
-			packageReferences = (
-				1A0000001000000000000050 /* XCRemoteSwiftPackageReference "supabase-swift" */,
-			);
-			productRefGroup = 1A0000001000000000000026 /* Products */;
+			mainGroup = A123456789012345678901A6;
+			productRefGroup = A123456789012345678901A5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1A000000100000000000002C /* PlantsDeLouton */,
+				A123456789012345678901B0 /* PlantsDeLouton */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		1A000000100000000000002F /* Resources */ = {
+		A123456789012345678901B3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0000001000000000000007 /* Preview Assets.xcassets in Resources */,
-				1A0000001000000000000005 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1A000000100000000000002E /* Sources */ = {
+		A123456789012345678901B2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A0000001000000000000003 /* ContentView.swift in Sources */,
-				1A0000001000000000000001 /* PlantsDeLoutonApp.swift in Sources */,
-				1A0000001000000000000009 /* Plant.swift in Sources */,
-				1A000000100000000000000B /* Bed.swift in Sources */,
-				1A000000100000000000000D /* CareEvent.swift in Sources */,
-				1A000000100000000000000F /* GardenOverviewView.swift in Sources */,
-				1A0000001000000000000011 /* GardenViewModel.swift in Sources */,
-				1A0000001000000000000013 /* DataService.swift in Sources */,
-				1A0000001000000000000017 /* AIPlantSearchService.swift in Sources */,
-				1A000000100000000000001B /* PlantDetailsFormView.swift in Sources */,
-				1A000000100000000000001D /* PlantDetailsViewModel.swift in Sources */,
-					1A0000001000000000000083 /* PlantDetailViewModel.swift in Sources */,
-				1A000000100000000000001F /* PlantDetailsView.swift in Sources */,
-					1A0000001000000000000081 /* PlantDetailView.swift in Sources */,
-				1A0000001000000000000052 /* SupabaseService.swift in Sources */,
-				1A0000001000000000000061 /* BedsListView.swift in Sources */,
-				1A0000001000000000000063 /* BedDetailView.swift in Sources */,
-				1A0000001000000000000065 /* BedsViewModel.swift in Sources */,
-				1A0000001000000000000067 /* SettingsView.swift in Sources */,
-				1A0000001000000000000069 /* WeatherService.swift in Sources */,
-				1A000000100000000000006B /* SectionDetailView.swift in Sources */,
-				1A000000100000000000006C /* EmptyStateView.swift in Sources */,
-
-				1A0000001000000000000070 /* BedImageViewModel.swift in Sources */,
+				9C5A3FE42E4FF9C3006E75A5 /* SpacesView.swift in Sources */,
+				A1234567890123456789012C /* ContentView.swift in Sources */,
+				A1234567890123456789012E /* SimpleModels.swift in Sources */,
+				A1234567890123456789013A /* GardenAPI.swift in Sources */,
+				A1234567890123456789016C /* GardenView.swift in Sources */,
+				A1234567890123456789016E /* PlantsView.swift in Sources */,
+				A1234567890123456789017A /* CareView.swift in Sources */,
+				A1234567890123456789017C /* MoreView.swift in Sources */,
+				A1234567890123456789012A /* PlantsDeLoutonApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1A0000001000000000000032 /* Debug */ = {
+		A123456789012345678901D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -341,7 +244,7 @@
 			};
 			name = Debug;
 		};
-		1A0000001000000000000033 /* Release */ = {
+		A123456789012345678901D1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -397,31 +300,28 @@
 			};
 			name = Release;
 		};
-		1A0000001000000000000034 /* Debug */ = {
+		A123456789012345678901D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PlantsDeLouton/PlantsDeLouton.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"PlantsDeLouton/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 3RP42MC533;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = PlantsDeLouton/Info.plist;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.louton.plants;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.PlantsDeLouton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -429,31 +329,28 @@
 			};
 			name = Debug;
 		};
-		1A0000001000000000000035 /* Release */ = {
+		A123456789012345678901D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PlantsDeLouton/PlantsDeLouton.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"PlantsDeLouton/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 3RP42MC533;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = PlantsDeLouton/Info.plist;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.louton.plants;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.PlantsDeLouton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -464,44 +361,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1A000000100000000000002D /* Build configuration list for PBXNativeTarget "PlantsDeLouton" */ = {
+		A123456789012345678901B1 /* Build configuration list for PBXNativeTarget "PlantsDeLouton" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1A0000001000000000000034 /* Debug */,
-				1A0000001000000000000035 /* Release */,
+				A123456789012345678901D2 /* Debug */,
+				A123456789012345678901D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1A0000001000000000000031 /* Build configuration list for PBXProject "PlantsDeLouton" */ = {
+		A123456789012345678901C1 /* Build configuration list for PBXProject "PlantsDeLouton" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1A0000001000000000000032 /* Debug */,
-				1A0000001000000000000033 /* Release */,
+				A123456789012345678901D0 /* Debug */,
+				A123456789012345678901D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		1A0000001000000000000050 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase/supabase-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1A0000001000000000000051 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1A0000001000000000000050 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 1A0000001000000000000030 /* Project object */;
+	rootObject = A123456789012345678901C0 /* Project object */;
 }

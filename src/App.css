@@ -1947,7 +1947,16 @@ a{ color:inherit; text-decoration:none; }
   flex-shrink: 0;
   flex-grow: 0;
 }
-.pin-name{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pin-name{ 
+  white-space:nowrap; 
+  overflow:hidden; 
+  text-overflow:ellipsis; 
+  transition: color 0.2s ease;
+}
+
+.pin-name:hover {
+  color: var(--color-primary);
+}
 
 /* =========================
    Modern Drawer (pin editor)
@@ -2734,6 +2743,17 @@ label.ui-btn input[type="file"]{ display:none; }
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+}
+
+/* =========================
+   Plant Detail Modal
+========================= */
+.plant-detail-modal .modal-body {
+  padding: 0;
+}
+
+.plant-detail-modal .modal-header {
+  padding: 24px 24px 16px 24px;
 }
 
 /* =========================

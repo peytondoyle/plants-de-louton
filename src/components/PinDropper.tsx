@@ -33,6 +33,8 @@ type Props = {
   allowCreate?: boolean;
   /** Called when a pin is selected or deselected */
   onSelect?: (pin: Pin | null) => void;
+  /** Called when a pin should open plant detail view */
+  onOpenPlantDetail?: (pinId: string) => void;
 };
 
 export default function PinDropper({
@@ -52,6 +54,7 @@ export default function PinDropper({
   pins: externalPins,
   allowCreate = true,
   onSelect,
+  onOpenPlantDetail,
 }: Props) {
   const [internalPins, setInternalPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -415,6 +418,16 @@ export default function PinDropper({
             if (!pinWasMoved) {
               const event = new CustomEvent('pin-selected', { detail: { id: p.id } });
               window.dispatchEvent(event);
+            }
+          }}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            console.log('Pin double-clicked:', p.id, p.name);
+            if (onOpenPlantDetail) {
+              console.log('Opening plant detail for pin:', p.id);
+              onOpenPlantDetail(p.id);
+            } else {
+              console.log('onOpenPlantDetail handler not provided');
             }
           }}
           aria-label={p.name || `Pin at ${Math.round(p.x * 100)}%, ${Math.round(p.y * 100)}%`}

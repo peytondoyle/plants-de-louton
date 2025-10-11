@@ -17,9 +17,10 @@ type Props = {
   addMode?: boolean;
   onOpenGallery?: (args: { pinId: string }) => void;
   showGalleryStrip?: boolean;
+  onOpenPlantDetail?: (pinId: string) => void;
 };
 
-export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onSelect, cardRef, promoteSelected = false, onToggleAddMode, addMode = false, onOpenGallery, showGalleryStrip = false }: Props) {
+export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onSelect, cardRef, promoteSelected = false, onToggleAddMode, addMode = false, onOpenGallery, showGalleryStrip = false, onOpenPlantDetail }: Props) {
   const sortedPins = promoteSelected && selectedPinId
     ? [
         ...pins.filter(p => p.id === selectedPinId),
@@ -84,7 +85,23 @@ export default function PinsPanel({ pins, onOpen, selectedPinId, fullHeight, onS
                       borderColor: getPinColors(p.id).highlight,
                     }}
                   />
-                  <span className="pin-name">{p.name || "Untitled"}</span>
+                  <span 
+                    className="pin-name" 
+                    style={{ cursor: onOpenPlantDetail ? 'pointer' : 'default' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('Pin name clicked:', p.id, p.name);
+                      if (onOpenPlantDetail) {
+                        console.log('Opening plant detail for pin:', p.id);
+                        onOpenPlantDetail(p.id);
+                      } else {
+                        console.log('onOpenPlantDetail handler not provided');
+                      }
+                    }}
+                    title={onOpenPlantDetail ? "Click to view plant details" : undefined}
+                  >
+                    {p.name || "Untitled"}
+                  </span>
                   <span className="pin-spacer" />
                   <PinGalleryStrip pinId={p.id} onOpen={() => onOpenGallery?.({ pinId: p.id })} />
                   <span className="pin-edit-btn-wrap">

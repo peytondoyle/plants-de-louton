@@ -16,6 +16,7 @@ import PinLightbox from "../components/plant-gallery/PinLightbox";
 import PinEditorDrawer from "../components/PinEditorDrawer";
 import MainImageTooltip from "../components/MainImageTooltip";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import PlantDetail from "../components/PlantDetail";
 
 import type { Bed, BedImage, Pin } from "../types/types";
 
@@ -58,6 +59,7 @@ export default function BedDetail() {
   const [openPlantGallery, setOpenPlantGallery] = useState<{ plantId: string; pinId?: string } | null>(null);
   const [openPinGallery, setOpenPinGallery] = useState<{ pinId: string } | null>(null);
   const [openLightbox, setOpenLightbox] = useState<{ pinId: string } | null>(null);
+  const [openPlantDetail, setOpenPlantDetail] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -576,6 +578,10 @@ export default function BedDetail() {
                     setDraftInit(pin || undefined);
                     setPromoteSelected(false);
                   }}
+                  onOpenPlantDetail={(pinId) => {
+                    console.log('BedDetail: Opening plant detail for pin (PinDropper):', pinId);
+                    setOpenPlantDetail(pinId);
+                  }}
                 >
                   {images.length > 0 && (
                     <MainImageTooltip
@@ -614,6 +620,10 @@ export default function BedDetail() {
             onOpen={(pin) => {
               setDraftInit(pin);
               setDrawerOpen(true);
+            }}
+            onOpenPlantDetail={(pinId) => {
+              console.log('BedDetail: Opening plant detail for pin:', pinId);
+              setOpenPlantDetail(pinId);
             }}
           />
 
@@ -775,6 +785,22 @@ export default function BedDetail() {
 
       {openLightbox ? (
         <PinLightbox pinId={openLightbox.pinId} onClose={() => setOpenLightbox(null)} />
+      ) : null}
+
+      {openPlantDetail ? (
+        <PlantDetail 
+          pinId={openPlantDetail} 
+          onClose={() => setOpenPlantDetail(null)}
+          onEdit={() => {
+            // Find the pin and open the editor
+            const pin = pins.find(p => p.id === openPlantDetail);
+            if (pin) {
+              setDraftInit(pin);
+              setDrawerOpen(true);
+            }
+            setOpenPlantDetail(null);
+          }}
+        />
       ) : null}
 
       <DeleteConfirmationModal
