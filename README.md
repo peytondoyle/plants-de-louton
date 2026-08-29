@@ -1,3 +1,13 @@
+<!-- Archive-status header added 2026-08-29; original content below is unchanged. -->
+> **ARCHIVED — Garden-management ecosystem, web + mobile (a pre-Verdant plant tracker).**
+>
+> - **Status:** Superseded
+> - **Died:** Superseded by Verdant. Last commit 2026-08-16 (removed stale build artifacts).
+> - **Successor / data:** Verdant, the live garden app at ~/Documents/Development/verdant.
+> - **Note:** Local branch backup-2025-08-15 embeds a LIVE OpenAI key — revoke it; a scrubbed copy is pushed as backup-2025-08-15-scrubbed.
+
+---
+
 # Plants de Louton
 
 A garden management app for tracking plants, beds, and care history.
